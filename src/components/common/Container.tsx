@@ -14,7 +14,7 @@ export default function Container(props: ContainerProps) {
     <Tag
       id={id}
       ref={ref}
-      className={`mx-auto w-full h-fit relative max-w-[1440px] px-5 md:px-7 lg:px-12 pt-12 lg:pt-20 xl:pt-24  ${className}`}
+      className={`mx-auto w-full h-fit relative max-w-[1440px] px-5 md:px-7 lg:px-12 pt-12 lg:pt-20 xl:pt-24 ${className}`}
     >
       {children}
     </Tag>
