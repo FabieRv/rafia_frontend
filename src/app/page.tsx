@@ -1,7 +1,9 @@
+import Hero from "@/components/common/Hero"
+
 export default function Home() {
   return (
     <div>
-      <p>Bienvenue sur art Malagasy</p>
+      <Hero />
     </div>
   )
 }
