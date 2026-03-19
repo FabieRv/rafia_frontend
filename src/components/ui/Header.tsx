@@ -14,12 +14,10 @@ export default function Header() {
     <header className="sticky top-0 z-50 bg-[#FAFAFA] ">
       <Container className="py-4! relative">
         <nav className="flex justify-between items-center w-full relative z-50">
-          {/* Logo */}
           <Logo />
-
           {/* Menu Desktop */}
           <ul className="hidden lg:flex items-center gap-10 font-text font-bold">
-            {["ACCUEIL", "À PROPOS", "SHOP", "BLOG", "CONTACT"].map(
+            {["ACCUEIL", "MODEL", "CATHALOGUE", "CONTACT"].map(
               (text, index) => (
                 <li key={index}>
                   <Link
