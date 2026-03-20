@@ -9,9 +9,11 @@
   --text-secondary: #c05340;
   --text-accent: #fac748;
 
-  /* Bouton */
-  --btn-primary: #a6a15e;
-  --btn-hover: #d97a4f;
+  /* Bouton a6a15e */
+  --btn-primary: #5c5651;
+  --btn-hover: #fac748;
+  --btn-secondary: #a89f94;
+  --btn-secondary-hover: #8c847a;
 
   /* Fonts */
   --font-title: var(--font-playfair);
@@ -30,6 +32,8 @@
   /* Boutons */
   --color-btn-primary: var(--btn-primary);
   --color-btn-hover: var(--btn-hover);
+  --color-btn-primary: var(--btn-secondary);
+  --color-btn-hover: var(--btn-secondary-hover);
 
   /* Fonts */
   --font-title: var(--font-playfair);
@@ -39,7 +43,7 @@
 /* Dark mode */
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg-primary: #2b1a14;
+    --bg-primary: #6b8e23;
     --text-primary: #ededed;
   }
 }
@@ -55,7 +59,7 @@
 
   h1,
   h3 {
-    font-size: 1.5rem;
+    font-size: 40px;
     font-weight: 700;
     line-height: 1.2;
   }
