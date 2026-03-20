@@ -26,7 +26,8 @@ export default function RootLayout({
         className={`${playfair.variable} ${montserrat.variable} antialiased`}
       >
         <Header />
-        <Search />
+        {/* <Search /> */}
+
         {children}
       </body>
     </html>

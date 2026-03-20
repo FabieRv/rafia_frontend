@@ -4,11 +4,12 @@ import { useEffect, useRef } from "react"
 import gsap from "gsap"
 import Button from "./Button"
 import Container from "./Container"
+import { useGSAP } from "@gsap/react"
 
-export default function Hero() {
-  const heroRef = useRef(null)
+export default function Home() {
+  //const heroRef = useRef(null)
 
-  useEffect(() => {
+  useGSAP(() => {
     gsap.from(".hero-content", {
       opacity: 0,
       y: 30,
@@ -16,7 +17,7 @@ export default function Hero() {
       stagger: 0.2,
       ease: "power3.out",
     })
-  }, [])
+  })
 
   return (
     // Changement : h-[450px] sur mobile, h-[593px] sur tablette/PC (md:)

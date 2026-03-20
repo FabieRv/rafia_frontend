@@ -1,9 +1,7 @@
 @import "tailwindcss";
 
 :root {
-  /* Background */
   --bg-primary: #fdfcf7;
-  /*C59D5F  */
   --bg-secondary: #6b8e23;
   --bg-tertiary: #c59d5f;
 
@@ -46,9 +44,19 @@
   }
 }
 
-/* Style global */
-body {
-  background: var(--bg-primary);
-  color: var(--text-primary);
-  font-family: var(--font-text);
+@layer base {
+  body {
+    @apply bg-[var(--bg-primary)] text-[var(--text-primary)] font-[var(--font-text)];
+  }
+
+  p {
+    font-size: 20px;
+  }
+
+  h1,
+  h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1.2;
+  }
 }

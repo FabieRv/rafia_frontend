@@ -12,46 +12,43 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-50 bg-[#FAFAFA] ">
-      <Container className="py-4! relative">
+      <Container className="py-6! relative">
         <nav className="flex justify-between items-center w-full relative z-50">
           <Logo />
-          {/* Menu Desktop */}
           <ul className="hidden lg:flex items-center gap-10 font-text font-bold">
-            {["ACCUEIL", "MODEL", "CATHALOGUE", "CONTACT"].map(
-              (text, index) => (
-                <li key={index}>
-                  <Link
-                    href={
-                      text === "ACCUEIL"
-                        ? "/"
-                        : `/${text.toLowerCase().replace(" ", "")}`
-                    }
-                    className="text-sm font-semibold text-[#2C2C2C] hover:text-[#E67E22] transition-colors"
-                  >
-                    {text}
-                  </Link>
-                </li>
-              )
-            )}
+            {["ACCUEIL", "MODEL", "CATALOGUE", "CONTACT"].map((text, index) => (
+              <li key={index}>
+                <Link
+                  href={
+                    text === "ACCUEIL"
+                      ? "/"
+                      : `/${text.toLowerCase().replace(" ", "")}`
+                  }
+                  className="text-xl font-semibold text-[#2C2C2C] hover:text-[#E67E22] transition-colors"
+                >
+                  {text}
+                </Link>
+              </li>
+            ))}
           </ul>
 
           {/* Actions Desktop */}
-          <div className="hidden text-[#A0522D] lg:flex items-center gap-6 font-text">
+          <div className="hidden text-[#A0522D] lg:flex items-center gap-6 font-text ">
             <Link href="/cart">
               <FiShoppingCart
-                size={22}
+                size={28}
                 className="hover:text-[#D97A4F] cursor-pointer transition-colors "
               />
             </Link>
             <Link href="/wishlist">
               <FiHeart
-                size={22}
+                size={28}
                 className="hover:text-[#D97A4F] cursor-pointer transition-colors"
               />
             </Link>
             <Link href="/profile">
               <FiUser
-                size={24}
+                size={28}
                 className="hover:text-[#D97A4F] cursor-pointer transition-colors"
               />
             </Link>
@@ -72,23 +69,21 @@ export default function Header() {
             isClicked ? "translate-x-0" : "translate-x-full"
           }`}
         >
-          {["ACCUEIL", "À PROPOS", "SHOP", "BLOG", "CONTACT"].map(
-            (text, index) => (
-              <li key={index}>
-                <Link
-                  href={
-                    text === "ACCUEIL"
-                      ? "/"
-                      : `/${text.toLowerCase().replace(" ", "")}`
-                  }
-                  className="font-bold hover:text-(--btn-hover) transition-colors"
-                  onClick={() => setIsClicked(false)}
-                >
-                  {text}
-                </Link>
-              </li>
-            )
-          )}
+          {["ACCUEIL", "MODEL", "CATALOGUE", "CONTACT"].map((text, index) => (
+            <li key={index}>
+              <Link
+                href={
+                  text === "ACCUEIL"
+                    ? "/"
+                    : `/${text.toLowerCase().replace(" ", "")}`
+                }
+                className="font-bold hover:text-(--btn-hover) transition-colors"
+                onClick={() => setIsClicked(false)}
+              >
+                {text}
+              </Link>
+            </li>
+          ))}
 
           <div className="h-px bg-gray-200 w-full my-4" />
 
