@@ -1,19 +1,51 @@
+"use client"
+
 import { Heart, Star } from "lucide-react"
 
-function ProductCard({ title, price, oldPrice, discount, rating, image }: any) {
+interface ProductProps {
+  title: string
+  price: number | string
+  image: string
+  rating?: number
+}
+
+export function ProductCard({ title, price, image, rating = 5 }: ProductProps) {
+  // Nettoie le chemin pour ne garder que "image.jpg"
+  const getCleanImageUrl = (path: string) => {
+    if (!path) return "https://placehold.co/400x300?text=Pas+d'image"
+    if (path.startsWith("http")) return path
+
+    // Extrait le nom du fichier peu importe le chemin C:\ ou /
+    const fileName = path.split(/[/\\]/).pop()
+    return `http://localhost:3001/uploads/${fileName}`
+  }
+
+  const imageUrl = getCleanImageUrl(image)
+
+  // Sécurité pour le prix
+  const displayPrice = !isNaN(Number(price)) ? Number(price).toFixed(2) : "0.00"
+
   return (
     <div className="group cursor-pointer">
+      {/* IMAGE CONTAINER */}
       <div className="relative aspect-[4/3] bg-[#f2f2f2] rounded-[2.5rem] overflow-hidden mb-4 flex items-center justify-center p-8">
         <button className="absolute top-5 right-5 z-10 p-1 text-gray-900 hover:scale-110 transition-transform">
           <Heart size={22} strokeWidth={1.5} />
         </button>
+
         <img
-          src={image}
+          src={imageUrl}
           alt={title}
           className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
+          onError={(e) => {
+            const target = e.target as HTMLImageElement
+            target.onerror = null
+            target.src = "https://placehold.co/400x300?text=Image+Non+Trouvée"
+          }}
         />
       </div>
 
+      {/* INFOS PRODUIT */}
       <h3 className="font-bold text-gray-900 text-[16px] mb-1 truncate">
         {title}
       </h3>
@@ -25,7 +57,7 @@ function ProductCard({ title, price, oldPrice, discount, rating, image }: any) {
               key={i}
               size={14}
               className={
-                i < Math.floor(rating)
+                i < rating
                   ? "fill-[#fac748] text-[#fac748]"
                   : "fill-gray-200 text-gray-200"
               }
@@ -36,20 +68,8 @@ function ProductCard({ title, price, oldPrice, discount, rating, image }: any) {
       </div>
 
       <div className="flex items-center gap-2">
-        <p className="text-xl font-bold text-gray-900">${price}</p>
-        {oldPrice && (
-          <span className="text-sm text-gray-400 line-through font-medium">
-            ${oldPrice}
-          </span>
-        )}
-        {discount && (
-          <span className="text-[10px] font-bold text-red-500 bg-red-50 px-2 py-0.5 rounded-full">
-            {discount}
-          </span>
-        )}
+        <p className="text-xl font-bold text-gray-900">{displayPrice} €</p>
       </div>
     </div>
   )
 }
-
-export default ProductCard
