@@ -1,7 +1,7 @@
 import { Playfair_Display, Montserrat } from "next/font/google"
 import "./globals.css"
 import Header from "@/components/ui/Header"
-import Search from "@/components/ui/Search"
+import Search from "@/components/ui/Recherche"
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
@@ -26,8 +26,6 @@ export default function RootLayout({
         className={`${playfair.variable} ${montserrat.variable} antialiased`}
       >
         <Header />
-        {/* <Search /> */}
-
         {children}
       </body>
     </html>

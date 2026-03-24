@@ -1,9 +1,14 @@
-import Hero from "@/components/common/Home"
+import HomePage from "@/app/_pages/HomePage"
+
+import AboutUs from "./_pages/AboutUs"
+import AboutExpertise from "./_pages/AboutExpertise"
 
 export default function Home() {
   return (
     <main>
-      <Hero />
+      <HomePage />
+      <AboutExpertise />
+      <AboutUs />
     </main>
   )
 }

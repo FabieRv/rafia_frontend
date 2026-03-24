@@ -47,14 +47,11 @@ export default function ModelPage() {
   return (
     <div>
       <Container className="px-0!">
-        <Title
-          text="Nos produits"
-          className="text-5xl text-[#7a4e2d] text-center mb-4"
-        />
+        <Title text="Nos produits" className="font-text" />
         <div className="flex flex-col lg:flex-row gap-8">
           {/* SIDEBAR CATEGORIES */}
-          <aside className="w-full lg:w-[300px] shrink-0">
-            <div className="bg-white p-6 rounded-[2rem] border border-gray-50 shadow-[0_10px_40px_rgba(0,0,0,0.04)]">
+          <aside className="w-full lg:w-75 shrink-0">
+            <div className="bg-white p-6 rounded-4xl border border-gray-50 shadow-[0_10px_40px_rgba(0,0,0,0.04)]">
               <h2 className="text-xl font-bold mb-6 text-gray-900 px-2">
                 Catégories
               </h2>
@@ -62,7 +59,7 @@ export default function ModelPage() {
                 {categories.map((cat, i) => (
                   <div
                     key={i}
-                    className="flex items-center justify-between p-3 hover:bg-gray-50 rounded-2xl cursor-pointer transition-all group"
+                    className="flex items-center justify-between p-3 hover:bg-seco rounded-2xl cursor-pointer transition-all group"
                   >
                     <div className="flex items-center gap-3">
                       <p className="w-10 h-10 flex items-center justify-center bg-gray-50 rounded-xl group-hover:bg-white transition-colors border border-transparent group-hover:border-gray-100 text-xl">
@@ -112,20 +109,6 @@ export default function ModelPage() {
                   </p>
                 </div>
               )}
-            </div>
-
-            {/* Banners Section */}
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-6 mt-12">
-              <div className="md:col-span-7 bg-[#ffebd5] rounded-[2.5rem] h-[220px] relative overflow-hidden flex items-center p-10">
-                <h3 className="text-3xl font-bold text-gray-900 leading-tight z-10 max-w-[200px]">
-                  Nouvelle Collection
-                </h3>
-                <img
-                  src="https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=400"
-                  className="absolute right-0 bottom-0 h-full w-auto object-contain"
-                  alt="banner"
-                />
-              </div>
             </div>
           </section>
         </div>

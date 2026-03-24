@@ -10,26 +10,21 @@ interface ProductProps {
 }
 
 export function ProductCard({ title, price, image, rating = 5 }: ProductProps) {
-  // Nettoie le chemin pour ne garder que "image.jpg"
   const getCleanImageUrl = (path: string) => {
     if (!path) return "https://placehold.co/400x300?text=Pas+d'image"
     if (path.startsWith("http")) return path
 
-    // Extrait le nom du fichier peu importe le chemin C:\ ou /
     const fileName = path.split(/[/\\]/).pop()
     return `http://localhost:3001/uploads/${fileName}`
   }
 
   const imageUrl = getCleanImageUrl(image)
-
-  // Sécurité pour le prix
   const displayPrice = !isNaN(Number(price)) ? Number(price).toFixed(2) : "0.00"
 
   return (
     <div className="group cursor-pointer">
-      {/* IMAGE CONTAINER */}
-      <div className="relative aspect-[4/3] bg-[#f2f2f2] rounded-[2.5rem] overflow-hidden mb-4 flex items-center justify-center p-8">
-        <button className="absolute top-5 right-5 z-10 p-1 text-gray-900 hover:scale-110 transition-transform">
+      <div className="relative aspect-4/3 bg-[#f2f2f2] rounded-[2.5rem] overflow-hidden mb-4 flex items-center justify-center p-8">
+        <button className="absolute top-3 right-2 z-10 p-1 text-gray-900 hover:scale-110 transition-transform">
           <Heart size={22} strokeWidth={1.5} />
         </button>
 

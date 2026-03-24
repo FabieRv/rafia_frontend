@@ -2,18 +2,17 @@
 
 :root {
   --bg-primary: #fdfcf7;
-  --bg-secondary: #6b8e23;
+  --bg-secondary: #59a96a;
   --bg-tertiary: #c59d5f;
 
-  /* Texte */
-  --text-secondary: #c05340;
+  /* Texte D9835D   6b8e23*/
+  --text-secondary: #499f68;
   --text-accent: #fac748;
 
   /* Bouton a6a15e */
-  --btn-primary: #5c5651;
+
   --btn-hover: #fac748;
-  --btn-secondary: #a89f94;
-  --btn-secondary-hover: #8c847a;
+  --btn-secondary: #e67e22;
 
   /* Fonts */
   --font-title: var(--font-playfair);
@@ -26,8 +25,10 @@
   --color-secondary: var(--bg-secondary);
 
   /* Texte */
-  --color-text-primary: var(--text-primary);
-  --color-text-accent: var(--text-accent);
+
+  --color-main-text: var(--text-primary);
+  --color-secondary-text: var(--text-secondary);
+  --color-accent-text: var(--text-accent);
 
   /* Boutons */
   --color-btn-primary: var(--btn-primary);
@@ -63,4 +64,17 @@
     font-weight: 700;
     line-height: 1.2;
   }
+}
+
+@keyframes scan {
+  0% {
+    top: 0%;
+  }
+  100% {
+    top: 100%;
+  }
+}
+.animate-scan {
+  position: absolute;
+  animation: scan 2s linear infinite;
 }
