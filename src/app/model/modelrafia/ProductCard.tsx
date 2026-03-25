@@ -15,7 +15,7 @@ export function ProductCard({ title, price, image, rating = 5 }: ProductProps) {
     if (path.startsWith("http")) return path
 
     const fileName = path.split(/[/\\]/).pop()
-    return `http://localhost:3001/uploads/${fileName}`
+    return process.env.NEXT_PUBLIC_API_URL + `/uploads/${fileName}`
   }
 
   const imageUrl = getCleanImageUrl(image)
