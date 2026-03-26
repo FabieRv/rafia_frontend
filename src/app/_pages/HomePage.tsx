@@ -6,7 +6,7 @@ import Button from "../../components/common/Button"
 import Container from "../../components/common/Container"
 import { useGSAP } from "@gsap/react"
 
-export default function Home() {
+export default function HomePage() {
   useGSAP(() => {
     gsap.from(".hero-content", {
       opacity: 0,

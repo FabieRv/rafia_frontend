@@ -1,6 +1,7 @@
 // src/app/layout.tsx
 import { Playfair_Display, Montserrat } from "next/font/google"
 import "./globals.css"
+import Header from "@/components/ui/Header"
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
