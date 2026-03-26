@@ -1,6 +1,5 @@
-// src/app/(admin)/layout.tsx
-
-import Sidebar from "@/components/common/Sidebar"
+import { Sidebar } from "@/app/(admin)/dashboard/_pages/Sidebar"
+import { Header } from "./dashboard/_pages/Header"
 
 export default function AdminLayout({
   children,
@@ -8,12 +7,12 @@ export default function AdminLayout({
   children: React.ReactNode
 }) {
   return (
-    <div className="flex min-h-screen bg-slate-50">
-      {/* 1. Ta Sidebar fixe à gauche */}
+    <div className="flex bg-[#f6f6f9] min-h-screen">
       <Sidebar />
-
-      {/* 2. Le contenu de tes pages admin à droite */}
-      <div className="flex-1 ml-64 p-10">{children}</div>
+      <main className="flex-1 ml-64 p-8">
+        <Header />
+        {children}
+      </main>
     </div>
   )
 }

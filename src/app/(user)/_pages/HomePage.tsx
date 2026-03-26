@@ -2,8 +2,8 @@
 import Image from "next/image"
 import { useEffect, useRef } from "react"
 import gsap from "gsap"
-import Button from "../../components/common/Button"
-import Container from "../../components/common/Container"
+import Button from "../../../components/common/Button"
+import Container from "../../../components/common/Container"
 import { useGSAP } from "@gsap/react"
 
 export default function HomePage() {

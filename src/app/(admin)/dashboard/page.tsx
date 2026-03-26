@@ -1,31 +1,93 @@
-// src/app/(admin)/dashboard/page.tsx
-
-"use client" // Optionnel, mais utile si tu ajoutes des boutons plus tard
+import {
+  ShoppingCart,
+  Package,
+  DollarSign,
+  TrendingUp,
+  Plus,
+} from "lucide-react"
+import { StatCard } from "./_pages/StatCard"
 
 export default function DashboardPage() {
   return (
-    <div className="p-8">
-      <h1 className="text-3xl font-bold text-slate-800 font-montserrat">
-        Tableau de Bord Artisanat
-      </h1>
-      <p className="text-slate-500 mt-2">
-        Aperçu de vos activités à Madagascar.
-      </p>
+    <div className="space-y-8 font-text ">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <StatCard
+          title="Produits en Stock"
+          value="142"
+          icon={<Package size={20} />}
+          percentage={62}
+          color="bg-[#1AFFD5]"
+        />
+        <StatCard
+          title="Commandes"
+          value="12"
+          icon={<TrendingUp size={20} />}
+          percentage={44}
+          color="bg-emerald-500"
+        />
+        <StatCard
+          title="Ventes Totales"
+          value="25,024 Ar"
+          icon={<ShoppingCart size={20} />}
+          percentage={81}
+          color="bg-indigo-500"
+        />
 
-      {/* Grille de test pour vérifier que le CSS fonctionne */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-10">
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-          <p className="text-sm text-slate-500 font-bold uppercase">
-            Ventes du jour
-          </p>
-          <p className="text-2xl font-black text-emerald-600">150.000 Ar</p>
+        <StatCard
+          title="Total Net"
+          value="10,864 Ar"
+          icon={<DollarSign size={20} />}
+          percentage={25}
+          color="bg-[#499f68]"
+        />
+      </div>
+      <div className="bg-white p-8 rounded-4xlshadow-sm">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-xl lg:2xl font-bold text-slate-800">
+            Commandes Récentes
+          </h2>
+          <button className="flex items-center gap-2 bg-[#FC7A57] text-white px-4 py-2 rounded-2xl  font-medium hover:bg-[#e67e22] transition-colors text-lg">
+            <Plus size={18} />
+            Ajouter Produit
+          </button>
         </div>
 
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-          <p className="text-sm text-slate-500 font-bold uppercase">
-            Produits actifs
-          </p>
-          <p className="text-2xl font-black text-slate-800">24</p>
+        <div className="overflow-x-auto">
+          <table className="w-full text-left">
+            <thead>
+              <tr className="text-black text-lg border-b border-gray-50">
+                <th className="pb-4 font-bold">Nom du Produit</th>
+                <th className="pb-4 font-bold">Référence</th>
+                <th className="pb-4 font-bold">Paiement</th>
+                <th className="pb-4 font-bold">Statut</th>
+                <th className="pb-4"></th>
+              </tr>
+            </thead>
+            <tbody className="text-sm">
+              <tr className="border-b border-gray-50 last:border-0">
+                <td className="py-4 text-slate-700 font-medium text-[14px]">
+                  Panier en Raffia XL
+                </td>
+                <td className="py-4 text-gray-500 text-[14px]">#RF-8563</td>
+                <td className="py-4 text-gray-500 text-[14px]">Mobile Money</td>
+                <td className="py-4">
+                  <span className="bg-orange-100 text-orange-600 px-3 py-1 rounded-full text-[12px] font-bold uppercase">
+                    En attente
+                  </span>
+                </td>
+                <td className="py-4 text-right">
+                  <button className="text-indigo-600 font-bold hover:underline text-lg">
+                    Détails
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div className="text-center mt-6">
+            <button className="text-indigo-600 text-lg font-bold hover:tracking-widest transition-all">
+              Afficher tout
+            </button>
+          </div>
         </div>
       </div>
     </div>

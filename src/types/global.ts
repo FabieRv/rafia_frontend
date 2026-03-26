@@ -1,3 +1,5 @@
+import { LucideIcon } from "lucide-react"
+
 export interface ProductCardProps {
   product: {
     id_produit: number
@@ -15,4 +17,11 @@ export interface ProductCardProps {
       }
     }
   }
+}
+
+export interface NavItem {
+  title: string
+  icon: LucideIcon
+  href: string
+  badge?: number
 }
