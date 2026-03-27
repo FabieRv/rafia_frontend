@@ -1,7 +1,7 @@
 "use client"
 import LoginForm from "@/features/auth/components/LoginForm"
 import RegisterForm from "@/features/auth/components/RegisterForm"
-import ForgotPasswordForm from "@/features/auth/components/ForgotPasswordForm" // Ajoute cet import
+import ForgotPasswordForm from "@/features/auth/components/ForgotPasswordForm" 
 import { useState } from "react"
 
 export default function AuthPage() {
