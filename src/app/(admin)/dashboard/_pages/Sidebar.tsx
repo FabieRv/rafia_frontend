@@ -3,15 +3,15 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { ADMIN_MENU_ITEMS } from "@/components/constant"
+import Logo from "@/components/ui/Logo"
 
 export const Sidebar = () => {
   const pathname = usePathname()
 
   return (
     <section className="w-64 h-screen bg-slate-900 border-r border-slate-800 flex flex-col p-4 fixed left-0 top-0 text-[20px]">
-      {/* Logo en blanc pour ressortir sur le noir */}
       <div className="flex items-center gap-3 px-2 mb-10">
-        <span className="text-xl font-bold text-white">RAFIACRAFT</span>
+        <p className="text-white text-2xl font-title">RAFIACRAFT</p>
       </div>
 
       <nav className="flex-1 space-y-2">

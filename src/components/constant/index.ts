@@ -11,7 +11,7 @@ import {
 import { NavItem } from "@/types/global"
 
 export const ADMIN_MENU_ITEMS: NavItem[] = [
-  { title: "Dashboard", icon: LayoutDashboard, href: "/admin" },
+  { title: "Dashboard", icon: LayoutDashboard, href: "/dashboard" },
   { title: "Clients", icon: Users, href: "/admin/customers" },
   { title: "Commandes", icon: ShoppingBag, href: "/admin/orders" },
   { title: "Produits", icon: PlusCircle, href: "/admin/products" },
@@ -28,10 +28,6 @@ export const ADMIN_MENU_ITEMS: NavItem[] = [
 
   { title: "Logout", icon: User, href: "admin/logout" },
 ]
-
-
-
-
 
 export const ACCORDION_ITEMS = [
   {
@@ -59,4 +55,4 @@ export const ACCORDION_ITEMS = [
     title: "Savoir-faire",
     imageUrl: "/img/savoir-faire.png",
   },
-];
+]
