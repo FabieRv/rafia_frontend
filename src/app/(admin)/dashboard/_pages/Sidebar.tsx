@@ -42,7 +42,6 @@ export const Sidebar = () => {
           )
         })}
       </nav>
-      <button>Logout</button>
       <div></div>
     </section>
   )

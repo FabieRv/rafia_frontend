@@ -2,50 +2,24 @@
 
 import Button from "@/components/common/Button"
 import Container from "@/components/common/Container"
+import { ACCORDION_ITEMS } from "@/components/constant"
 import { useState } from "react"
+import { AccordionItemProps } from "@/types/global"
 
-const accordionItems = [
-  {
-    id: 1,
-    title: "VANNERIE ",
-    imageUrl: "/img/tableau-2.jpg",
-  },
-  {
-    id: 2,
-    title: "Matière en SATRANA",
-    imageUrl: "/img/satrana.jpg",
-  },
-  {
-    id: 3,
-    title: "Sculpture RABANE",
-    imageUrl: "/img/Rabane.jpg",
-  },
-  {
-    id: 4,
-    title: "Tissage RAFIA",
-    imageUrl: "/img/sac-crocher.jpg",
-  },
-  {
-    id: 5,
-    title: "Savoir-faire",
-    imageUrl: "/img/savoir-faire.png",
-  },
-]
-
-const AccordionItem = ({ item, isActive, onMouseEnter }) => {
+const AccordionItem = ({
+  item,
+  isActive,
+  onMouseEnter,
+}: AccordionItemProps) => {
   return (
     <div
       className={`
-        relative h-[350px] md:h-[450px] rounded-2xl overflow-hidden cursor-pointer
+        relative h-87.5 md:h-112.5 rounded-2xl overflow-hidden cursor-pointer
         transition-all duration-700 ease-in-out
-        ${
-          isActive
-            ? "w-[250px] md:w-[400px] flex-grow"
-            : "w-[60px] md:w-[80px] flex-shrink-0"
-        }
+        ${isActive ? "w-62.5 md:w-100 grow" : "w-15  md:w-20 shrink-0"}
       `}
       onMouseEnter={onMouseEnter}
-      onClick={onMouseEnter} // Ajout pour le tactile mobile
+      onClick={onMouseEnter}
     >
       <img
         src={item.imageUrl}
@@ -100,10 +74,9 @@ export default function AboutUs() {
             </div>
           </div>
 
-          {/* Accordéon : Largeur totale sur mobile */}
           <div className="w-full lg:w-2/3 flex justify-center lg:justify-end overflow-hidden px-2 md:px-0">
-            <div className="flex flex-row items-center gap-2 md:gap-3 w-full max-w-[900px]">
-              {accordionItems.map((item, index) => (
+            <div className="flex flex-row items-center gap-2 md:gap-3 w-full max-w-225">
+              {ACCORDION_ITEMS.map((item, index) => (
                 <AccordionItem
                   key={item.id}
                   item={item}

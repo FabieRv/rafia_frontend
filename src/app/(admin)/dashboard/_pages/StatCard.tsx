@@ -14,14 +14,10 @@ export const StatCard = ({
   color,
 }: StatCardProps) => {
   return (
-    <div className="bg-white p-6 rounded-[2rem] shadow-sm hover:shadow-md transition-shadow">
+    <div className="bg-white p-6 rounded-4xl shadow-sm hover:shadow-md transition-shadow">
       <div className="flex items-center justify-between">
-        {/* Icone avec fond de couleur */}
         <div className={`p-3 rounded-full text-white ${color}`}>{icon}</div>
-
-        {/* Cercle de progression simplifié */}
       </div>
-
       <div className="flex items-center justify-between">
         <div className="mt-4">
           <h3 className="text-gray-500 text-lg font-text">{title}</h3>

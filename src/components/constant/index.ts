@@ -28,3 +28,35 @@ export const ADMIN_MENU_ITEMS: NavItem[] = [
 
   { title: "Logout", icon: User, href: "admin/logout" },
 ]
+
+
+
+
+
+export const ACCORDION_ITEMS = [
+  {
+    id: 1,
+    title: "VANNERIE",
+    imageUrl: "/img/tableau-2.jpg",
+  },
+  {
+    id: 2,
+    title: "Matière en SATRANA",
+    imageUrl: "/img/satrana.jpg",
+  },
+  {
+    id: 3,
+    title: "Sculpture RABANE",
+    imageUrl: "/img/Rabane.jpg",
+  },
+  {
+    id: 4,
+    title: "Tissage RAFIA",
+    imageUrl: "/img/sac-crocher.jpg",
+  },
+  {
+    id: 5,
+    title: "Savoir-faire",
+    imageUrl: "/img/savoir-faire.png",
+  },
+];

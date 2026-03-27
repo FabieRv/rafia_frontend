@@ -25,3 +25,15 @@ export interface NavItem {
   href: string
   badge?: number
 }
+
+export interface AccordionItemType {
+  id: number
+  title: string
+  imageUrl: string
+}
+
+export interface AccordionItemProps {
+  item: AccordionItemType
+  isActive: boolean
+  onMouseEnter: () => void 
+}

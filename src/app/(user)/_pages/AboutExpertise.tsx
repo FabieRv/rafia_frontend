@@ -1,6 +1,5 @@
 "use client"
 
-import Button from "@/components/common/Button"
 import Container from "@/components/common/Container"
 import { motion } from "framer-motion"
 
@@ -36,7 +35,6 @@ export default function AboutExpertise() {
             </div>
           </motion.div>
 
-          {/* --- Partie Texte (Droite) - RESTE FIXE --- */}
           <div className="w-full lg:w-1/2">
             <div
               className="inline-block px-6 py-2  bg-gray-200 text-sm font-text font-bold tracking-widest uppercase mb-6"
