@@ -24,8 +24,7 @@ export default function LoginForm({
     setError("")
 
     try {
-      // Vérifie bien que le port correspond à ton backend NestJS (ex: 4000)
-      const response = await fetch("http://localhost:4000/auth/login", {
+      const response = await fetch("http://localhost:3001/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
@@ -41,9 +40,9 @@ export default function LoginForm({
 
         // 2. Redirection dynamique intelligente
         if (data.role === "ADMIN") {
-          router.push("/admin/dashboard")
+          router.push("/dashboard")
         } else {
-          router.push("/") // Accueil client
+          router.push("/")
         }
       } else {
         setError(data.message || "Email ou mot de passe incorrect")

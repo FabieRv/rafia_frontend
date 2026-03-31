@@ -23,18 +23,27 @@ export const Sidebar = () => {
             <Link
               key={item.href}
               href={item.href}
-              className={`flex items-center justify-between px-4 py-3 rounded-xl transition-all ${
+              className={`flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-200 group ${
                 isActive
-                  ? "bg-[#6B8E23] text-white"
-                  : "text-slate-400 hover:bg-slate-800 hover:text-white"
+                  ? "bg-[#FC7A57] text-white hover:bg-[#e96b4a]"
+                  : "text-slate-500 hover:bg-[#DFF8EB] hover:text-[#1b4332]"
               }`}
             >
+           
               <div className="flex items-center gap-4">
-                <Icon size={20} />
+                <Icon
+                  size={20}
+                  className={`transition-colors duration-200 ${
+                    isActive
+                      ? "text-white"
+                      : "text-slate-400 group-hover:text-[#1b4332]"
+                  }`}
+                />
                 <span className="font-medium">{item.title}</span>
               </div>
+
               {item.badge && (
-                <span className="bg-red-500 text-white text-[10px] px-2 py-0.5 rounded-full font-bold">
+                <span className="bg-red-500 text-white text-[10px] px-2 py-0.5 rounded-full font-bold group-hover:bg-red-600">
                   {item.badge}
                 </span>
               )}

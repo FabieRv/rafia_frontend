@@ -26,7 +26,7 @@ export default function DashboardPage() {
           color="bg-emerald-500"
         />
         <StatCard
-          title="Ventes Totales"
+          title="Ventes"
           value="25,024 Ar"
           icon={<ShoppingCart size={20} />}
           percentage={81}

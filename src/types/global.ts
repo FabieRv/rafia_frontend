@@ -35,5 +35,12 @@ export interface AccordionItemType {
 export interface AccordionItemProps {
   item: AccordionItemType
   isActive: boolean
-  onMouseEnter: () => void 
+  onMouseEnter: () => void
+}
+
+export interface UserProps {
+  id_user?: number
+  name?: string
+  email?: string
+  role?: string // Vous pouvez aussi mettre "USER" | "ADMIN"
 }
