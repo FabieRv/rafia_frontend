@@ -33,12 +33,10 @@ export default function LoginForm({
       const data = await response.json()
 
       if (response.ok) {
-        // 1. Stockage des informations essentielles
         localStorage.setItem("token", data.access_token)
         localStorage.setItem("user_name", data.name)
         localStorage.setItem("user_role", data.role)
 
-        // 2. Redirection dynamique intelligente
         if (data.role === "ADMIN") {
           router.push("/dashboard")
         } else {
@@ -65,7 +63,6 @@ export default function LoginForm({
       )}
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Champ Email */}
         <div className="relative border-b border-white/30 py-2">
           <input
             type="email"
@@ -77,7 +74,7 @@ export default function LoginForm({
               setFormData({ ...formData, email: e.target.value })
             }
           />
-          <User className="absolute right-0 opacity-60" size={18} />
+          <User className="absolute right-0 bottom-2 opacity-60" size={18} />
         </div>
 
         {/* Champ Password */}
@@ -92,7 +89,7 @@ export default function LoginForm({
               setFormData({ ...formData, password: e.target.value })
             }
           />
-          <Lock className="absolute right-0 opacity-60" size={18} />
+          <Lock className="absolute right-0 bottom-2 opacity-60" size={18} />
         </div>
 
         {/* Bouton de soumission stylé */}

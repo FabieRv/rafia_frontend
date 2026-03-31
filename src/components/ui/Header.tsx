@@ -10,14 +10,15 @@ import Recherche from "./Recherche"
 
 export default function Header() {
   const [isClicked, setIsClicked] = useState(false)
+  const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false)
 
   return (
-    /* Le conteneur parent est sticky pour fixer les deux lignes ensemble */
     <header className="sticky top-0 z-50 w-full shadow-sm">
       <div className="bg-[#FAFAFA]">
         <Container className="py-6! relative font-text">
           <nav className="flex justify-between items-center w-full relative z-50">
             <Logo />
+
             <ul className="hidden lg:flex items-center gap-10 font-text font-bold">
               {["ACCUEIL", "MODEL", "CATALOGUE", "CONTACT"].map(
                 (text, index) => (
@@ -37,7 +38,6 @@ export default function Header() {
               )}
             </ul>
 
-            {/* Actions Desktop */}
             <div className="hidden text-[#A0522D] lg:flex items-center gap-6 font-text ">
               <Link href="/cart">
                 <FiShoppingCart
@@ -51,12 +51,40 @@ export default function Header() {
                   className="hover:text-[#D97A4F] cursor-pointer transition-colors"
                 />
               </Link>
-              <Link href="/profile">
-                <FiUser
-                  size={28}
-                  className="hover:text-[#D97A4F] cursor-pointer transition-colors"
-                />
-              </Link>
+
+              <div className="relative">
+                <button
+                  onClick={() => setIsUserDropdownOpen(!isUserDropdownOpen)}
+                  onBlur={() =>
+                    setTimeout(() => setIsUserDropdownOpen(false), 200)
+                  }
+                  className="flex items-center focus:outline-none"
+                >
+                  <FiUser
+                    size={28}
+                    className="hover:text-[#D97A4F] cursor-pointer transition-colors"
+                  />
+                </button>
+
+                {isUserDropdownOpen && (
+                  <div className="absolute right-0 mt-3 w-[180px] bg-white border border-[#D97A4F] rounded-xl shadow-xl py-2 z-60 animate-in fade-in zoom-in duration-200">
+                    <Link
+                      href="/auth"
+                      className="block px-4 py-2.5 text-lg text-black font-text  hover:bg-[#D97A4F] hover:text-white rounded-lg "
+                    >
+                      Se connecter
+                    </Link>
+
+                    <Link
+                      href="/logout"
+                      onClick={() => console.log("Déconnexion...")}
+                      className="w-full text-left block px-4 py-2.5 text-lg text-red-600 font-text hover:bg-red-300 rounded-lg"
+                    >
+                      Se déconnecter
+                    </Link>
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* Hamburger Mobile */}
@@ -105,8 +133,6 @@ export default function Header() {
           </ul>
         </Container>
       </div>
-
-      {/* --- DEUXIÈME HEAD (Barre de recherche verte #556B2F) --- */}
       <Recherche />
     </header>
   )

@@ -27,9 +27,9 @@ export default function ModelPage() {
   ]
 
   useEffect(() => {
-    countAllProductByCategory() //update after insert product
+    countAllProductByCategory()
     fetchProducts()
-  }, [selectedCategoryId]) // Relance le fetch dès que l'ID change
+  }, [selectedCategoryId])
 
   const fetchProducts = async () => {
     try {
