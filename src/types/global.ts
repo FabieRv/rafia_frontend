@@ -42,5 +42,14 @@ export interface UserProps {
   id_user?: number
   name?: string
   email?: string
-  role?: string // Vous pouvez aussi mettre "USER" | "ADMIN"
+  role?: string
+}
+
+export interface Client {
+  id_user: number
+  name: string
+  email: string
+  phone: string
+  adress: string
+  createdAt: string
 }

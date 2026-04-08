@@ -1,10 +1,14 @@
 "use client"
 
-import React from "react"
 import { Sun, Moon } from "lucide-react"
 import { UserProps } from "@/types/global"
+import { ROUTE_TITLES } from "@/components/constant"
+import { usePathname } from "next/navigation"
 
-export const Header = ({ user }: { user: UserProps | null | undefined }) => {
+export const Header = ({ user }: { user?: UserProps | null }) => {
+  const pathname = usePathname()
+  const currentTitle = ROUTE_TITLES[pathname] || "Dashboard"
+
   const displayName = user?.name || "Administrateur"
   const dynamicAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(
     displayName
@@ -13,7 +17,9 @@ export const Header = ({ user }: { user: UserProps | null | undefined }) => {
   return (
     <header className="flex items-center justify-between mb-8 w-full">
       <div>
-        <h1 className="text-2xl font-extrabold text-slate-800">Dashboard</h1>
+        <h1 className="text-2xl font-extrabold text-slate-800">
+          {currentTitle}
+        </h1>
         <div className="mt-2 bg-white px-4 py-1.5 rounded-lg border border-gray-100 text-gray-400 text-sm inline-block shadow-sm">
           <input
             type="date"
@@ -22,6 +28,7 @@ export const Header = ({ user }: { user: UserProps | null | undefined }) => {
           />
         </div>
       </div>
+
       <div className="flex items-center gap-6">
         {/* Toggle Mode Sombre/Clair */}
         <div className="flex items-center bg-gray-200 rounded-xl p-1 border border-gray-200">
@@ -32,7 +39,6 @@ export const Header = ({ user }: { user: UserProps | null | undefined }) => {
             <Moon size={18} />
           </button>
         </div>
-
         <div className="flex items-center gap-4">
           <div className="text-right hidden sm:block">
             <p className="text-lg leading-tight">
@@ -52,6 +58,7 @@ export const Header = ({ user }: { user: UserProps | null | undefined }) => {
                 className="w-full h-full object-cover"
               />
             </div>
+            {/* Badge de statut en ligne */}
             <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></span>
           </div>
         </div>

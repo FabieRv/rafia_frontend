@@ -12,7 +12,7 @@ import { NavItem } from "@/types/global"
 
 export const ADMIN_MENU_ITEMS: NavItem[] = [
   { title: "Dashboard", icon: LayoutDashboard, href: "/dashboard" },
-  { title: "Clients", icon: Users, href: "/admin/customers" },
+  { title: "Clients", icon: Users, href: "/dashboard/clients" },
   { title: "Commandes", icon: ShoppingBag, href: "/admin/orders" },
   { title: "Produits", icon: PlusCircle, href: "/admin/products" },
   { title: "Ventes", icon: PlusCircle, href: "/admin/sales" },
@@ -28,6 +28,16 @@ export const ADMIN_MENU_ITEMS: NavItem[] = [
 
   { title: "Logout", icon: User, href: "admin/logout" },
 ]
+
+export const ROUTE_TITLES: Record<string, string> = {
+  "/dashboard/clients": "Gestion des Clients",
+  "/dashboard/produits": "Catalogue Produits",
+  "/dashboard/commandes": "Suivi des Commandes",
+  "/dashboard/ventes": "Rapports de Ventes",
+  "/dashboard/messages": "Messagerie",
+  "/dashboard/parametres": "Configuration",
+  "/dashboard": "Dashboard",
+}
 
 export const ACCORDION_ITEMS = [
   {

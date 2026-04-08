@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { ADMIN_MENU_ITEMS } from "@/components/constant"
-import Logo from "@/components/ui/Logo"
+
 
 export const Sidebar = () => {
   const pathname = usePathname()
