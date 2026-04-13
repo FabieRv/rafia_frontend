@@ -36,8 +36,8 @@ export default function LoginForm({
         localStorage.setItem("token", data.access_token)
 
         const userToStore = {
-          name: data.name, // Fabienne Ravo
-          role: data.role, // ADMIN
+          name: data.name, 
+          role: data.role, 
           email: formData.email,
         }
         localStorage.setItem("user", JSON.stringify(userToStore))

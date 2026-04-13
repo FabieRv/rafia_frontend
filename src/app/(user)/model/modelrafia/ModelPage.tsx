@@ -33,14 +33,12 @@ export default function ModelPage() {
 
   const fetchProducts = async () => {
     try {
-      // 1. Construction de l'URL avec le filtre
+
       const baseUrl =
         process.env.NEXT_PUBLIC_API_URL + "/products/public-models"
       const url = selectedCategoryId
         ? `${baseUrl}?categoryId=${selectedCategoryId}`
         : baseUrl
-
-      // --- TEST CONSOLE ---
       console.log(
         "🚀 Tentative de récupération pour la catégorie ID:",
         selectedCategoryId
@@ -52,8 +50,6 @@ export default function ModelPage() {
       if (!response.ok) throw new Error("Erreur réseau")
 
       const data = await response.json()
-
-      // --- TEST CONSOLE DES DONNÉES REÇUES ---
       console.log("📦 Données reçues du Backend :", data)
 
       if (Array.isArray(data)) {
@@ -100,7 +96,6 @@ export default function ModelPage() {
         <Title text="Nos produits" className="font-text" />
 
         <div className="flex flex-col lg:flex-row gap-8">
-          {/* SIDEBAR CATEGORIES */}
           <aside className="w-full lg:w-75 shrink-0">
             <div className="bg-white p-6 rounded-4xl border border-gray-50 shadow-[0_10px_40px_rgba(0,0,0,0.04)]">
               <h2 className="text-xl font-text font-bold mb-6 text-gray-900 px-2">

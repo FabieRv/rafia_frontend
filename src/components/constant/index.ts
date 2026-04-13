@@ -13,8 +13,8 @@ import { NavItem } from "@/types/global"
 export const ADMIN_MENU_ITEMS: NavItem[] = [
   { title: "Dashboard", icon: LayoutDashboard, href: "/dashboard" },
   { title: "Clients", icon: Users, href: "/dashboard/clients" },
-  { title: "Commandes", icon: ShoppingBag, href: "/admin/orders" },
-  { title: "Produits", icon: PlusCircle, href: "/admin/products" },
+  { title: "Commandes", icon: ShoppingBag, href: "/dashboard/commandes" },
+  { title: "Produits", icon: PlusCircle, href: "/dashboard/products" },
   { title: "Ventes", icon: PlusCircle, href: "/admin/sales" },
   { title: "Analytiques", icon: BarChart3, href: "/admin/analytics" },
   {
@@ -31,9 +31,9 @@ export const ADMIN_MENU_ITEMS: NavItem[] = [
 
 export const ROUTE_TITLES: Record<string, string> = {
   "/dashboard/clients": "Gestion des Clients",
-  "/dashboard/produits": "Catalogue Produits",
-  "/dashboard/commandes": "Suivi des Commandes",
-  "/dashboard/ventes": "Rapports de Ventes",
+  "/dashboard/products": "Gestion des Produits",
+  "/dashboard/commandes": "Gestion des Commandes",
+  "/dashboard/ventes": "Gestion des Ventes",
   "/dashboard/messages": "Messagerie",
   "/dashboard/parametres": "Configuration",
   "/dashboard": "Dashboard",
