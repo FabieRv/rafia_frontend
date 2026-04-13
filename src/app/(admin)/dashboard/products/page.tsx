@@ -58,7 +58,6 @@ function ProductTable({ product }: ProductCardProps) {
           Ajouter produit
         </button>
       </div>
-
       {/* Tableau dans son propre div */}
       <div className="overflow-x-auto bg-neutral-primary-soft shadow-lg rounded-lg">
         <table className="w-full text-lg text-left rtl:text-right text-body ">
@@ -98,7 +97,7 @@ function ProductTable({ product }: ProductCardProps) {
                 </td>
               </tr>
             ) : (
-              products.map((p) => (
+              currentProducts.map((p) => (
                 <tr
                   className="odd:bg-neutral-primary even:bg-neutral-secondary-soft border-b border-default"
                   key={p.id_produit}
@@ -134,20 +133,39 @@ function ProductTable({ product }: ProductCardProps) {
       </div>
 
       {/* Pagination */}
-      <div className="flex justify-center mt-4 gap-2">
+      <div className="flex justify-center items-center mt-6 gap-2 font-text">
+        {/* Bouton Précédent */}
+        <button
+          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+          disabled={currentPage === 1}
+          className="px-3 py-2 rounded-lg border border-gray-100 bg-white text-black text-lg hover:bg-gray-50 disabled:opacity-50 shadow-sm"
+        >
+          {"< "}
+        </button>
+
         {Array.from({ length: totalPages }, (_, i) => i + 1).map((num) => (
           <button
             key={num}
             onClick={() => setCurrentPage(num)}
-            className={`px-4 py-2 rounded-lg border ${
+            className={`w-10 h-10 flex items-center justify-center rounded-lg border transition-all duration-200  ${
               num === currentPage
-                ? "bg-blue-500 text-white"
-                : "bg-white text-black"
-            } hover:bg-blue-500 hover:text-white transition-colors`}
+                ? "bg-blue-400 text-white border-blue-400"
+                : "bg-white text-gray-700 border-gray-100 hover:border-blue-400"
+            }`}
           >
             {num}
           </button>
         ))}
+
+        <button
+          onClick={() =>
+            setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+          }
+          disabled={currentPage === totalPages}
+          className="px-3 py-2 rounded-lg border border-gray-100 bg-white text-black hover:bg-gray-50 disabled:opacity-50 shadow-sm"
+        >
+          {" Suivant >"}
+        </button>
       </div>
     </div>
   )
