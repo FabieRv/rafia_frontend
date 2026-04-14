@@ -3,13 +3,15 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { User, Lock, Loader2 } from "lucide-react"
 
+interface LoginFormProps {
+  onSwitch: () => void
+  onForgotPassword: () => void
+}
+
 export default function LoginForm({
   onSwitch,
   onForgotPassword,
-}: {
-  onSwitch: () => void
-  onForgotPassword: () => void
-}) {
+}: LoginFormProps) {
   const [formData, setFormData] = useState({ email: "", password: "" })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
@@ -21,7 +23,7 @@ export default function LoginForm({
     setError("")
 
     try {
-      const response = await fetch("http://localhost:3001/auth/login", {
+      const response = await fetch("http://127.0.0.1:3001/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
@@ -30,13 +32,28 @@ export default function LoginForm({
       const data = await response.json()
 
       if (response.ok) {
+        const role = (data.role || "").toUpperCase()
         localStorage.setItem("token", data.access_token)
-        router.push("/")
+
+        localStorage.setItem(
+          "user",
+          JSON.stringify({
+            name: data.name,
+            role: role,
+            email: formData.email,
+          })
+        )
+
+        if (role === "ADMIN") {
+          router.push("/dashboard")
+        } else {
+          router.push("/")
+        }
       } else {
         setError(data.message || "Email ou mot de passe incorrect")
       }
     } catch (err) {
-      setError("Impossible de contacter le serveur. Vérifiez votre connexion.")
+      setError("Le serveur est injoignable. Vérifie ton backend.")
     } finally {
       setLoading(false)
     }
@@ -44,7 +61,7 @@ export default function LoginForm({
 
   return (
     <div className="animate-in fade-in duration-500">
-      <h2 className="text-3xl font-bold text-center mb-6">Login</h2>
+      <h2 className="text-3xl font-bold text-center mb-6">Connexion</h2>
 
       {error && (
         <p className="bg-red-500/20 border border-red-500 text-red-200 text-xs p-2 rounded mb-4 text-center">
@@ -57,34 +74,42 @@ export default function LoginForm({
           <input
             type="email"
             required
-            placeholder="Email Address"
+            placeholder="Adresse Email"
             className="w-full bg-transparent outline-none text-white placeholder:text-white/40 text-sm"
+            value={formData.email}
             onChange={(e) =>
               setFormData({ ...formData, email: e.target.value })
             }
           />
-          <User className="absolute  right-0 opacity-60" size={18} />
+          <User className="absolute right-0 bottom-2 opacity-60" size={18} />
         </div>
 
-        <div className="relative  border-b border-white/30 py-2">
+        {/* Champ Password */}
+        <div className="relative border-b border-white/30 py-2">
           <input
             type="password"
             required
-            placeholder="Password"
+            placeholder="Mot de passe"
             className="w-full bg-transparent outline-none text-white placeholder:text-white/40 text-sm"
+            value={formData.password}
             onChange={(e) =>
               setFormData({ ...formData, password: e.target.value })
             }
           />
-          <Lock className="absolute right-0 opacity-60" size={18} />
+          <Lock className="absolute right-0 bottom-2 opacity-60" size={18} />
         </div>
 
+        {/* Bouton de soumission stylé */}
         <button
           disabled={loading}
           type="submit"
           className="w-full bg-white text-black font-bold py-3 rounded-full flex items-center justify-center gap-2 hover:bg-opacity-90 transition disabled:bg-gray-400"
         >
-          {loading ? <Loader2 className="animate-spin" size={20} /> : "Login"}
+          {loading ? (
+            <Loader2 className="animate-spin" size={20} />
+          ) : (
+            "Se connecter"
+          )}
         </button>
       </form>
 
@@ -99,7 +124,7 @@ export default function LoginForm({
           onClick={onSwitch}
           className="text-sm text-white/60 hover:text-white underline"
         >
-          Don't have an account? Register
+          Pas encore de compte ? S'inscrire
         </button>
       </div>
     </div>

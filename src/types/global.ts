@@ -7,8 +7,7 @@ export interface ProductCardProps {
     description?: string
     prix?: string | number
     oldPrice?: string | number
-    discount?: string
-    rating?: number
+    quantite_stock?: string | number
     image?: string
     sous_category?: {
       nom_sous_categorie?: string
@@ -35,5 +34,21 @@ export interface AccordionItemType {
 export interface AccordionItemProps {
   item: AccordionItemType
   isActive: boolean
-  onMouseEnter: () => void 
+  onMouseEnter: () => void
+}
+
+export interface UserProps {
+  id_user?: number
+  name?: string
+  email?: string
+  role?: string
+}
+
+export interface Client {
+  id_user: number
+  name: string
+  email: string
+  phone: string
+  adress: string
+  createdAt: string
 }
