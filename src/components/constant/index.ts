@@ -66,3 +66,21 @@ export const ACCORDION_ITEMS = [
     imageUrl: "/img/savoir-faire.png",
   },
 ]
+
+export const SUB_CATEGORIES_DATA = {
+  Chapeaux: ["Capeline", "Bob"],
+  Panier: [
+    "Satrana",
+    "2 tons",
+    "Ananas",
+    "Arc",
+    "Barea",
+    "Chat double",
+    "Rayure",
+    "Marienière",
+    "Olive",
+    "Rectangle",
+  ],
+  Boite: ["Brush", "Flowers", "Box floor", "Storage"],
+  Pochette: ["Etoil", "Sac Dame"],
+}

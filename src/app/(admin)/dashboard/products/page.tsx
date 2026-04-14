@@ -8,6 +8,7 @@ import { RiDeleteBin2Fill } from "react-icons/ri"
 import { CiEdit } from "react-icons/ci"
 import { CiImport } from "react-icons/ci"
 import { IoIosAdd } from "react-icons/io"
+import AddProductModal from "./Modal/AddProductModal"
 
 function ProductTable({ product }: ProductCardProps) {
   const [products, setProduct] = useState<ProductCardProps["product"][]>([])
@@ -40,7 +41,8 @@ function ProductTable({ product }: ProductCardProps) {
     }
   }
 
-  //calcul produit afficher sur la pages
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  //calcule de la pagination
   const indexOfLast = currentPage * itemPerPage
   const indexOfFirst = indexOfLast - itemPerPage
   const currentProducts = products.slice(indexOfFirst, indexOfLast)
@@ -53,12 +55,14 @@ function ProductTable({ product }: ProductCardProps) {
           <CiImport size={25} />
           Export
         </button>
-        <button className="flex items-center gap-2 px-5 py-3 bg-[#e67e22] rounded-xl text-white text-lg hover:bg-[#cf6c16] transition-all duration-200">
+        <button
+          onClick={() => setIsModalOpen(true)}
+          className="flex items-center gap-2 px-5 py-3 bg-[#e67e22] rounded-xl text-white text-lg hover:bg-[#cf6c16] transition-all duration-200"
+        >
           <IoIosAdd size={25} />
           Ajouter produit
         </button>
       </div>
-      {/* Tableau dans son propre div */}
       <div className="overflow-x-auto bg-neutral-primary-soft shadow-lg rounded-lg">
         <table className="w-full text-lg text-left rtl:text-right text-body ">
           <thead className="bg-gray-200 text-xl font-extrabold border-b border-gray-300">
@@ -134,7 +138,6 @@ function ProductTable({ product }: ProductCardProps) {
 
       {/* Pagination */}
       <div className="flex justify-center items-center mt-6 gap-2 font-text">
-        {/* Bouton Précédent */}
         <button
           onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
           disabled={currentPage === 1}
@@ -167,6 +170,11 @@ function ProductTable({ product }: ProductCardProps) {
           {" Suivant >"}
         </button>
       </div>
+      <AddProductModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSuccess={loadProducts} 
+      />
     </div>
   )
 }
