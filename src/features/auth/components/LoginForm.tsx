@@ -12,7 +12,6 @@ export default function LoginForm({
   onSwitch,
   onForgotPassword,
 }: LoginFormProps) {
-  // On utilise un seul état pour le formulaire, c'est plus propre
   const [formData, setFormData] = useState({ email: "", password: "" })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
@@ -24,7 +23,7 @@ export default function LoginForm({
     setError("")
 
     try {
-      const response = await fetch("http://localhost:3001/auth/login", {
+      const response = await fetch("http://127.0.0.1:3001/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
@@ -33,18 +32,19 @@ export default function LoginForm({
       const data = await response.json()
 
       if (response.ok) {
+        const role = (data.role || "").toUpperCase()
         localStorage.setItem("token", data.access_token)
 
-        const userToStore = {
-          name: data.name, 
-          role: data.role, 
-          email: formData.email,
-        }
-        localStorage.setItem("user", JSON.stringify(userToStore))
-        localStorage.setItem("user_name", data.name)
-        localStorage.setItem("user_role", data.role)
+        localStorage.setItem(
+          "user",
+          JSON.stringify({
+            name: data.name,
+            role: role,
+            email: formData.email,
+          })
+        )
 
-        if (data.role === "ADMIN") {
+        if (role === "ADMIN") {
           router.push("/dashboard")
         } else {
           router.push("/")
