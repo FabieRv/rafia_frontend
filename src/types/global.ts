@@ -1,5 +1,15 @@
 import { LucideIcon } from "lucide-react"
 
+export interface Category {
+  id_categorie: number
+  nom_categorie: string
+  description?: string
+  type?: {
+    id_type: number
+    nom_type: string
+  }
+}
+
 export interface ProductCardProps {
   product: {
     id_produit: number
@@ -11,9 +21,7 @@ export interface ProductCardProps {
     image?: string
     sous_category?: {
       nom_sous_categorie?: string
-      category?: {
-        nom_categorie?: string
-      }
+      category?: Category
     }
   }
 }

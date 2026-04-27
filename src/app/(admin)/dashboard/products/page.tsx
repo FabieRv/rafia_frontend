@@ -1,7 +1,7 @@
 "use client"
 
 import { deleteProduit, getProduits } from "@/services/produitServices"
-import { ProductCardProps } from "@/types/global"
+import { ProductCardProps, Category } from "@/types/global"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { RiDeleteBin2Fill } from "react-icons/ri"
@@ -83,6 +83,9 @@ function ProductTable({ product }: ProductCardProps) {
                 Stock
               </th>
               <th scope="col" className="px-6 py-3 font-medium">
+                Type
+              </th>
+              <th scope="col" className="px-6 py-3 font-medium">
                 Catégorie
               </th>
               <th scope="col" className="px-6 py-3 font-medium">
@@ -113,6 +116,9 @@ function ProductTable({ product }: ProductCardProps) {
                   <td className="px-6 py-4">{p.image}</td>
                   <td className="px-6 py-4">{p.prix}</td>
                   <td className="px-6 py-4">{p.quantite_stock}</td>
+                  <td className="px-6 py-4">
+                    {p.sous_category?.category?.type?.nom_type || "Pas de type"}
+                  </td>
                   <td className="px-6 py-4">
                     {p.sous_category?.category?.nom_categorie || "-"}
                   </td>
@@ -173,7 +179,7 @@ function ProductTable({ product }: ProductCardProps) {
       <AddProductModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        onSuccess={loadProducts} 
+        onSuccess={loadProducts}
       />
     </div>
   )

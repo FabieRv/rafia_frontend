@@ -5,7 +5,7 @@ import { FaCloudUploadAlt } from "react-icons/fa"
 import Button from "@/components/common/Button"
 import { useRef, useState } from "react"
 import { SUB_CATEGORIES_DATA } from "@/components/constant"
-import { FileInput } from "lucide-react"
+import { addProduit } from "@/features/auth/services/produitServices"
 
 interface AddProductModalProps {
   isOpen: boolean
@@ -23,15 +23,85 @@ export default function AddProductModal({
 
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [preview, setPreview] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false)
 
+  const [formData, setFormData] = useState({
+    nom_produit: "",
+    description: "",
+    prix: 0,
+    quantite_stock: 0,
+    type: "RAFIA",
+    image: "",
+    id_sous_categorie: 1,
+  })
+
+  const handleInputChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => {
+    const { name, value } = e.target
+
+    setFormData((prev) => {
+      const newData = {
+        ...prev,
+        [name]:
+          name === "prix" ||
+          name === "quantite_stock" ||
+          name === "id_sous_categorie"
+            ? value === ""
+              ? 0
+              : Number(value)
+            : value,
+      }
+
+      console.log(`Changement sur ${name}:`, newData[name as keyof typeof prev])
+      return newData
+    })
+  }
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
       setPreview(URL.createObjectURL(file))
+      setFormData((prev) => ({ ...prev, image: file.name }))
     }
   }
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+
+    if (loading) return
+    setLoading(true)
+
+    try {
+      const token = localStorage.getItem("token") || ""
+      //VERIFIER SI LE TOKEN N'EST PAS EXPIRER SINON REDIRIGER VERS LOGIN
+      const payload = {
+        nom_produit: formData.nom_produit,
+        description: formData.description,
+        type: formData.type,
+        prix: Number(formData.prix),
+        quantite_stock: Number(formData.quantite_stock),
+        image: formData.image,
+        id_sous_categorie: Number(formData.id_sous_categorie),
+      }
+      console.log("Envoi du payload:", payload)
+
+      const response = await addProduit(payload, token)
+      if (response) {
+        alert("Produit ajouté avec succès !")
+        onSuccess()
+        onClose()
+      }
+    } catch (error: any) {
+      console.error("Erreur attrapée :", error)
+      alert(`Erreur : ${error.message || "Impossible de contacter le serveur"}`)
+    } finally {
+      setLoading(false)
+    }
+  }
   if (!isOpen) return null
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4">
       <div className="bg-white rounded-3xl shadow-2xl w-full max-w-5xl max-h-[95vh] overflow-y-auto relative p-8">
@@ -47,21 +117,23 @@ export default function AddProductModal({
           </button>
         </div>
 
-        <form className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-          {/* COLONNE GAUCHE : Informations */}
+        <form
+          onSubmit={handleSubmit}
+          className="grid grid-cols-1 lg:grid-cols-2 gap-12"
+        >
           <div className="space-y-6">
             <div>
               <label className="block text-sm font-semibold text-slate-700 mb-2">
                 Nom du produit
               </label>
               <input
+                name="nom_produit"
                 type="text"
+                required
+                onChange={handleInputChange}
                 placeholder="Panier Rabane"
                 className="w-full p-3 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50/50"
               />
-              <p className="text-xs text-slate-400 mt-2">
-                Ne pas dépasser 20 caractères.
-              </p>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
@@ -69,10 +141,14 @@ export default function AddProductModal({
                 <label className="block text-sm font-semibold text-slate-700 mb-2">
                   Type
                 </label>
-                <select className="w-full p-3 border border-slate-200 rounded-xl bg-slate-50/50 outline-none">
-                  <option>RAFIA</option>
-                  <option>RABANE</option>
-                  <option>SATRANA</option>
+                <select
+                  name="type"
+                  onChange={handleInputChange}
+                  className="w-full p-3 border border-slate-200 rounded-xl bg-slate-50/50 outline-none"
+                >
+                  <option value="RAFIA">RAFIA</option>
+                  <option value="RABANE">RABANE</option>
+                  <option value="SATRANA">SATRANA</option>
                 </select>
               </div>
               <div>
@@ -88,10 +164,11 @@ export default function AddProductModal({
                   }
                   className="w-full p-3 border border-slate-200 rounded-xl bg-slate-50/50 outline-none focus:ring-2 focus:ring-blue-500"
                 >
-                  <option value="Chapeaux">Chapeaux</option>
-                  <option value="Panier">Panier</option>
-                  <option value="Boite">Boite</option>
-                  <option value="Pochette">Pochette</option>
+                  {Object.keys(SUB_CATEGORIES_DATA).map((cat) => (
+                    <option key={cat} value={cat}>
+                      {cat}
+                    </option>
+                  ))}
                 </select>
               </div>
             </div>
@@ -100,9 +177,13 @@ export default function AddProductModal({
               <label className="block text-sm font-semibold text-slate-700 mb-2">
                 Sous Categories
               </label>
-              <select className="w-full p-3 border border-slate-200 rounded-xl bg-slate-50/50 outline-none focus:ring-2 focus:ring-blue-500">
-                {SUB_CATEGORIES_DATA[selectedCategory].map((sub) => (
-                  <option key={sub} value={sub}>
+              <select
+                name="id_sous_categorie"
+                onChange={handleInputChange}
+                className="w-full p-3 border border-slate-200 rounded-xl bg-slate-50/50 outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                {SUB_CATEGORIES_DATA[selectedCategory].map((sub, index) => (
+                  <option key={sub} value={index + 1}>
                     {sub}
                   </option>
                 ))}
@@ -114,13 +195,12 @@ export default function AddProductModal({
                 Description
               </label>
               <textarea
-                rows={6}
+                name="description"
+                rows={4}
+                onChange={handleInputChange}
                 className="w-full p-3 border border-slate-200 rounded-xl bg-slate-50/50 outline-none resize-none"
                 placeholder="Entrez la description..."
               ></textarea>
-              <p className="text-xs text-slate-400 mt-2">
-                Maximum 100 caractères.
-              </p>
             </div>
           </div>
 
@@ -128,65 +208,76 @@ export default function AddProductModal({
             <label className="block text-sm font-semibold text-slate-700 mb-2">
               Images du produit
             </label>
-            <div className="flex justify-start">
+
+            <div
+              onClick={() => fileInputRef.current?.click()}
+              className="group w-48 aspect-square border-2 border-dashed border-slate-200 rounded-3xl flex flex-col items-center justify-center bg-slate-50 hover:bg-white hover:border-blue-400 hover:shadow-lg transition-all cursor-pointer p-6"
+            >
+              {preview ? (
+                <img
+                  src={preview}
+                  alt="Preview"
+                  className="w-full h-full object-cover rounded-2xl"
+                />
+              ) : (
+                <>
+                  <FaCloudUploadAlt
+                    size={48}
+                    className="text-slate-300 group-hover:text-blue-500 mb-4 transition-colors"
+                  />
+                  <div className="text-center">
+                    <p className="text-sm text-slate-500 font-medium">
+                      Glissez vos images ici
+                    </p>
+                    <p className="text-sm text-slate-400">
+                      ou{" "}
+                      <span className="text-blue-600 font-bold">
+                        cliquez pour parcourir
+                      </span>
+                    </p>
+                  </div>
+                  <p className="text-[10px] text-slate-400 mt-4">
+                    PNG, JPG jusqu'à 10MB
+                  </p>
+                </>
+              )}
               <input
                 type="file"
                 ref={fileInputRef}
                 onChange={handleImageChange}
-                accept="image/*"
                 className="hidden"
+                accept="image/*"
               />
-
-              <div
-                onClick={() => fileInputRef.current?.click()}
-                className="group w-64 aspect-square border-2 border-dashed border-slate-200 rounded-3xl flex flex-col items-center justify-center bg-slate-50 hover:bg-white hover:border-blue-400 hover:shadow-lg transition-all cursor-pointer p-6"
-              >
-                {preview ? (
-                  <img
-                    src={preview}
-                    alt="Preview"
-                    className="w-full h-full object-cover rounded-2xl"
-                  />
-                ) : (
-                  <>
-                    {" "}
-                    <FaCloudUploadAlt
-                      size={48}
-                      className="text-slate-300 group-hover:text-blue-500 mb-4 transition-colors"
-                    />
-                    <div className="text-center">
-                      <p className="text-sm text-slate-500 font-medium">
-                        Glissez vos images ici
-                      </p>
-                      <p className="text-sm text-slate-400">
-                        ou{" "}
-                        <span className="text-blue-600 font-bold">
-                          cliquez pour parcourir
-                        </span>
-                      </p>
-                    </div>
-                    <p className="text-[10px] text-slate-400 mt-4">
-                      PNG, JPG jusqu'à 10MB
-                    </p>
-                  </>
-                )}
-              </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4 pt-4">
+            <div className="grid grid-cols-3 gap-4 pt-4">
               <div>
                 <label className="block text-sm font-semibold text-slate-700 mb-2">
-                  Quantité produit{" "}
+                  Prix en ($)
                 </label>
                 <input
+                  name="prix"
                   type="number"
-                  placeholder="0.00"
+                  onChange={handleInputChange}
+                  placeholder="35$"
                   className="w-full p-3 border border-slate-200 rounded-xl bg-slate-50/50 outline-none"
-                ></input>
+                />
               </div>
               <div>
                 <label className="block text-sm font-semibold text-slate-700 mb-2">
-                  Date d'ajout du produit
+                  Quantité stock
+                </label>
+                <input
+                  name="quantite_stock"
+                  type="number"
+                  onChange={handleInputChange}
+                  placeholder="10"
+                  className="w-full p-3 border border-slate-200 rounded-xl bg-slate-50/50 outline-none"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                  Date d'ajout
                 </label>
                 <input
                   type="date"
@@ -195,19 +286,21 @@ export default function AddProductModal({
               </div>
             </div>
 
-            {/* Actions */}
             <div className="flex gap-4 pt-10">
               <button
-                type="submit"
+                type="button"
+                onClick={onClose}
                 className="flex-1 bg-red-600 text-white transition-transform hover:scale-105 active:scale-95 flex items-center justify-center py-4 rounded-xl font-bold cursor-pointer"
               >
                 Annuler Produit
               </button>
-              <Button
-                label="Enregistrer"
+              <button
                 type="submit"
-                className="w-30! rounded-xl px-0! py-2! p-4 border-2 border-slate-400 hover:border-blue-400   text-slate-600! bg-white"
-              ></Button>
+                disabled={loading}
+                className="bg-blue-500 text-white p-4 rounded-xl"
+              >
+                {loading ? "Chargement..." : "Enregistrer"}
+              </button>
 
               <button
                 type="button"
