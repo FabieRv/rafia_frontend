@@ -7,7 +7,9 @@ import ModelCard from "./modelrafia/ModelPage"
 export default function ModelPage() {
   return (
     <div>
-      <ModelCard />
+      <Container className="py-0!">
+        <ModelCard />
+      </Container>
     </div>
   )
 }
