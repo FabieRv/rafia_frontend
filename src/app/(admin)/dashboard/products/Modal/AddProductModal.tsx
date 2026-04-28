@@ -2,15 +2,16 @@
 
 import { IoMdClose } from "react-icons/io"
 import { FaCloudUploadAlt } from "react-icons/fa"
-import Button from "@/components/common/Button"
 import { useRef, useState } from "react"
 import { SUB_CATEGORIES_DATA } from "@/components/constant"
 import { addProduit } from "@/features/auth/services/produitServices"
+import { useRouter } from "next/navigation"
+import SuccessPopup from "@/components/common/SuccessPopup"
 
 interface AddProductModalProps {
   isOpen: boolean
   onClose: () => void
-  onSuccess: () => void
+  onSuccess: (product: any) => void
 }
 
 export default function AddProductModal({
@@ -24,7 +25,7 @@ export default function AddProductModal({
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [preview, setPreview] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
-
+  const [showSuccess, setShowSuccess] = useState(false)
   const [formData, setFormData] = useState({
     nom_produit: "",
     description: "",
@@ -75,7 +76,6 @@ export default function AddProductModal({
 
     try {
       const token = localStorage.getItem("token") || ""
-      //VERIFIER SI LE TOKEN N'EST PAS EXPIRER SINON REDIRIGER VERS LOGIN
       const payload = {
         nom_produit: formData.nom_produit,
         description: formData.description,
@@ -84,15 +84,22 @@ export default function AddProductModal({
         quantite_stock: Number(formData.quantite_stock),
         image: formData.image,
         id_sous_categorie: Number(formData.id_sous_categorie),
+        categorie: selectedCategory,
       }
-      console.log("Envoi du payload:", payload)
 
       const response = await addProduit(payload, token)
-      if (response) {
-        alert("Produit ajouté avec succès !")
-        onSuccess()
-        onClose()
+      const newProduct = {
+        ...response,
+        date_ajout: response.date_ajout || new Date().toISOString(),
       }
+
+      setShowSuccess(true)
+
+      setTimeout(() => {
+        setShowSuccess(false)
+        onSuccess(newProduct)
+        onClose()
+      }, 3000)
     } catch (error: any) {
       console.error("Erreur attrapée :", error)
       alert(`Erreur : ${error.message || "Impossible de contacter le serveur"}`)
@@ -250,7 +257,7 @@ export default function AddProductModal({
               />
             </div>
 
-            <div className="grid grid-cols-3 gap-4 pt-4">
+            <div className="grid grid-cols-2 gap-4 pt-4">
               <div>
                 <label className="block text-sm font-semibold text-slate-700 mb-2">
                   Prix en ($)
@@ -275,42 +282,29 @@ export default function AddProductModal({
                   className="w-full p-3 border border-slate-200 rounded-xl bg-slate-50/50 outline-none"
                 />
               </div>
-              <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2">
-                  Date d'ajout
-                </label>
-                <input
-                  type="date"
-                  className="w-full p-3 border border-slate-200 rounded-xl bg-slate-50/50 outline-none"
-                />
-              </div>
             </div>
 
             <div className="flex gap-4 pt-10">
               <button
-                type="button"
-                onClick={onClose}
-                className="flex-1 bg-red-600 text-white transition-transform hover:scale-105 active:scale-95 flex items-center justify-center py-4 rounded-xl font-bold cursor-pointer"
-              >
-                Annuler Produit
-              </button>
-              <button
                 type="submit"
                 disabled={loading}
-                className="bg-blue-500 text-white p-4 rounded-xl"
+                className="flex-2 bg-blue-500 text-white p-4 rounded-xl"
               >
                 {loading ? "Chargement..." : "Enregistrer"}
               </button>
-
               <button
                 type="button"
-                className="flex-1 border-2 border-slate-100 text-slate-300 py-4 rounded-xl font-bold cursor-not-allowed"
+                onClick={onClose}
+                className="flex-1 p-4 bg-red-600 text-white transition-transform hover:scale-105 active:scale-95 flex items-center justify-center py-4 rounded-xl font-bold cursor-pointer"
               >
-                Planifier
+                Annuler Produit
               </button>
             </div>
           </div>
         </form>
+        {showSuccess && (
+          <SuccessPopup message="Enregistrement produit avec succès !" />
+        )}
       </div>
     </div>
   )

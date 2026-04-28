@@ -17,7 +17,7 @@ export interface ProductCardProps {
     description?: string
     prix?: string | number
     oldPrice?: string | number
-    quantite_stock?: string | number
+    quantite_stock?: number
     image?: string
     sous_category?: {
       nom_sous_categorie?: string

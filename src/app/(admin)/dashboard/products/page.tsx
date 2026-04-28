@@ -1,7 +1,7 @@
 "use client"
 
 import { deleteProduit, getProduits } from "@/services/produitServices"
-import { ProductCardProps, Category } from "@/types/global"
+import { ProductCardProps } from "@/types/global"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { RiDeleteBin2Fill } from "react-icons/ri"
@@ -11,129 +11,175 @@ import { IoIosAdd } from "react-icons/io"
 import AddProductModal from "./Modal/AddProductModal"
 
 function ProductTable({ product }: ProductCardProps) {
-  const [products, setProduct] = useState<ProductCardProps["product"][]>([])
-  const router = useRouter()
-  const [currentPage, setCurrentPage] = useState(1)
-  const itemPerPage = 5
-  const token =
-    typeof window !== "undefined" ? localStorage.getItem("token") : null
-
-  const loadProducts = async () => {
-    try {
-      const data = await getProduits()
-      setProduct(data)
-    } catch (error) {
-      console.error("Erreur de chargement", error)
-    }
-  }
-
-  useEffect(() => {
-    loadProducts()
-  }, [])
-
-  const handleDelete = async (id: number) => {
-    if (!confirm("Supprimer ce produit?")) return
-    try {
-      await deleteProduit(id, token || "")
-      loadProducts()
-    } catch (error) {
-      console.error("Erreur de suppression")
-    }
-  }
+  const [products, setProducts] = useState<ProductCardProps["product"][]>([])
 
   const [isModalOpen, setIsModalOpen] = useState(false)
-  //calcule de la pagination
+  const [currentPage, setCurrentPage] = useState(1)
+
+  const itemPerPage = 4
   const indexOfLast = currentPage * itemPerPage
   const indexOfFirst = indexOfLast - itemPerPage
   const currentProducts = products.slice(indexOfFirst, indexOfLast)
   const totalPages = Math.ceil(products.length / itemPerPage)
 
+  const loadProducts = async () => {
+    try {
+      const data = await getProduits()
+
+      const sorted = [...data].sort(
+        (a, b) =>
+          new Date(b.date_ajout).getTime() - new Date(a.date_ajout).getTime()
+      )
+      setProducts(sorted)
+    } catch (error) {
+      console.error("Erreur de chargement", error)
+    }
+  }
+  useEffect(() => {
+    loadProducts()
+  }, [])
+
+  const handleNewProduct = (newProduct: any) => {
+    setProducts((prev) =>
+      [newProduct, ...prev].sort(
+        (a, b) =>
+          new Date(b.date_ajout).getTime() - new Date(a.date_ajout).getTime()
+      )
+    )
+  }
   return (
-    <div className="m-10">
-      <div className="flex flex-wrap gap-4 items-center justify-end mb-4 font-text">
-        <button className="flex items-center gap-2 px-5 py-3 bg-blue-400 text-white rounded-xl hover:bg-blue-500 text-lg ">
-          <CiImport size={25} />
-          Export
-        </button>
-        <button
-          onClick={() => setIsModalOpen(true)}
-          className="flex items-center gap-2 px-5 py-3 bg-[#e67e22] rounded-xl text-white text-lg hover:bg-[#cf6c16] transition-all duration-200"
-        >
-          <IoIosAdd size={25} />
-          Ajouter produit
-        </button>
+    <div className="m-5 md:m-10 max-w-400 mx-auto">
+      <div className="flex flex-col sm:flex-row gap-4 items-center justify-between mb-6 font-text">
+        <h1 className="text-2xl font-bold text-gray-800 self-start">
+          Gestion des Produits
+        </h1>
+        <div className="flex gap-4 w-full sm:w-auto">
+          <button className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-3 bg-blue-400 text-white rounded-xl hover:bg-blue-500 text-lg transition-colors">
+            <CiImport size={25} />
+            Export
+          </button>
+          <button
+            onClick={() => setIsModalOpen(true)}
+            className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-3 bg-[#e67e22] rounded-xl text-white text-lg hover:bg-[#cf6c16] transition-all duration-200"
+          >
+            <IoIosAdd size={25} />
+            Ajouter produit
+          </button>
+        </div>
       </div>
-      <div className="overflow-x-auto bg-neutral-primary-soft shadow-lg rounded-lg">
-        <table className="w-full text-lg text-left rtl:text-right text-body ">
-          <thead className="bg-gray-200 text-xl font-extrabold border-b border-gray-300">
+
+      <div className="overflow-x-auto bg-neutral-primary-soft shadow-xl rounded-xl border border-gray-100">
+        <table className="w-full text-left border-collapse">
+          <thead className="bg-gray-50 text-gray-700 uppercase text-sm border-b border-gray-200">
             <tr>
-              <th scope="col" className="px-6 py-3 font-medium">
-                Produit
-              </th>
-              <th scope="col" className="px-6 py-3 font-medium">
+              <th className="px-6 py-4 font-bold">Produit</th>
+              <th className="px-6 py-4 font-bold hidden lg:table-cell max-w-xs">
                 Description
               </th>
-              <th scope="col" className="px-6 py-3 font-medium">
-                Image
-              </th>
-              <th scope="col" className="px-6 py-3 font-medium">
-                Prix
-              </th>
-              <th scope="col" className="px-6 py-3 font-medium">
-                Stock
-              </th>
-              <th scope="col" className="px-6 py-3 font-medium">
-                Type
-              </th>
-              <th scope="col" className="px-6 py-3 font-medium">
-                Catégorie
-              </th>
-              <th scope="col" className="px-6 py-3 font-medium">
-                Sous-catégorie
-              </th>
-              <th scope="col" className="px-6 py-3 font-medium">
-                Actions
-              </th>
+              <th className="px-6 py-4 font-bold">Image</th>
+              <th className="px-6 py-4 font-bold text-center">Prix</th>
+              <th className="px-6 py-4 font-bold text-center">Stock</th>
+              <th className="px-6 py-4 font-bold">Catégories</th>{" "}
+              <th className="px-6 py-4 font-bold text-right">Actions</th>
             </tr>
           </thead>
-          <tbody className="font-text text-[16px]">
-            {products && products.length === 0 ? (
+
+          <tbody className="divide-y divide-gray-100 bg-white">
+            {products.length === 0 ? (
               <tr>
-                <td colSpan={8} className="px-6 py-4 text-center">
-                  Aucun produit
+                <td
+                  colSpan={8}
+                  className="px-6 py-10 text-center text-gray-500 italic"
+                >
+                  Aucun produit trouvé
                 </td>
               </tr>
             ) : (
               currentProducts.map((p) => (
                 <tr
-                  className="odd:bg-neutral-primary even:bg-neutral-secondary-soft border-b border-default"
+                  className="hover:bg-blue-50/30 transition-colors duration-150"
                   key={p.id_produit}
                 >
-                  <td className="px-6 py-4 whitespace-nowrap font-bold text-[16px]">
-                    {p.nom_produit}
-                  </td>
-                  <td className="px-6 py-4">{p.description}</td>
-                  <td className="px-6 py-4">{p.image}</td>
-                  <td className="px-6 py-4">{p.prix}</td>
-                  <td className="px-6 py-4">{p.quantite_stock}</td>
                   <td className="px-6 py-4">
-                    {p.sous_category?.category?.type?.nom_type || "Pas de type"}
+                    <span className="font-bold text-gray-900 block">
+                      {p.nom_produit}
+                    </span>
+                    <span className="text-xs text-gray-400 lg:hidden line-clamp-1">
+                      {p.description}
+                    </span>
                   </td>
+
+                  <td className="px-6 py-4 hidden lg:table-cell">
+                    <p className="text-gray-600 line-clamp-2 max-w-xs text-sm">
+                      {p.description}
+                    </p>
+                  </td>
+
                   <td className="px-6 py-4">
-                    {p.sous_category?.category?.nom_categorie || "-"}
+                    <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden border border-gray-100">
+                      {p.image ? (
+                        <img
+                          src={p.image}
+                          alt={p.nom_produit}
+                          className="object-cover w-full h-full"
+                        />
+                      ) : (
+                        <span className="text-[10px] text-gray-400">
+                          No image
+                        </span>
+                      )}
+                    </div>
                   </td>
+
+                  <td className="px-6 py-4 text-center font-semibold text-blue-600">
+                    {p.prix}€
+                  </td>
+
+                  <td className="px-6 py-4 text-center">
+                    {(() => {
+                      const stock = Number(p.quantite_stock ?? 0)
+                      return (
+                        <span
+                          className={`px-2 py-1 rounded-full text-xs font-medium ${
+                            stock < 5
+                              ? "bg-red-100 text-red-600"
+                              : "bg-green-100 text-green-600"
+                          }`}
+                        >
+                          {p.quantite_stock ?? 0}
+                        </span>
+                      )
+                    })()}
+                  </td>
+
                   <td className="px-6 py-4">
-                    {p.sous_category?.nom_sous_categorie || "-"}
+                    <div className="flex flex-col text-sm">
+                      {/* TYPE */}
+                      <span className="text-gray-400 text-[10px] uppercase font-bold tracking-wider">
+                        {p.sous_category?.category?.type?.nom_type}
+                      </span>
+
+                      {/* CATEGORIE */}
+                      <span className="text-gray-700 font-medium">
+                        {p.sous_category?.category?.nom_categorie}
+                      </span>
+
+                      {/* SOUS CATEGORIE */}
+                      <span className="text-gray-500 text-xs">
+                        {p.sous_category?.nom_sous_categorie}
+                      </span>
+                    </div>
                   </td>
-                  <td className="px-6 py-4 flex flex-wrap gap-4">
-                    <CiEdit
-                      size={25}
-                      className="text-blue-600 cursor-pointer"
-                    />
-                    <RiDeleteBin2Fill
-                      size={20}
-                      className="text-red-600 cursor-pointer"
-                    />
+
+                  <td className="px-6 py-4">
+                    <div className="flex justify-end gap-3">
+                      <button className="p-2 hover:bg-blue-100 text-blue-600 rounded-lg transition-colors">
+                        <CiEdit size={22} />
+                      </button>
+                      <button className="p-2 hover:bg-red-100 text-red-600 rounded-lg transition-colors">
+                        <RiDeleteBin2Fill size={20} />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))
@@ -142,44 +188,63 @@ function ProductTable({ product }: ProductCardProps) {
         </table>
       </div>
 
-      {/* Pagination */}
-      <div className="flex justify-center items-center mt-6 gap-2 font-text">
-        <button
-          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-          disabled={currentPage === 1}
-          className="px-3 py-2 rounded-lg border border-gray-100 bg-white text-black text-lg hover:bg-gray-50 disabled:opacity-50 shadow-sm"
-        >
-          {"< "}
-        </button>
+      {/* Pagination optimisée */}
+      <div className="flex flex-col sm:flex-row justify-between items-center mt-8 gap-4">
+        <p className="text-sm text-gray-500 order-2 sm:order-1">
+          Affichage de{" "}
+          <span className="font-semibold text-gray-700">
+            {indexOfFirst + 1}
+          </span>{" "}
+          à{" "}
+          <span className="font-semibold text-gray-700">
+            {Math.min(indexOfLast, products.length)}
+          </span>{" "}
+          sur{" "}
+          <span className="font-semibold text-gray-700">{products.length}</span>{" "}
+          produits
+        </p>
 
-        {Array.from({ length: totalPages }, (_, i) => i + 1).map((num) => (
+        <div className="flex items-center gap-2 order-1 sm:order-2">
           <button
-            key={num}
-            onClick={() => setCurrentPage(num)}
-            className={`w-10 h-10 flex items-center justify-center rounded-lg border transition-all duration-200  ${
-              num === currentPage
-                ? "bg-blue-400 text-white border-blue-400"
-                : "bg-white text-gray-700 border-gray-100 hover:border-blue-400"
-            }`}
+            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+            disabled={currentPage === 1}
+            className="p-2 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 disabled:opacity-50 transition-all"
           >
-            {num}
+            {"<"}
           </button>
-        ))}
 
-        <button
-          onClick={() =>
-            setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-          }
-          disabled={currentPage === totalPages}
-          className="px-3 py-2 rounded-lg border border-gray-100 bg-white text-black hover:bg-gray-50 disabled:opacity-50 shadow-sm"
-        >
-          {" Suivant >"}
-        </button>
+          <div className="hidden sm:flex gap-1">
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((num) => (
+              <button
+                key={num}
+                onClick={() => setCurrentPage(num)}
+                className={`w-10 h-10 flex items-center justify-center rounded-lg border transition-all ${
+                  num === currentPage
+                    ? "bg-blue-500 text-white border-blue-500 shadow-md"
+                    : "bg-white text-gray-600 border-gray-200 hover:border-blue-400"
+                }`}
+              >
+                {num}
+              </button>
+            ))}
+          </div>
+
+          <button
+            onClick={() =>
+              setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+            }
+            disabled={currentPage === totalPages}
+            className="p-2 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 disabled:opacity-50 transition-all"
+          >
+            {">"}
+          </button>
+        </div>
       </div>
+
       <AddProductModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        onSuccess={loadProducts}
+        onSuccess={handleNewProduct}
       />
     </div>
   )
