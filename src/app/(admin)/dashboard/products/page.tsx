@@ -40,6 +40,8 @@ function ProductTable({ product }: ProductCardProps) {
   }, [])
 
   const handleNewProduct = (newProduct: any) => {
+    console.log("-------newProduct---------" + JSON.stringify(newProduct))
+
     setProducts((prev) =>
       [newProduct, ...prev].sort(
         (a, b) =>
@@ -47,6 +49,7 @@ function ProductTable({ product }: ProductCardProps) {
       )
     )
   }
+
   return (
     <div className="m-5 md:m-10 max-w-400 mx-auto">
       <div className="flex flex-col sm:flex-row gap-4 items-center justify-between mb-6 font-text">

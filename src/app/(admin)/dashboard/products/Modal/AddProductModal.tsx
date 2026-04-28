@@ -60,6 +60,7 @@ export default function AddProductModal({
       return newData
     })
   }
+
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
@@ -79,12 +80,12 @@ export default function AddProductModal({
       const payload = {
         nom_produit: formData.nom_produit,
         description: formData.description,
-        type: formData.type,
         prix: Number(formData.prix),
         quantite_stock: Number(formData.quantite_stock),
         image: formData.image,
-        id_sous_categorie: Number(formData.id_sous_categorie),
+        type: formData.type,
         categorie: selectedCategory,
+        id_sous_categorie: Number(formData.id_sous_categorie),
       }
 
       const response = await addProduit(payload, token)

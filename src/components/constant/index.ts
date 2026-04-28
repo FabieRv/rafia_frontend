@@ -39,6 +39,7 @@ export const ROUTE_TITLES: Record<string, string> = {
   "/dashboard": "Dashboard",
 }
 
+//image dans Aboutus
 export const ACCORDION_ITEMS = [
   {
     id: 1,
