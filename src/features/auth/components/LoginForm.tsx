@@ -33,6 +33,7 @@ export default function LoginForm({
 
       if (response.ok) {
         const role = (data.role || "").toUpperCase()
+        document.cookie = `token=${data.access_token}; path=/; SameSite=Lax`
         localStorage.setItem("token", data.access_token)
 
         localStorage.setItem(
@@ -43,11 +44,14 @@ export default function LoginForm({
             email: formData.email,
           })
         )
-
-        if (role === "ADMIN") {
-          router.push("/dashboard")
-        } else {
-          router.push("/")
+        if (data.access_token) {
+          setTimeout(() => {
+            if (role === "ADMIN") {
+              router.push("/dashboard")
+            } else {
+              router.push("/")
+            }
+          }, 100)
         }
       } else {
         setError(data.message || "Email ou mot de passe incorrect")
@@ -129,4 +133,7 @@ export default function LoginForm({
       </div>
     </div>
   )
+}
+function useEffect(arg0: () => void, arg1: never[]) {
+  throw new Error("Function not implemented.")
 }

@@ -1,16 +1,38 @@
 "use client"
 
 import Link from "next/link"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { FiUser, FiHeart, FiShoppingCart, FiPlus } from "react-icons/fi"
 import MyMenu from "../common/Menu"
 import Container from "../common/Container"
 import Logo from "./Logo"
 import Recherche from "./Recherche"
+import IconChevron from "../icons/currentColor"
+import { User } from "@/types/global"
 
 export default function Header() {
   const [isClicked, setIsClicked] = useState(false)
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false)
+  const [user, setUser] = useState<User | null>(null)
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user")
+
+    if (storedUser) {
+      setUser(JSON.parse(storedUser))
+    } else {
+      setUser(null)
+    }
+  }, [])
+
+  const handleLogout = () => {
+    localStorage.removeItem("token")
+    localStorage.removeItem("user")
+    document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;"
+    setUser(null)
+    setIsUserDropdownOpen(false)
+    window.location.href = "/"
+  }
 
   return (
     <header className="sticky top-0 z-50 w-full shadow-sm">
@@ -18,7 +40,6 @@ export default function Header() {
         <Container className="py-6! relative font-text">
           <nav className="flex justify-between items-center w-full relative z-50">
             <Logo />
-
             <ul className="hidden lg:flex items-center gap-10 font-text font-bold">
               {["ACCUEIL", "MODEL", "CATALOGUE", "CONTACT"].map(
                 (text, index) => (
@@ -51,43 +72,77 @@ export default function Header() {
                   className="hover:text-[#D97A4F] cursor-pointer transition-colors"
                 />
               </Link>
-
               <div className="relative">
                 <button
                   onClick={() => setIsUserDropdownOpen(!isUserDropdownOpen)}
-                  onBlur={() =>
-                    setTimeout(() => setIsUserDropdownOpen(false), 200)
-                  }
                   className="flex items-center focus:outline-none"
                 >
-                  <FiUser
-                    size={28}
-                    className="hover:text-[#D97A4F] cursor-pointer transition-colors"
-                  />
+                  {user ? (
+                    //profile
+                    <div className="flex items-center gap-2 border border-[#e67e22] rounded-full px-2 py-1 bg-white">
+                      <div className="w-8 h-8 rounded-full overflow-hidden bg-gray-100">
+                        {user.image ? (
+                          <img
+                            src={user.image}
+                            alt="Profil"
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center bg-orange-100 text-[#e67e22]">
+                            {user?.name?.charAt(0)}
+                          </div>
+                        )}
+                      </div>
+                      <span className="font-medium text-sm text-gray-700 hidden md:block">
+                        {user.name}
+                      </span>
+                      <IconChevron></IconChevron>
+                    </div>
+                  ) : (
+                    //icons simple
+                    <div className="hidden text-[#A0522D] lg:flex items-center gap-6 font-text">
+                      <FiUser size={28} />
+                    </div>
+                  )}
                 </button>
 
                 {isUserDropdownOpen && (
-                  <div className="absolute right-0 mt-3 w-[180px] bg-white border border-[#D97A4F] rounded-xl shadow-xl py-2 z-60 animate-in fade-in zoom-in duration-200">
-                    <Link
-                      href="/auth"
-                      className="block px-4 py-2.5 text-lg text-black font-text  hover:bg-[#D97A4F] hover:text-white rounded-lg "
-                    >
-                      Se connecter
-                    </Link>
-
-                    <Link
-                      href="/logout"
-                      onClick={() => console.log("Déconnexion...")}
-                      className="w-full text-left block px-4 py-2.5 text-lg text-red-600 font-text hover:bg-red-300 rounded-lg"
-                    >
-                      Se déconnecter
-                    </Link>
-                  </div>
+                  <>
+                    <div
+                      className="fixed inset-0 z-40"
+                      onClick={() => setIsUserDropdownOpen(false)}
+                    />
+                    <div className="absolute right-0 mt-3 w-48 bg-white border border-gray-100 rounded-xl shadow-xl z-50 py-2">
+                      {user ? (
+                        <>
+                          <Link
+                            href="/profile"
+                            className="block px-4 py-2 hover:bg-orange-50 text-gray-700"
+                          >
+                            Mon profil
+                          </Link>
+                          <button
+                            onClick={handleLogout}
+                            className="w-full text-left px-4 py-2 text-red-600 hover:bg-red-50"
+                          >
+                            Se déconnecter
+                          </button>
+                        </>
+                      ) : (
+                        <Link
+                          href="/auth"
+                          className="block px-4 py-2 text-[#e67e22] font-bold hover:bg-orange-50"
+                        >
+                          Se connecter
+                        </Link>
+                      )}
+                    </div>
+                  </>
                 )}
               </div>
             </div>
 
-            {/* Hamburger Mobile */}
+            {/* Mobile */}
             <div className="lg:hidden z-50">
               <MyMenu
                 isClicked={isClicked}
@@ -124,11 +179,16 @@ export default function Header() {
               <div className="flex gap-6">
                 <FiShoppingCart size={24} />
                 <FiHeart size={24} />
-                <FiUser size={24} />
+                <Link href={"/auth"}>
+                  <FiUser size={24} />
+                </Link>
               </div>
-              <button className="bg-[#E67E22] text-white px-4 py-2 rounded-full flex items-center gap-2">
-                <FiPlus /> Publier
-              </button>
+              <Link
+                href={"/auth?view=register"}
+                className="bg-[#E67E22] text-white px-6 py-2 rounded-full flex items-center gap-2"
+              >
+                S'inscrire
+              </Link>
             </div>
           </ul>
         </Container>

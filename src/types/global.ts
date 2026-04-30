@@ -60,3 +60,9 @@ export interface Client {
   adress: string
   createdAt: string
 }
+
+export interface User {
+  name: string
+  email: string
+  image?: string
+}
