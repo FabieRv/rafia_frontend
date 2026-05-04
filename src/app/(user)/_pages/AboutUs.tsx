@@ -70,7 +70,7 @@ export default function AboutUs() {
               durables et uniques.
             </p>
             <div className="mt-6 md:mt-8">
-              <Button label="Contactez-nous "></Button>
+              <Button href="/contact" label="Contactez-nous "></Button>
             </div>
           </div>
 

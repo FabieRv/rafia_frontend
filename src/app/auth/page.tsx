@@ -3,9 +3,15 @@ import LoginForm from "@/features/auth/components/LoginForm"
 import RegisterForm from "@/features/auth/components/RegisterForm"
 import ForgotPasswordForm from "@/features/auth/components/ForgotPasswordForm"
 import { useState } from "react"
+import { useSearchParams } from "next/navigation"
 
 export default function AuthPage() {
-  const [view, setView] = useState<"login" | "register" | "forgot">("register")
+  const searchParams = useSearchParams()
+  const viewParam = searchParams.get("view")
+
+  const [view, setView] = useState<"login" | "register" | "forgot">(
+    (viewParam as any) || "login"
+  )
 
   return (
     <div className="relative min-h-screen w-full flex items-center justify-center">

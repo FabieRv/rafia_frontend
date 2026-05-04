@@ -30,10 +30,15 @@ export default function LoginForm({
       })
 
       const data = await response.json()
+      console.log("repose baceken", data)
 
       if (response.ok) {
         const role = (data.role || "").toUpperCase()
+        document.cookie = `token=${data.access_token}; path=/; SameSite=Lax`
+        document.cookie = `userRole=${role}; path=/; SameSite=Lax`
         localStorage.setItem("token", data.access_token)
+
+        console.log("3. COOKIES ACTUELS :", document.cookie)
 
         localStorage.setItem(
           "user",
@@ -43,11 +48,15 @@ export default function LoginForm({
             email: formData.email,
           })
         )
-
-        if (role === "ADMIN") {
-          router.push("/dashboard")
-        } else {
-          router.push("/")
+        if (data.access_token) {
+          setTimeout(() => {
+            if (role === "ADMIN") {
+              console.log("4. DIRECTION -> DASHBOARD")
+              window.location.href = "/dashboard"
+            } else {
+              window.location.href = "/"
+            }
+          }, 100)
         }
       } else {
         setError(data.message || "Email ou mot de passe incorrect")
@@ -129,4 +138,7 @@ export default function LoginForm({
       </div>
     </div>
   )
+}
+function useEffect(arg0: () => void, arg1: never[]) {
+  throw new Error("Function not implemented.")
 }

@@ -46,10 +46,12 @@ export default function HomePage() {
 
               <div className="hero-content mt-10 flex flex-wrap justify-center md:justify-start gap-6">
                 <Button
+                  href="/auth"
                   label="Explorer la Collection"
                   className="px-10 py-4 text-lg shadow-xl"
                 />
                 <Button
+                  href="/model"
                   label="Notre Savoir-faire"
                   className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-[#D35400] transition-all px-10 py-4 text-lg"
                 />

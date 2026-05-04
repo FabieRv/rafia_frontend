@@ -1,14 +1,16 @@
+import Link from "next/link"
+
 interface ButtonProps {
-  label?: string // Mis en optionnel car tu peux utiliser children à la place
+  label?: string
   icon?: React.ReactNode
   className?: string
   children?: React.ReactNode
   type?: "submit" | "button"
   onClick?: () => void
+  href?: string // 👈 AJOUT
 }
 
 export default function Button(props: ButtonProps) {
-  // AJOUT de "children" ici dans la déstructuration
   const {
     label,
     icon,
@@ -16,17 +18,39 @@ export default function Button(props: ButtonProps) {
     className = "",
     type = "button",
     onClick,
+    href,
   } = props
+
+  const content = (
+    <>
+      {icon && <span className="flex items-center">{icon}</span>}
+      {children}
+      {label && <span>{label}</span>}
+    </>
+  )
+
+  if (href) {
+    return (
+      <Link
+        href={href}
+        className={`inline-flex items-center justify-center gap-2 
+        py-3 px-6 lg:px-8 lg:py-4 
+        bg-[#E67E22] font-text text-white rounded-full font-semibold 
+        transition-transform hover:scale-105 active:scale-95 
+        ${className}`}
+      >
+        {content}
+      </Link>
+    )
+  }
 
   return (
     <button
       type={type}
-      className={`py-3 px-6 lg:px-8 lg:py-4 bg-[#E67E22] font-text text-white rounded-full font-semibold transition-transform hover:scale-105 active:scale-95 flex items-center justify-center gap-2 ${className}`}
       onClick={onClick}
+      className={`py-3 px-6 lg:px-8 lg:py-4 bg-[#E67E22] font-text text-white rounded-full font-semibold transition-transform hover:scale-105 active:scale-95 flex items-center justify-center gap-2 ${className}`}
     >
-      {icon && <span className="flex items-center">{icon}</span>}
-      {children}
-      {label && <span>{label}</span>}
+      {content}
     </button>
   )
 }
