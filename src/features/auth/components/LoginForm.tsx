@@ -30,11 +30,15 @@ export default function LoginForm({
       })
 
       const data = await response.json()
+      console.log("repose baceken", data)
 
       if (response.ok) {
         const role = (data.role || "").toUpperCase()
         document.cookie = `token=${data.access_token}; path=/; SameSite=Lax`
+        document.cookie = `userRole=${role}; path=/; SameSite=Lax`
         localStorage.setItem("token", data.access_token)
+
+        console.log("3. COOKIES ACTUELS :", document.cookie)
 
         localStorage.setItem(
           "user",
@@ -47,9 +51,10 @@ export default function LoginForm({
         if (data.access_token) {
           setTimeout(() => {
             if (role === "ADMIN") {
-              router.push("/dashboard")
+              console.log("4. DIRECTION -> DASHBOARD")
+              window.location.href = "/dashboard"
             } else {
-              router.push("/")
+              window.location.href = "/"
             }
           }, 100)
         }
