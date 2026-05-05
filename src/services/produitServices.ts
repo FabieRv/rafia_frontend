@@ -1,17 +1,17 @@
 import { ProductCardProps } from "@/types/global"
 
-const API_URL = "http://localhost:3001"
-
 // GET PRODUIT
 export async function getProduits() {
-  const res = await fetch(`${API_URL}/products/public-models`)
-  if (!res.ok) throw new Error("Erreur chargement")
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/products/public-models`
+  )
+  if (!res.ok) throw new Error("Erreur chargement des produits")
   return res.json()
 }
 
 export async function addProduit(data: any, token: string) {
   try {
-    const res = await fetch(`${API_URL}/products/add`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/products/add`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -28,7 +28,6 @@ export async function addProduit(data: any, token: string) {
     return await res.json()
   } catch (error) {
     console.error("Erreur service addProduit:", error)
-    throw error // Crucial pour que le Modal arrête le loading
   }
 }
 
@@ -38,7 +37,7 @@ export async function updateProduit(
   data: ProductCardProps,
   token: string
 ) {
-  const res = await fetch(`${API_URL}/products/${id}`, {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/products/${id}`, {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",
@@ -51,11 +50,14 @@ export async function updateProduit(
 
 // DELETE
 export async function deleteProduit(id: number, token: string) {
-  const res = await fetch(`${API_URL}/products/${id}`, {
-    method: "DELETE",
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  })
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URLL}/products/${id}`,
+    {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  )
   return res.json()
 }

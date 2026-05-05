@@ -1,6 +1,6 @@
 "use client"
 
-import { deleteProduit, getProduits } from "@/services/produitServices"
+import { getProduits } from "@/services/produitServices"
 import { ProductCardProps } from "@/types/global"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
@@ -61,6 +61,7 @@ function ProductTable({ product }: ProductCardProps) {
             <CiImport size={25} />
             Export
           </button>
+
           <button
             onClick={() => setIsModalOpen(true)}
             className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-3 bg-[#e67e22] rounded-xl text-white text-lg hover:bg-[#cf6c16] transition-all duration-200"
@@ -128,7 +129,7 @@ function ProductTable({ product }: ProductCardProps) {
                         />
                       ) : (
                         <span className="text-[10px] text-gray-400">
-                          No image
+                          Non image
                         </span>
                       )}
                     </div>

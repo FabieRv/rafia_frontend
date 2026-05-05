@@ -46,7 +46,7 @@ export default function DashboardPage() {
           <h2 className="text-xl lg:2xl font-bold text-slate-800">
             Commandes Récentes
           </h2>
-          <button className="flex items-center gap-2 bg-[#FC7A57] text-white px-4 py-2 rounded-2xl  font-medium hover:bg-[#e67e22] transition-colors text-lg">
+          <button className="flex items-center gap-2 bg-[#fac748] text-white px-4 py-2 rounded-2xl  font-medium hover:bg-[#e67e22] transition-colors text-lg">
             <Plus size={18} />
             Ajouter Produit
           </button>

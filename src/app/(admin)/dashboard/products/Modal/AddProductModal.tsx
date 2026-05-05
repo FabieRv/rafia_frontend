@@ -4,9 +4,9 @@ import { IoMdClose } from "react-icons/io"
 import { FaCloudUploadAlt } from "react-icons/fa"
 import { useRef, useState } from "react"
 import { SUB_CATEGORIES_DATA } from "@/components/constant"
-import { addProduit } from "@/features/auth/services/produitServices"
 import { useRouter } from "next/navigation"
 import SuccessPopup from "@/components/common/SuccessPopup"
+import { addProduit } from "@/services/produitServices"
 
 interface AddProductModalProps {
   isOpen: boolean
