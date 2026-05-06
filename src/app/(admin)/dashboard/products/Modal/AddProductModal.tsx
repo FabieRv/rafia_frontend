@@ -2,22 +2,17 @@
 
 import { IoMdClose } from "react-icons/io"
 import { FaCloudUploadAlt } from "react-icons/fa"
-import { useRef, useState } from "react"
+import { useRef, useState, useEffect } from "react"
 import { SUB_CATEGORIES_DATA } from "@/components/constant"
-import { useRouter } from "next/navigation"
 import SuccessPopup from "@/components/common/SuccessPopup"
 import { addProduit } from "@/services/produitServices"
-
-interface AddProductModalProps {
-  isOpen: boolean
-  onClose: () => void
-  onSuccess: (product: any) => void
-}
+import { AddProductModalProps } from "@/types/global"
 
 export default function AddProductModal({
   isOpen,
   onClose,
   onSuccess,
+  productToEdit,
 }: AddProductModalProps) {
   const [selectedCategory, setSelectedCategory] =
     useState<keyof typeof SUB_CATEGORIES_DATA>("Chapeaux")
@@ -26,6 +21,44 @@ export default function AddProductModal({
   const [preview, setPreview] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [showSuccess, setShowSuccess] = useState(false)
+
+  useEffect(() => {
+    if (!productToEdit) return
+
+    setFormData({
+      nom_produit: productToEdit.nom_produit ?? "",
+      description: productToEdit.description ?? "",
+      prix: productToEdit.prix ?? 0,
+      quantite_stock: productToEdit.quantite_stock ?? 0,
+      type:
+        productToEdit.sous_category?.category?.type?.nom_type ??
+        productToEdit.type ??
+        "RAFIA",
+
+      image: productToEdit.image ?? "",
+
+      id_sous_categorie: productToEdit.id_sous_categorie ?? 1,
+    })
+
+    setPreview(productToEdit.image ?? null)
+  }, [productToEdit])
+
+  useEffect(() => {
+    if (!isOpen) {
+      setFormData({
+        nom_produit: "",
+        description: "",
+        prix: 0,
+        quantite_stock: 0,
+        type: "RAFIA",
+        image: "",
+        id_sous_categorie: 1,
+      })
+
+      setPreview(null)
+    }
+  }, [isOpen])
+
   const [formData, setFormData] = useState({
     nom_produit: "",
     description: "",
@@ -77,6 +110,9 @@ export default function AddProductModal({
 
     try {
       const token = localStorage.getItem("token") || ""
+      const currentSubCategories = SUB_CATEGORIES_DATA[selectedCategory]
+      const subCategoryName =
+        currentSubCategories[formData.id_sous_categorie - 1]
       const payload = {
         nom_produit: formData.nom_produit,
         description: formData.description,
@@ -91,16 +127,30 @@ export default function AddProductModal({
       const response = await addProduit(payload, token)
       const newProduct = {
         ...response,
+        nom_produit: formData.nom_produit,
+        prix: formData.prix,
+        quantite_stock: formData.quantite_stock,
+        image: formData.image,
+
+        sous_category: {
+          nom_sous_categorie: subCategoryName,
+          category: {
+            nom_categorie: selectedCategory,
+            type: {
+              nom_type: formData.type,
+            },
+          },
+        },
+
         date_ajout: response.date_ajout || new Date().toISOString(),
       }
-
       setShowSuccess(true)
 
       setTimeout(() => {
         setShowSuccess(false)
         onSuccess(newProduct)
         onClose()
-      }, 3000)
+      }, 1500)
     } catch (error: any) {
       console.error("Erreur attrapée :", error)
       alert(`Erreur : ${error.message || "Impossible de contacter le serveur"}`)
@@ -108,8 +158,8 @@ export default function AddProductModal({
       setLoading(false)
     }
   }
-  if (!isOpen) return null
 
+  if (!isOpen) return null
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4">
       <div className="bg-white rounded-3xl shadow-2xl w-full max-w-5xl max-h-[95vh] overflow-y-auto relative p-8">
@@ -138,6 +188,7 @@ export default function AddProductModal({
                 name="nom_produit"
                 type="text"
                 required
+                value={formData.nom_produit}
                 onChange={handleInputChange}
                 placeholder="Panier Rabane"
                 className="w-full p-3 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50/50"
@@ -164,6 +215,7 @@ export default function AddProductModal({
                   Catégorie
                 </label>
                 <select
+                  name="categorie"
                   value={selectedCategory}
                   onChange={(e) =>
                     setSelectedCategory(
@@ -188,6 +240,7 @@ export default function AddProductModal({
               <select
                 name="id_sous_categorie"
                 onChange={handleInputChange}
+                value={formData.id_sous_categorie}
                 className="w-full p-3 border border-slate-200 rounded-xl bg-slate-50/50 outline-none focus:ring-2 focus:ring-blue-500"
               >
                 {SUB_CATEGORIES_DATA[selectedCategory].map((sub, index) => (
@@ -205,6 +258,7 @@ export default function AddProductModal({
               <textarea
                 name="description"
                 rows={4}
+                value={formData.description}
                 onChange={handleInputChange}
                 className="w-full p-3 border border-slate-200 rounded-xl bg-slate-50/50 outline-none resize-none"
                 placeholder="Entrez la description..."
@@ -266,6 +320,7 @@ export default function AddProductModal({
                 <input
                   name="prix"
                   type="number"
+                  value={formData.prix}
                   onChange={handleInputChange}
                   placeholder="35$"
                   className="w-full p-3 border border-slate-200 rounded-xl bg-slate-50/50 outline-none"
@@ -277,6 +332,7 @@ export default function AddProductModal({
                 </label>
                 <input
                   name="quantite_stock"
+                  value={formData.quantite_stock}
                   type="number"
                   onChange={handleInputChange}
                   placeholder="10"

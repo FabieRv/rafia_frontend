@@ -37,7 +37,7 @@ export default function AboutExpertise() {
 
           <div className="w-full lg:w-1/2">
             <div
-              className="inline-block px-6 py-2  bg-gray-200 text-sm font-text font-bold tracking-widest uppercase mb-6"
+              className="inline-block px-6 py-2  bg-[#FFEDD4] text-sm font-text font-bold tracking-widest uppercase mb-6"
               style={{
                 clipPath: "polygon(10% 0%, 100% 0%, 90% 100%, 0% 100%)",
               }}

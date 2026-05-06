@@ -1,18 +1,19 @@
 "use client"
 
-import { getProduits } from "@/services/produitServices"
+import { deleteProduit, getProduits } from "@/services/produitServices"
 import { ProductCardProps } from "@/types/global"
-import { useRouter } from "next/navigation"
+
 import { useEffect, useState } from "react"
 import { RiDeleteBin2Fill } from "react-icons/ri"
 import { CiEdit } from "react-icons/ci"
 import { CiImport } from "react-icons/ci"
 import { IoIosAdd } from "react-icons/io"
 import AddProductModal from "./Modal/AddProductModal"
+import { Product } from "@/types/global"
 
 function ProductTable({ product }: ProductCardProps) {
   const [products, setProducts] = useState<ProductCardProps["product"][]>([])
-
+  const [productToEdit, setProductToEdit] = useState<Product | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [currentPage, setCurrentPage] = useState(1)
 
@@ -39,15 +40,44 @@ function ProductTable({ product }: ProductCardProps) {
     loadProducts()
   }, [])
 
-  const handleNewProduct = (newProduct: any) => {
-    console.log("-------newProduct---------" + JSON.stringify(newProduct))
+  const handleSuccess = (product: any) => {
+    setProducts((prev) => {
+      const exists = prev.find((p) => p.id_produit === product.id_produit)
+      if (exists) {
+        return prev
+          .map((p) => (p.id_produit === product.id_produit ? product : p))
+          .sort(
+            (a, b) =>
+              new Date(b.date_ajout).getTime() -
+              new Date(a.date_ajout).getTime()
+          )
+      }
 
-    setProducts((prev) =>
-      [newProduct, ...prev].sort(
+      return [product, ...prev].sort(
         (a, b) =>
           new Date(b.date_ajout).getTime() - new Date(a.date_ajout).getTime()
       )
-    )
+    })
+  }
+
+  const handleDelete = async (id: number) => {
+    console.log("ID à supprimer :", id)
+
+    const confirmDelete = confirm("Voulez-vous vraiment supprimer ce produit ?")
+    if (!confirmDelete) return
+
+    try {
+      const token = localStorage.getItem("token") || ""
+      console.log("TOKEN :", token)
+
+      await deleteProduit(id, token)
+
+      setProducts((prev) => prev.filter((p) => p.id_produit !== id))
+      console.log("Suppression réussie")
+    } catch (error: any) {
+      console.error("Erreur suppression détaillée :", error)
+      alert("Erreur lors de la suppression")
+    }
   }
 
   return (
@@ -177,10 +207,19 @@ function ProductTable({ product }: ProductCardProps) {
 
                   <td className="px-6 py-4">
                     <div className="flex justify-end gap-3">
-                      <button className="p-2 hover:bg-blue-100 text-blue-600 rounded-lg transition-colors">
+                      <button
+                        onClick={() => {
+                          setProductToEdit(p)
+                          setIsModalOpen(true)
+                        }}
+                        className="p-2 hover:bg-blue-100 text-blue-600 rounded-lg transition-colors"
+                      >
                         <CiEdit size={22} />
                       </button>
-                      <button className="p-2 hover:bg-red-100 text-red-600 rounded-lg transition-colors">
+                      <button
+                        onClick={() => handleDelete(p.id_produit)}
+                        className="p-2 hover:bg-red-100 text-red-600 rounded-lg transition-colors"
+                      >
                         <RiDeleteBin2Fill size={20} />
                       </button>
                     </div>
@@ -248,7 +287,8 @@ function ProductTable({ product }: ProductCardProps) {
       <AddProductModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        onSuccess={handleNewProduct}
+        onSuccess={handleSuccess}
+        productToEdit={productToEdit}
       />
     </div>
   )

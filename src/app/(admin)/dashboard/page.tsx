@@ -1,93 +1,97 @@
 import {
-  ShoppingCart,
+  Users,
   Package,
-  DollarSign,
-  TrendingUp,
-  Plus,
+  ShoppingCart,
+  BarChart3,
+  Calendar,
+  MoreVertical,
 } from "lucide-react"
+import { TopSoldItem } from "./_pages/TopSoldItem"
 import { StatCard } from "./_pages/StatCard"
 
 export default function DashboardPage() {
   return (
-    <div className="space-y-8 font-text ">
+    <div className="p-6 bg-[#F8F9FD] min-h-screen space-y-6 font-sans">
+      {/* 1. TOP STATS */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatCard
-          title="Produits en Stock"
-          value="142"
-          icon={<Package size={20} />}
-          percentage={62}
-          color="bg-[#1AFFD5]"
+          title="Total Clients"
+          value="2000+"
+          icon={<Users size={24} />}
+          iconBg="bg-purple-50"
+          iconColor="text-purple-500"
         />
         <StatCard
-          title="Commandes"
-          value="12"
-          icon={<TrendingUp size={20} />}
-          percentage={44}
-          color="bg-emerald-500"
+          title="Total Produits"
+          value="140+"
+          icon={<Package size={24} />}
+          iconBg="bg-orange-50"
+          iconColor="text-orange-500"
         />
         <StatCard
-          title="Ventes"
-          value="25,024 Ar"
-          icon={<ShoppingCart size={20} />}
-          percentage={81}
-          color="bg-indigo-500"
+          title="Total des commandes"
+          value="1600+"
+          icon={<ShoppingCart size={24} />}
+          iconBg="bg-red-50"
+          iconColor="text-red-500"
         />
-
         <StatCard
-          title="Total Net"
-          value="10,864 Ar"
-          icon={<DollarSign size={20} />}
-          percentage={25}
-          color="bg-[#499f68]"
+          title="Total Ventes"
+          value="2000+"
+          icon={<BarChart3 size={24} />}
+          iconBg="bg-green-50"
+          iconColor="text-green-500"
         />
       </div>
-      <div className="bg-white p-8 rounded-4xlshadow-sm">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl lg:2xl font-bold text-slate-800">
-            Commandes Récentes
-          </h2>
-          <button className="flex items-center gap-2 bg-[#fac748] text-white px-4 py-2 rounded-2xl  font-medium hover:bg-[#e67e22] transition-colors text-lg">
-            <Plus size={18} />
-            Ajouter Produit
-          </button>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2 bg-white p-6 rounded-xl shadow-sm border border-gray-50">
+          <h3 className="font-bold text-lg mb-4">All Orders</h3>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm text-left">
+              <thead>
+                <tr className="text-gray-400 border-b">
+                  <th className="pb-3 font-medium">Product</th>
+                  <th className="pb-3 font-medium">Orders ID</th>
+                  <th className="pb-3 font-medium">Date</th>
+                  <th className="pb-3 font-medium">Price</th>
+                  <th className="pb-3 font-medium">Status</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-50">
+                {[1, 2, 3].map((item) => (
+                  <tr
+                    key={item}
+                    className="group hover:bg-gray-50 transition-colors"
+                  >
+                    <td className="py-4 font-medium flex items-center gap-2">
+                      <div className="w-8 h-8 bg-gray-200 rounded-md"></div>
+                      Panier Raffia
+                    </td>
+                    <td className="py-4 text-gray-500">#202394</td>
+                    <td className="py-4 text-gray-500 italic flex items-center gap-1">
+                      <Calendar size={14} /> 1 Jan 26
+                    </td>
+                    <td className="py-4 font-bold text-slate-700">1200 Ar</td>
+                    <td className="py-4">
+                      <span className="bg-green-100 text-green-600 px-3 py-1 rounded-md text-[11px] font-bold">
+                        COMPLETED
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-left">
-            <thead>
-              <tr className="text-black text-lg border-b border-gray-50">
-                <th className="pb-4 font-bold">Nom du Produit</th>
-                <th className="pb-4 font-bold">Référence</th>
-                <th className="pb-4 font-bold">Paiement</th>
-                <th className="pb-4 font-bold">Statut</th>
-                <th className="pb-4"></th>
-              </tr>
-            </thead>
-            <tbody className="text-sm">
-              <tr className="border-b border-gray-50 last:border-0">
-                <td className="py-4 text-slate-700 font-medium text-[14px]">
-                  Panier en Raffia XL
-                </td>
-                <td className="py-4 text-gray-500 text-[14px]">#RF-8563</td>
-                <td className="py-4 text-gray-500 text-[14px]">Mobile Money</td>
-                <td className="py-4">
-                  <span className="bg-orange-100 text-orange-600 px-3 py-1 rounded-full text-[12px] font-bold uppercase">
-                    En attente
-                  </span>
-                </td>
-                <td className="py-4 text-right">
-                  <button className="text-indigo-600 font-bold hover:underline text-lg">
-                    Détails
-                  </button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-          <div className="text-center mt-6">
-            <button className="text-indigo-600 text-lg font-bold hover:tracking-widest transition-all">
-              Afficher tout
-            </button>
-          </div>
+        {/* Top Sold Items */}
+        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-50">
+          <h3 className="font-bold text-lg mb-6">Top Sold Items</h3>
+          <TopSoldItem name="Jeans" percentage={75} color="bg-blue-400" />
+          <TopSoldItem name="Jacket" percentage={90} color="bg-orange-400" />
+          <TopSoldItem name="Sweater" percentage={80} color="bg-red-400" />
+          <TopSoldItem name="T-Shirt" percentage={60} color="bg-emerald-400" />
         </div>
       </div>
     </div>

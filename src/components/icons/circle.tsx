@@ -1,4 +1,4 @@
-function circle() {
+function Circle() {
   return (
     <div>
       <circle
@@ -14,4 +14,4 @@ function circle() {
   )
 }
 
-export default circle
+export default Circle

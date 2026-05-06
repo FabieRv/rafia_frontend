@@ -38,26 +38,35 @@ export async function updateProduit(
   token: string
 ) {
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/products/${id}`, {
-    method: "PATCH",
+    method: "PUT",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify(data),
   })
+  if (!res.ok) {
+    const text = await res.text()
+    throw new Error(text || "Erreur update")
+  }
   return res.json()
 }
 
 // DELETE
 export async function deleteProduit(id: number, token: string) {
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URLL}/products/${id}`,
-    {
-      method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  )
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/products/${id}`, {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+  console.log("STATUS DELETE :", res.status)
+  if (!res.ok) {
+    const text = await res.text()
+    console.error("ERREUR BACKEND :", text)
+    throw new Error(text || "Erreur suppression")
+  }
+  if (res.status === 204) return null
+
   return res.json()
 }

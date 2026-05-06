@@ -66,3 +66,36 @@ export interface User {
   email: string
   image?: string
 }
+export interface Product {
+  id_produit: number
+  nom_produit: string
+  description?: string
+  prix?: number | string
+  quantite_stock?: number
+  image?: string
+
+  sous_category?: {
+    nom_sous_categorie?: string
+    category?: {
+      nom_categorie?: string
+      type?: {
+        nom_type?: string
+      }
+    }
+  }
+
+  type?: string
+  categorie?: string
+  id_sous_categorie?: number
+}
+
+export interface ProductTableProps {
+  product: Product[]
+}
+
+export interface AddProductModalProps {
+  isOpen: boolean
+  onClose: () => void
+  onSuccess: (product: any) => void
+  productToEdit?: any // 👈 AJOUT
+}

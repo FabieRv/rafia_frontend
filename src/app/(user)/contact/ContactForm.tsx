@@ -9,7 +9,7 @@ function ContactForm() {
   return (
     <section className="py-16 bg-white">
       <Container>
-        <div className="flex flex-col lg:flex-row justify-between items-stretch gap-16">
+        <div className="flex flex-col p-0! md:p-10 lg:p-20 lg:flex-row justify-between items-stretch gap-16">
           <div className="flex-1">
             <div className="  flex flex-col items-center">
               <h1 className="text-2xl lg:text-4xl font-bold font-title text-gray-900">

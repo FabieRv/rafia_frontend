@@ -13,7 +13,6 @@ export default function AdminLayout({
   const [currentUser, setCurrentUser] = useState<UserProps | null>(null)
 
   useEffect(() => {
-    // On récupère l'objet complet "user" (nom, rôle, etc.)
     const data = localStorage.getItem("user")
     if (data) {
       try {
