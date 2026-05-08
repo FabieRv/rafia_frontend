@@ -83,9 +83,7 @@ function ProductTable({ product }: ProductCardProps) {
   return (
     <div className="m-5 md:m-10 max-w-400 mx-auto">
       <div className="flex flex-col sm:flex-row gap-4 items-center justify-between mb-6 font-text">
-        <h1 className="text-2xl font-bold text-gray-800 self-start">
-          Gestion des Produits
-        </h1>
+        <div></div>
         <div className="flex gap-4 w-full sm:w-auto">
           <button className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-3 bg-blue-400 text-white rounded-xl hover:bg-blue-500 text-lg transition-colors">
             <CiImport size={25} />
@@ -104,7 +102,7 @@ function ProductTable({ product }: ProductCardProps) {
 
       <div className="overflow-x-auto bg-neutral-primary-soft shadow-xl rounded-xl border border-gray-100">
         <table className="w-full text-left border-collapse">
-          <thead className="bg-gray-50 text-gray-700 uppercase text-sm border-b border-gray-200">
+          <thead className="bg-gray-200  text-gray-700 uppercase text-sm border-b border-gray-200">
             <tr>
               <th className="px-6 py-4 font-bold">Produit</th>
               <th className="px-6 py-4 font-bold hidden lg:table-cell max-w-xs">
