@@ -99,3 +99,8 @@ export interface AddProductModalProps {
   onSuccess: (product: any) => void
   productToEdit?: any // 👈 AJOUT
 }
+
+export interface Image {
+  src: string
+  alt?: string
+}
