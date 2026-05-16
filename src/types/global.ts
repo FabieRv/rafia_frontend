@@ -99,3 +99,11 @@ export interface AddProductModalProps {
   onSuccess: (product: any) => void
   productToEdit?: any // 👈 AJOUT
 }
+
+//testimonial
+export interface SectionHeaderProps {
+  subtitle: string
+  title: string
+  description: string
+  isInView: boolean
+}
