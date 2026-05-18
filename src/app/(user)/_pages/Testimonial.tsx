@@ -18,24 +18,24 @@ interface TestimonialData {
 const testimonials: TestimonialData[] = [
   {
     name: "Sophie Martin",
-    role: "Designer UX, Paris",
-    avatar: "/images/sophie.jpg",
+    role: "Commercial du boutique à Paris",
+    avatar: "/img/questionaire1.png",
     quote:
       "La qualité des produits est exceptionnelle. Chaque détail est pensé pour offrir une expérience utilisateur parfaite. Je recommande vivement cette boutique à tous mes collègues.",
     rating: 5,
   },
   {
     name: "Lucas Dubois",
-    role: "Développeur Full-Stack",
-    avatar: "/images/user1.jpg",
+    role: "Vendeuse du boutique en Italie",
+    avatar: "/img/questionaire2.png",
     quote:
       "Commande livrée en 24h, emballage soigné et produit conforme à la description. Le service client est également très réactif. Une expérience d'achat sans fausse note !",
     rating: 5,
   },
   {
     name: "Camille Lefèvre",
-    role: "Chef de projet digital",
-    avatar: "/images/camille.jpg",
+    role: "Commercial du boutique en Allemagne",
+    avatar: "/img/questionaire3.png",
     quote:
       "J'ai acheté le casque Bluetooth Pro X et je suis bluffée par la qualité audio. Le rapport qualité-prix est imbattable. C'est devenu mon indispensable du quotidien.",
     rating: 4,

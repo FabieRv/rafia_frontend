@@ -1,3 +1,4 @@
+import Footer from "@/components/ui/Footer"
 import Header from "@/components/ui/Header"
 
 export default function UserLayout({
@@ -9,6 +10,7 @@ export default function UserLayout({
     <>
       <Header />
       <main>{children}</main>
+      <Footer />
     </>
   )
 }

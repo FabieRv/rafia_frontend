@@ -16,7 +16,7 @@ export default function Footer() {
   return (
     <footer
       ref={ref}
-      className="relative z-10 w-full overflow-hidden pt-16 pb-8 bg-gray-950"
+      className="relative z-10 w-full overflow-hidden pt-16 pb-8 bg-secondary"
     >
       {/* Glow animé en fond */}
       <div className="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 select-none">
@@ -50,17 +50,12 @@ export default function Footer() {
           animate={isInView ? "visible" : "hidden"}
           variants={footerVariants}
         >
-          {/* Brand + Social */}
           <FooterBrand />
 
-          {/* Liens */}
           <FooterLinks />
 
-          {/* Newsletter */}
           <FooterNewsletter />
         </motion.div>
-
-        {/* Copyright + Legal */}
         <FooterBottom />
       </Container>
     </footer>

@@ -7,8 +7,62 @@ import SectionHeader from "./TopProduct/SectionHeader"
 import { containerVariants } from "./TopProduct/animation"
 import ProductCard from "./TopProduct/ProductCard"
 import ViewAllButton from "./TopProduct/ViewAllButton"
-import { products } from "@/data/productTops"
-import Button from "@/components/common/Button"
+
+interface Product {
+  category: string
+  title: string
+  rating: number
+  reviews: number
+  price: string
+  oldPrice?: string
+  image: string
+  imageAlt: string
+  isWishlisted?: boolean
+}
+
+const products: Product[] = [
+  {
+    category: "Panier",
+    title: "Panier Rafia",
+    rating: 4,
+    reviews: 128,
+    price: "15€",
+    oldPrice: "25€",
+    image: "/img/panier-6.webp",
+    imageAlt: "Panier Rafia",
+  },
+  {
+    category: "Wearables",
+    title: "boite-flower-rouge",
+    rating: 5,
+    reviews: 89,
+    price: "11€",
+    oldPrice: "25€",
+    image: "/img/lux1_.jpg",
+    imageAlt: "boite-flower-rouge",
+  },
+  {
+    category: "Chapeaux",
+    title: "Capeline Solaire en Rafia",
+    rating: 4,
+    reviews: 312,
+    price: "12€",
+    oldPrice: "120€",
+    image: "/img/chapeau.jpg",
+    imageAlt: "Capeline Solaire en Rafia",
+    isWishlisted: true,
+  },
+  {
+    category: "Rabane",
+    title: "Sac à dos Tech Lite",
+    rating: 5,
+    reviews: 57,
+    price: "10€",
+    oldPrice: "19€",
+    image: "/img/Rabane.jpg",
+    imageAlt: "Rabane",
+  },
+]
 
 export default function TopProduits() {
   const ref = useRef(null)
@@ -35,7 +89,11 @@ export default function TopProduits() {
           ))}
         </motion.div>
 
-        <ViewAllButton label="Voir tous les produits" isInView={isInView} />
+        <ViewAllButton
+          label="Voir tous les produits"
+          href="/model"
+          isInView={isInView}
+        />
       </Container>
     </section>
   )

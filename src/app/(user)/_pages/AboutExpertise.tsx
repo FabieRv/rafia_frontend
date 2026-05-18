@@ -60,7 +60,7 @@ export default function AboutExpertise() {
 
             <div className="space-y-8 font-text">
               <div className="flex gap-6">
-                <div className="flex-shrink-0 w-12 h-12 rounded-full bg-slate-50 flex items-center justify-center text-2xl">
+                <div className="shrink-0 w-12 h-12 rounded-full bg-slate-50 flex items-center justify-center text-2xl">
                   🌿
                 </div>
                 <div>
@@ -74,7 +74,7 @@ export default function AboutExpertise() {
               </div>
 
               <div className="flex gap-6">
-                <div className="flex-shrink-0 w-12 h-12 rounded-full bg-slate-50 flex items-center justify-center text-2xl">
+                <div className="shrink-0 w-12 h-12 rounded-full bg-slate-50 flex items-center justify-center text-2xl">
                   ✍️
                 </div>
                 <div>

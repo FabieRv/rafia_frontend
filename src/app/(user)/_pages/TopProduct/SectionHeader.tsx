@@ -38,7 +38,7 @@ export default function SectionHeader({
         </motion.p>
 
         <motion.div
-          className="mt-6 h-1 rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500"
+          className="mt-6 h-1 rounded-full bg-linear-to-r from-green-500 via-orange-400 to-pink-500"
           initial={{ width: 0 }}
           animate={isInView ? { width: 80 } : { width: 0 }}
           transition={{
