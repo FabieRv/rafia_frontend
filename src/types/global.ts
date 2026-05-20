@@ -100,10 +100,7 @@ export interface AddProductModalProps {
   productToEdit?: any // 👈 AJOUT
 }
 
-//testimonial
-export interface SectionHeaderProps {
-  subtitle: string
-  title: string
-  description: string
-  isInView: boolean
+export interface Image {
+  src: string
+  alt?: string
 }

@@ -85,3 +85,36 @@ export const SUB_CATEGORIES_DATA = {
   Boite: ["Brush", "Flowers", "Box floor", "Storage"],
   Pochette: ["Etoil", "Sac Dame"],
 }
+
+const images = [
+  {
+    src: "/img/panier-2.jpg",
+    alt: "Modern architecture building",
+  },
+  {
+    src: "/img/img.jpg",
+    alt: "Urban cityscape at sunset",
+  },
+  {
+    src: "/img/panier-2.jpg",
+    alt: "Abstract geometric pattern",
+  },
+  {
+    src: "/img/panier-2.jpg",
+    alt: "Mountain landscape",
+  },
+  {
+    src: "/img/panier-2.jpg",
+    alt: "Minimalist design elements",
+  },
+  {
+    src: "/img/panier-2.jpg",
+    alt: "Ocean waves and beach",
+  },
+  {
+    src: "/img/panier-2.jpg",
+    alt: "Forest trees and sunlight",
+  },
+]
+
+export default images

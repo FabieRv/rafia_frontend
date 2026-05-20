@@ -9,16 +9,24 @@ function ContactForm() {
   return (
     <section className="py-16 bg-white">
       <Container>
+        <div className="flex justify-center mb-12">
+          <div className="flex flex-col items-center text-center max-w-2xl mx-auto mb-12">
+            <h1 className="font-title text-3xl md:text-5xl font-bold text-gray-900">
+              Contactez-nous
+            </h1>
+            <p className="font-text text-gray-600 text-lg mt-4">
+              Nous sommes à votre entière disposition pour vous guider dans vos
+              choix ou assurer le suivi de vos acquisitions.
+            </p>
+          </div>
+        </div>
         <div className="flex flex-col p-0! md:p-10 lg:p-20 lg:flex-row justify-between items-stretch gap-16">
           <div className="flex-1">
             <div className="  flex flex-col items-center">
-              <h1 className="text-2xl lg:text-4xl font-bold font-title text-gray-900">
-                Êtes-vous intéressé ?
-              </h1>
-              <p className="font-text text-gray-600 text-lg mt-2">
-                Vous avez une question ou besoin d’assistance concernant votre
-                commande ?
+              <p className="text-xl lg:text-2xl font-bold font-title text-gray-900">
+                Besoin d'un conseil ?
               </p>
+
               <p className="font-text mb-8 text-gray-600 text-lg">
                 Notre équipe est à votre écoute et prête à vous aider.
               </p>
@@ -102,7 +110,7 @@ function ContactForm() {
               loading="lazy"
               allowFullScreen
               referrerPolicy="no-referrer-when-downgrade"
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15093.224151740925!2d47.5218705!3d-18.8791902!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x21f07df59099c08d%3A0xc489d8ccf9850550!2sAntananarivo!5e0!3m2!1sfr!2smg!4v1711111111111!5m2!1sfr!2smg"
+              src="https://maps.google.com/maps?q=-18.804237953700415, 47.59173749501723&z=17&output=embed"
             ></iframe>
           </div>
         </div>
