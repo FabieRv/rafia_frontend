@@ -11,7 +11,10 @@ export function middleware(request: NextRequest) {
   console.log(`Rôle détecté: ${role}`)
   console.log(`Token présent: ${!!token}`)
 
+  //page auth
   const isAuthPage = pathname.startsWith("/auth")
+
+  //page admin
 
   if (pathname.startsWith("/dashboard")) {
     if (!token || role !== "ADMIN") {
@@ -21,14 +24,28 @@ export function middleware(request: NextRequest) {
     console.log("✅ ACCÈS DASHBOARD AUTORISÉ")
   }
 
-  if ((pathname === '/' || pathname === '/auth') && token && role === 'ADMIN') {
+  if ((pathname === "/" || pathname === "/auth") && token && role === "ADMIN") {
     console.log("➡️ ADMIN DÉJÀ CONNECTÉ : Redirection vers /dashboard")
-    return NextResponse.redirect(new URL('/dashboard', request.url))
+    return NextResponse.redirect(new URL("/dashboard", request.url))
+  }
+
+  //page catalogue
+  if (pathname.startsWith("/catalogue")) {
+    if (!token) {
+      console.log("ACCÈS CATALOGUE REFUSÉ")
+      return NextResponse.redirect(new URL("/auth", request.url))
+    }
+    console.log("acces catalogue autorisé")
   }
 
   return NextResponse.next()
 }
 
 export const config = {
-  matcher: ["/dashboard", "/dashboard/:path*", "/catalogue"],
+  matcher: [
+    "/dashboard",
+    "/dashboard/:path*",
+    "/catalogue",
+    "/catalogue/:path*",
+  ],
 }
