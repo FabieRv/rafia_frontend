@@ -2,13 +2,13 @@
 
 import Container from "@/components/common/Container"
 import React from "react"
-import ModelCard from "./modelrafia/ModelPage"
+import ModelLayout from "./modelrafia/ModelLayout"
 
 export default function ModelPage() {
   return (
     <div>
       <Container className="py-0!">
-        <ModelCard />
+        <ModelLayout />
       </Container>
     </div>
   )

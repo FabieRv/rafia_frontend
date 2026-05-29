@@ -6,7 +6,7 @@ import { ChevronRight } from "lucide-react"
 import { ProductCard } from "./ProductCard"
 import { useEffect, useState } from "react"
 
-export default function ModelPage() {
+export default function ModelLayout() {
   const [products, setProducts] = useState<any[]>([])
   const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(
     null

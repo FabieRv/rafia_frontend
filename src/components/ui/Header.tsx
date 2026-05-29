@@ -41,7 +41,7 @@ export default function Header() {
           <nav className="flex justify-between items-center w-full relative z-50">
             <Logo />
             <ul className="hidden lg:flex items-center gap-10 font-text font-bold">
-              {["ACCUEIL", "MODEL", "CATALOGUE", "CONTACT"].map(
+              {["ACCUEIL", "MODELE", "CATALOGUE", "CONTACT"].map(
                 (text, index) => (
                   <li key={index}>
                     <Link
