@@ -1,4 +1,4 @@
-import { ProductCardProps } from "@/types/global"
+import { Product, ProductCardProps } from "@/types/global"
 
 // GET PRODUIT
 export async function getProduits() {
@@ -7,6 +7,16 @@ export async function getProduits() {
   )
   if (!res.ok) throw new Error("Erreur chargement des produits")
   return res.json()
+}
+
+//GET PRODUCT BY ID
+export async function getProductById(id: number) {
+  console.log("-----------------------" + id)
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/products/${id}`)
+  if (!res.ok) throw new Error("Erreur chargement des produits")
+  const data = await res.json()
+  const product: Product = data
+  return product
 }
 
 export async function addProduit(data: any, token: string) {

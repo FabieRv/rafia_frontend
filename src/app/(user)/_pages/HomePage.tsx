@@ -51,7 +51,7 @@ export default function HomePage() {
                   className="px-10 py-4 text-lg shadow-xl"
                 />
                 <Button
-                  href="/model"
+                  href="/modele"
                   label="Notre Savoir-faire"
                   className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-[#D35400] transition-all px-10 py-4 text-lg"
                 />

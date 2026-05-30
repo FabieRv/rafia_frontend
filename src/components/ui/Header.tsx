@@ -60,7 +60,11 @@ export default function Header() {
             </ul>
 
             <div className="hidden text-[#A0522D] lg:flex items-center gap-6 font-text ">
-              <Link href="/cart">
+              <Link href="/cart" className="relative">
+                <span className="absolute -top-0.5 -right-1 bg-red-500 rounded-full min-w-4 h-4 px-1 text-[10px] text-white flex items-center justify-center p-1">
+                  0
+                </span>
+
                 <FiShoppingCart
                   size={28}
                   className="hover:text-[#D97A4F] cursor-pointer transition-colors "

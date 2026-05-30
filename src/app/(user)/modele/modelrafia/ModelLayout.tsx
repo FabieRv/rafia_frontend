@@ -182,6 +182,7 @@ export default function ModelLayout() {
               products.map((p: any) => (
                 <ProductCard
                   key={p.id_produit}
+                  id={p.id_produit}
                   title={p.nom_produit}
                   price={p.prix}
                   image={p.image}
