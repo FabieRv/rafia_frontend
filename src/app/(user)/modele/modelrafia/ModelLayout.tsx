@@ -90,7 +90,7 @@ export default function ModelLayout() {
 
   return (
     <Container>
-      <Title text="Nos produits" className="font-text " />
+      <Title text="Nos produits" className="font-text pb-16" />
 
       <div className="flex flex-col lg:flex-row gap-8">
         <aside className="w-full lg:w-75 shrink-0">
