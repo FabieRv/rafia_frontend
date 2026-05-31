@@ -1,3 +1,4 @@
+import AddToCartButton from "@/components/common/AddCartButton"
 import { getCleanImageUrl } from "@/components/shared/utils/image"
 import { getProductById } from "@/services/produitServices"
 import { Product } from "@/types/global"
@@ -47,9 +48,12 @@ export default async function DetailProduct({
           Ajouter aux favorites
         </button>
 
-        <button className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition-colors">
-          Ajouter au panier
-        </button>
+        
+        <AddToCartButton
+          id_produit={product.id_produit}
+          prix={Number(product.prix)}
+          quantite={1}
+        />
         <button className="bg-white text-black px-4 py-2 rounded border border-gray-300">
           Annuler
         </button>

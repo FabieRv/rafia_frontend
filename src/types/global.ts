@@ -104,3 +104,11 @@ export interface Image {
   src: string
   alt?: string
 }
+
+//detailCommande
+export interface CommandItem {
+  id_produit: number
+  prix: number
+  quantite: number
+  id_commande?:number
+}

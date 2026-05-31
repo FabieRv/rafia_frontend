@@ -9,11 +9,15 @@ import Logo from "./Logo"
 import Recherche from "./Recherche"
 import IconChevron from "../icons/currentColor"
 import { User } from "@/types/global"
+import { usecommandeStore } from "@/store/commande.store"
 
 export default function Header() {
   const [isClicked, setIsClicked] = useState(false)
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false)
   const [user, setUser] = useState<User | null>(null)
+  const items = usecommandeStore((state) => state.items)
+  const removeItem = usecommandeStore((state) => state.removeItem)
+  const getTotal = usecommandeStore((state) => state.getTotal)
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user")
@@ -60,9 +64,9 @@ export default function Header() {
             </ul>
 
             <div className="hidden text-[#A0522D] lg:flex items-center gap-6 font-text ">
-              <Link href="/cart" className="relative">
+              <Link href="/panier" className="relative">
                 <span className="absolute -top-0.5 -right-1 bg-red-500 rounded-full min-w-4 h-4 px-1 text-[10px] text-white flex items-center justify-center p-1">
-                  0
+                  {items.reduce((total, item) => total + item.quantite, 0)}
                 </span>
 
                 <FiShoppingCart
