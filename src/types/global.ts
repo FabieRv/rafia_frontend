@@ -110,5 +110,6 @@ export interface CommandItem {
   id_produit: number
   prix: number
   quantite: number
-  id_commande?:number
+  id_commande?: number
+  nom_produit: string
 }

@@ -9,15 +9,17 @@ import Logo from "./Logo"
 import Recherche from "./Recherche"
 import IconChevron from "../icons/currentColor"
 import { User } from "@/types/global"
-import { usecommandeStore } from "@/store/commande.store"
+import { getItems, getTotal } from "@/store/commande.store"
+import { CommandItem } from "@/types/global"
 
 export default function Header() {
   const [isClicked, setIsClicked] = useState(false)
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false)
   const [user, setUser] = useState<User | null>(null)
-  const items = usecommandeStore((state) => state.items)
-  const removeItem = usecommandeStore((state) => state.removeItem)
-  const getTotal = usecommandeStore((state) => state.getTotal)
+
+  const [items, setItems] = useState<CommandItem[]>([])
+
+  const [total, setTotal] = useState(0)
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user")
@@ -27,6 +29,8 @@ export default function Header() {
     } else {
       setUser(null)
     }
+    setTotal(getTotal())
+    setItems(getItems())
   }, [])
 
   const handleLogout = () => {
@@ -54,7 +58,7 @@ export default function Header() {
                           ? "/"
                           : `/${text.toLowerCase().replace(" ", "")}`
                       }
-                      className="text-xl font-semibold text-[#2C2C2C] hover:text-[#E67E22] transition-colors"
+                      className="text-lg font-semibold text-[#2C2C2C] hover:text-[#E67E22] transition-colors"
                     >
                       {text}
                     </Link>

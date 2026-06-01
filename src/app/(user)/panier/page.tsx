@@ -1,13 +1,11 @@
 "use client"
 
 import Link from "next/link"
-import { usecommandeStore } from "@/store/commande.store"
 import CartItem from "@/components/common/CartItem"
+import { clearOrder, getItems, getTotal } from "@/store/commande.store"
 
 export default function CartPage() {
-  const items = usecommandeStore((state) => state.items)
-  const clearOrder = usecommandeStore((state) => state.clearOrder)
-  const getTotal = usecommandeStore((state) => state.getTotal)
+  const items = getItems()
 
   const total = getTotal()
 

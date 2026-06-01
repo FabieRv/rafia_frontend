@@ -12,8 +12,8 @@ export default function Home() {
     <main>
       <HomePage />
       <AboutExpertise />
-      <TopProduits />
       <AboutUs />
+      <TopProduits />
       <Testimonial />
       <ContactForm />
     </main>

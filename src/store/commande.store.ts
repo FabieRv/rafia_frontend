@@ -1,82 +1,97 @@
 import { CommandItem } from "@/types/global"
-import { create } from "zustand"
-import { persist, createJSONStorage } from "zustand/middleware"
 
-interface CommandeState {
-  items: CommandItem[]
+const STORAGE_KEY = "commande-storage"
 
-  addItem: (item: CommandItem) => void
-  removeItem: (id_produit: number) => void
-  updateQuantity: (id_produit: number, quantite: number) => void
-  clearOrder: () => void
+export const getItems = (): CommandItem[] => {
+  if (typeof window === "undefined") return []
 
-  getTotal: () => number
-  incrementQuantity: (id_produit: number) => void
-  decrementQuantity: (id_produit: number) => void
+  const data = localStorage.getItem(STORAGE_KEY)
+  return data ? JSON.parse(data) : []
 }
 
-export const usecommandeStore = create<CommandeState>()(
-  persist(
-    (set, get) => ({
-      items: [],
+export const saveItems = (items: CommandItem[]) => {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(items))
+}
 
-      addItem: (item) =>
-        set((state) => {
-          const exists = state.items.find(
-            (i) => i.id_produit === item.id_produit
-          )
+export const addItem = (item: CommandItem) => {
+  const items = getItems()
 
-          if (exists) {
-            return {
-              items: state.items.map((i) =>
-                i.id_produit === item.id_produit
-                  ? { ...i, quantite: i.quantite + item.quantite }
-                  : i
-              ),
-            }
-          }
+  const exists = items.find((i) => i.id_produit === item.id_produit)
 
-          return { items: [...state.items, item] }
-        }),
+  if (exists) {
+    const updated = items.map((i) =>
+      i.id_produit === item.id_produit
+        ? { ...i, quantite: i.quantite + item.quantite }
+        : i
+    )
 
-      removeItem: (id_produit) =>
-        set((state) => ({
-          items: state.items.filter((i) => i.id_produit !== id_produit),
-        })),
+    saveItems(updated)
+    return
+  }
 
-      updateQuantity: (id_produit, quantite) =>
-        set((state) => ({
-          items: state.items.map((i) =>
-            i.id_produit === id_produit ? { ...i, quantite } : i
-          ),
-        })),
+  saveItems([...items, item])
+}
 
-      clearOrder: () => set({ items: [] }),
+export const removeItem = (id_produit: number) => {
+  const items = getItems()
 
-      getTotal: () =>
-        get().items.reduce(
-          (total, item) => total + item.prix * item.quantite,
-          0
-        ),
-      incrementQuantity: (id_produit: number) =>
-        set((state) => ({
-          items: state.items.map((i) =>
-            i.id_produit === id_produit ? { ...i, quantite: i.quantite + 1 } : i
-          ),
-        })),
+  saveItems(items.filter((i) => i.id_produit !== id_produit))
+}
 
-      decrementQuantity: (id_produit: number) =>
-        set((state) => ({
-          items: state.items.map((i) =>
-            i.id_produit === id_produit
-              ? { ...i, quantite: Math.max(1, i.quantite - 1) }
-              : i
-          ),
-        })),
-    }),
-    {
-      name: "commande-storage",
-      storage: createJSONStorage(() => localStorage),
-    }
+export const updateQuantity = (id_produit: number, quantite: number) => {
+  const items = getItems()
+
+  saveItems(
+    items.map((i) => (i.id_produit === id_produit ? { ...i, quantite } : i))
   )
-)
+}
+
+export const incrementQuantity = (id_produit: number) => {
+  const items = getItems()
+
+  saveItems(
+    items.map((i) =>
+      i.id_produit === id_produit ? { ...i, quantite: i.quantite + 1 } : i
+    )
+  )
+}
+
+export const decrementQuantity = (id_produit: number) => {
+  const items = getItems()
+
+  saveItems(
+    items.map((i) =>
+      i.id_produit === id_produit
+        ? { ...i, quantite: Math.max(1, i.quantite - 1) }
+        : i
+    )
+  )
+}
+
+export const clearOrder = () => {
+  localStorage.removeItem(STORAGE_KEY)
+}
+
+export const getTotal = () => {
+  if (typeof window === "undefined") return 0
+
+  try {
+    const raw = localStorage.getItem("commande-storage")
+
+    if (!raw) return 0
+
+    const data = JSON.parse(raw)
+
+    const items = Array.isArray(data)
+      ? data
+      : data?.state?.items ?? []
+
+    return items.reduce(
+      (total: number, item: any) =>
+        total + item.prix * item.quantite,
+      0
+    )
+  } catch (e) {
+    return 0
+  }
+}

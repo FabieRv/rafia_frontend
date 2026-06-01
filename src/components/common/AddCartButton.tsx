@@ -1,19 +1,19 @@
 "use client"
 
-import { usecommandeStore } from "@/store/commande.store"
+import { addItem } from "@/store/commande.store"
 import { Product } from "@/types/global"
 interface AddToCartButtonProps {
   id_produit: number
   prix: number
   quantite: number
+  nom_produit:string
 }
 
 export default function AddToCartButton({
   id_produit,
   prix,
-  quantite,
+  quantite,nom_produit
 }: AddToCartButtonProps) {
-  const addItem = usecommandeStore((state) => state.addItem)
 
   return (
     <button
@@ -23,6 +23,7 @@ export default function AddToCartButton({
           id_produit: id_produit,
           prix: prix,
           quantite: quantite,
+          nom_produit: nom_produit
         })
       }
     >
