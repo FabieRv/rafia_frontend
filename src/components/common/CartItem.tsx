@@ -1,4 +1,3 @@
-// Option 1 : Déclarer puis exporter (Recommandé pour la clarté)
 const CartItem = ({ nom, vendeur, prix, quantite, image }: any) => (
   <div className="flex items-center justify-between p-6 border-b border-gray-100 last:border-0">
     <div className="flex items-center gap-6">
