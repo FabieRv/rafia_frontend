@@ -1,7 +1,9 @@
 "use client"
 
 import Link from "next/link"
+
 import CartItem from "@/components/common/CartItem"
+
 import { clearOrder, getItems, getTotal } from "@/store/commande.store"
 
 export default function CartPage() {
@@ -11,11 +13,14 @@ export default function CartPage() {
 
   return (
     <div className="max-w-5xl mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-6">Mon Panier</h1>
+      <h1 className="text-3xl font-bold mb-8 text-[#1a1a1a]">
+        (Nombre) Item in Cart
+      </h1>
 
       {items.length === 0 ? (
         <div className="text-center py-20">
           <p>Panier vide</p>
+
           <Link href="/catalogue" className="text-blue-500">
             Continuer les achats
           </Link>
