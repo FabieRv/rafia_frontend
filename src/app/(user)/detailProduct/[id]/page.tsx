@@ -48,12 +48,8 @@ export default async function DetailProduct({
           Ajouter aux favorites
         </button>
 
-        <AddToCartButton
-          id_produit={product.id_produit}
-          prix={Number(product.prix)}
-          quantite={1}
-          nom_produit={product.nom_produit}
-        />
+        <AddToCartButton product={product} />
+
         <button className="bg-white text-black px-4 py-2 rounded border border-gray-300">
           Annuler
         </button>

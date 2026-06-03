@@ -38,6 +38,13 @@ export function middleware(request: NextRequest) {
     console.log("acces catalogue autorisé")
   }
 
+  //page commande
+  if (pathname.startsWith("/commande")) {
+    if (!token) {
+      return NextResponse.redirect(new URL("/auth", request.url))
+    }
+  }
+
   return NextResponse.next()
 }
 
@@ -47,5 +54,8 @@ export const config = {
     "/dashboard/:path*",
     "/catalogue",
     "/catalogue/:path*",
+    "/commande/:path*",
+    "/auth",
+    "/commande",
   ],
 }

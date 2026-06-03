@@ -1,31 +1,21 @@
 "use client"
 
-import { addItem } from "@/store/commande.store"
-import { Product } from "@/types/global"
-interface AddToCartButtonProps {
-  id_produit: number
-  prix: number
-  quantite: number
-  nom_produit:string
-}
+import { useCommandeStore } from "@/store/commande.store"
 
-export default function AddToCartButton({
-  id_produit,
-  prix,
-  quantite,nom_produit
-}: AddToCartButtonProps) {
+export default function AddToCartButton({ product }: any) {
+  const addItem = useCommandeStore((state) => state.addItem)
 
   return (
     <button
-      className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition-colors"
       onClick={() =>
         addItem({
-          id_produit: id_produit,
-          prix: prix,
-          quantite: quantite,
-          nom_produit: nom_produit
+          id_produit: product.id_produit,
+          nom_produit: product.nom_produit,
+          prix: Number(product.prix),
+          quantite: 1,
         })
       }
+      className="bg-[#e67e22] text-white px-4 py-2 rounded"
     >
       Ajouter au panier
     </button>

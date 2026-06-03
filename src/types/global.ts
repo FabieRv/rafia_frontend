@@ -113,3 +113,12 @@ export interface CommandItem {
   id_commande?: number
   nom_produit: string
 }
+
+export interface State {
+  items: CommandItem[]
+
+  addItem: (item: CommandItem) => void
+  removeItem: (id: number) => void
+  updateQuantity: (id: number, qty: number) => void
+  clear: () => void
+}

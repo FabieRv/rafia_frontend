@@ -1,97 +1,50 @@
-import { CommandItem } from "@/types/global"
+import { CommandItem, State } from "@/types/global"
+import { create } from "zustand"
+import { persist } from "zustand/middleware"
 
 const STORAGE_KEY = "commande-storage"
 
-export const getItems = (): CommandItem[] => {
-  if (typeof window === "undefined") return []
+export const useCommandeStore = create<State>()(
+  persist(
+    (set) => ({
+      items: [] as CommandItem[],
 
-  const data = localStorage.getItem(STORAGE_KEY)
-  return data ? JSON.parse(data) : []
-}
+      addItem: (item) =>
+        set((state) => {
+          const exist = state.items.find(
+            (p) => p.id_produit === item.id_produit
+          )
 
-export const saveItems = (items: CommandItem[]) => {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(items))
-}
+          if (exist) {
+            return {
+              items: state.items.map((p) =>
+                p.id_produit === item.id_produit
+                  ? {
+                      ...p,
+                      quantite: p.quantite + item.quantite,
+                    }
+                  : p
+              ),
+            }
+          }
 
-export const addItem = (item: CommandItem) => {
-  const items = getItems()
+          return { items: [...state.items, item] }
+        }),
 
-  const exists = items.find((i) => i.id_produit === item.id_produit)
+      removeItem: (id) =>
+        set((state) => ({
+          items: state.items.filter((p) => p.id_produit !== id),
+        })),
 
-  if (exists) {
-    const updated = items.map((i) =>
-      i.id_produit === item.id_produit
-        ? { ...i, quantite: i.quantite + item.quantite }
-        : i
-    )
+      updateQuantity: (id, qty) =>
+        set((state) => ({
+          items: state.items.map((p) =>
+            p.id_produit === id ? { ...p, quantite: qty } : p
+          ),
+        })),
 
-    saveItems(updated)
-    return
-  }
-
-  saveItems([...items, item])
-}
-
-export const removeItem = (id_produit: number) => {
-  const items = getItems()
-
-  saveItems(items.filter((i) => i.id_produit !== id_produit))
-}
-
-export const updateQuantity = (id_produit: number, quantite: number) => {
-  const items = getItems()
-
-  saveItems(
-    items.map((i) => (i.id_produit === id_produit ? { ...i, quantite } : i))
+      clear: () => set({ items: [] }),
+    }),
+    { name: "cart-storage" }
   )
-}
-
-export const incrementQuantity = (id_produit: number) => {
-  const items = getItems()
-
-  saveItems(
-    items.map((i) =>
-      i.id_produit === id_produit ? { ...i, quantite: i.quantite + 1 } : i
-    )
-  )
-}
-
-export const decrementQuantity = (id_produit: number) => {
-  const items = getItems()
-
-  saveItems(
-    items.map((i) =>
-      i.id_produit === id_produit
-        ? { ...i, quantite: Math.max(1, i.quantite - 1) }
-        : i
-    )
-  )
-}
-
-export const clearOrder = () => {
-  localStorage.removeItem(STORAGE_KEY)
-}
-
-export const getTotal = () => {
-  if (typeof window === "undefined") return 0
-
-  try {
-    const raw = localStorage.getItem("commande-storage")
-
-    if (!raw) return 0
-
-    const data = JSON.parse(raw)
-
-    const items = Array.isArray(data)
-      ? data
-      : data?.state?.items ?? []
-
-    return items.reduce(
-      (total: number, item: any) =>
-        total + item.prix * item.quantite,
-      0
-    )
-  } catch (e) {
-    return 0
-  }
-}
+)
