@@ -7,7 +7,8 @@ interface ButtonProps {
   children?: React.ReactNode
   type?: "submit" | "button"
   onClick?: () => void
-  href?: string // 👈 AJOUT
+  href?: string
+  disabled?: boolean
 }
 
 export default function Button(props: ButtonProps) {
@@ -19,6 +20,7 @@ export default function Button(props: ButtonProps) {
     type = "button",
     onClick,
     href,
+    disabled = false,
   } = props
 
   const content = (
@@ -33,10 +35,10 @@ export default function Button(props: ButtonProps) {
     return (
       <Link
         href={href}
-        className={`inline-flex items-center justify-center gap-2 
-        py-3 px-6 lg:px-8 lg:py-4 
-        bg-[#E67E22] font-text text-white rounded-full font-semibold 
-        transition-transform hover:scale-105 active:scale-95 
+        className={`inline-flex items-center justify-center gap-2
+        py-2 px-3 lg:px-8 lg:py-4
+        bg-[#E67E22] font-text text-white rounded-full font-semibold
+        transition-transform hover:scale-105 active:scale-95
         ${className}`}
       >
         {content}
@@ -48,7 +50,13 @@ export default function Button(props: ButtonProps) {
     <button
       type={type}
       onClick={onClick}
-      className={`py-3 px-6 lg:px-8 lg:py-4 bg-[#E67E22] font-text text-white rounded-full font-semibold transition-transform hover:scale-105 active:scale-95 flex items-center justify-center gap-2 ${className}`}
+      disabled={disabled}
+      className={`py-2 px-3 lg:px-6 lg:py-4
+      bg-[#E67E22] font-text text-white rounded-full font-semibold
+      transition-transform hover:scale-105 active:scale-95
+      flex items-center justify-center gap-2
+      disabled:opacity-50 disabled:cursor-not-allowed
+      ${className}`}
     >
       {content}
     </button>

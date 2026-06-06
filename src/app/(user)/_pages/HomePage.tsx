@@ -24,6 +24,7 @@ export default function HomePage() {
           src="/img/fond.png"
           alt="Artisanat Malagasy"
           fill
+          sizes="100vw"
           className="object-cover"
           priority
         />

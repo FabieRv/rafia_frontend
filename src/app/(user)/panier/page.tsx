@@ -75,7 +75,7 @@ export default function Panier() {
                 <span className="text-2xl font-bold text-[#1a1a1a]">
                   Prix total:
                 </span>
-                <span className="text-3xl font-black text-[#1a1a1a] ml-2">
+                <span className="text-2xl font-black text-[#1a1a1a] ml-2">
                   {" "}
                   {totalTTC.toFixed(2)} €
                 </span>
@@ -88,8 +88,11 @@ export default function Panier() {
                 >
                   Continue
                 </button>
-                <button className="w-full border border-gray-300 py-2 rounded-full font-semibold text-gray-600 hover:bg-gray-50 transition-colors">
-                  Back to shop
+                <button
+                  onClick={() => router.push("/modele")}
+                  className="w-full border border-gray-300 py-2 rounded-full font-semibold text-gray-600 hover:bg-gray-50 transition-colors"
+                >
+                  Retour
                 </button>
               </div>
             </div>

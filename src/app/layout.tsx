@@ -1,6 +1,7 @@
 // src/app/layout.tsx
 import { Playfair_Display, Montserrat } from "next/font/google"
 import "./globals.css"
+import { Toaster } from "react-hot-toast"
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
@@ -25,6 +26,17 @@ export default function RootLayout({
         className={`${playfair.variable} ${montserrat.variable} antialiased`}
       >
         {children}
+        <Toaster
+          position="top-right"
+          toastOptions={{
+            duration: 3000,
+            style: {
+              background: "#FCA5A5",
+              color: "#fff",
+              fontWeight: "500",
+            },
+          }}
+        />
       </body>
     </html>
   )
