@@ -64,6 +64,7 @@ export interface Client {
 export interface User {
   name: string
   email: string
+  role?: string
   image?: string
 }
 export interface Product {
@@ -89,6 +90,7 @@ export interface Product {
   id_sous_categorie?: number
 }
 
+//-----------commande---------------------
 export interface ProductTableProps {
   product: Product[]
 }
@@ -97,7 +99,7 @@ export interface AddProductModalProps {
   isOpen: boolean
   onClose: () => void
   onSuccess: (product: any) => void
-  productToEdit?: any // 👈 AJOUT
+  productToEdit?: any
 }
 
 export interface Image {
@@ -105,19 +107,35 @@ export interface Image {
   alt?: string
 }
 
-//detailCommande
-export interface CommandItem {
-  id_produit: number
-  prix: number
+export interface CommandeItem {
+  id_commandeItem: number
   quantite: number
-  id_commande?: number
-  nom_produit: string
+  prix: number
+  product: Product
 }
 
-export interface State {
-  items: CommandItem[]
+export interface Commande {
+  id_commande: number
+  total: number
+  statut: "EN_ATTENTE" | "CONFIRMEE" | "NEGOCIEE" | "LIVREE" | "ANNULEE"
+  statut_livraison: "EN_PREPARATION" | "EN_COURS" | "LIVREE" | "ANNULEE"
+  adresse_livraison: string
+  ville: string
+  region: string
+  createdAt: string
+  user: User
 
-  addItem: (item: CommandItem) => void
+  items: CommandeItem[]
+}
+
+export interface CommandesTableProps {
+  commandes: Commande[]
+  onStatusChange: (id: number, newStatus: string) => void | Promise<void>
+}
+
+export interface CartState {
+  items: CommandeItem[]
+  addItem: (item: CommandeItem) => void
   removeItem: (id: number) => void
   updateQuantity: (id: number, qty: number) => void
   clear: () => void

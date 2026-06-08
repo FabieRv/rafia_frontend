@@ -10,7 +10,8 @@ import Recherche from "./Recherche"
 import IconChevron from "../icons/currentColor"
 import { User } from "@/types/global"
 import { useCommandeStore } from "@/store/commande.store"
-import { CommandItem } from "@/types/global"
+import { FaRegHeart } from "react-icons/fa"
+import { IoChatboxOutline } from "react-icons/io5"
 
 export default function Header() {
   const [isClicked, setIsClicked] = useState(false)
@@ -65,9 +66,9 @@ export default function Header() {
               )}
             </ul>
 
-            <div className="hidden text-[#A0522D] lg:flex items-center gap-6 font-text ">
-              <Link href="/panier" className="relative">
-                <span className="absolute -top-0.5 -right-1 bg-red-500 rounded-full min-w-4 h-4 px-1 text-[10px] text-white flex items-center justify-center p-1">
+            <div className="hidden text-[#A0522D] lg:flex items-center  font-text gap-6 ">
+              <Link href="/panier" className="relative ">
+                <span className="absolute -top-2 -right-1 bg-red-500 rounded-full min-w-4 h-4 px-1 text-[10px] text-white flex items-center justify-center p-1">
                   {totalItems}
                 </span>
 
@@ -76,12 +77,25 @@ export default function Header() {
                   className="hover:text-[#D97A4F] cursor-pointer transition-colors "
                 />
               </Link>
-              <Link href="/wishlist">
-                <FiHeart
-                  size={28}
+              <Link href="/wishlist" className="relative">
+                <span className="absolute -top-2 -right-1 bg-red-500 rounded-full min-w-4 h-4 px-1 text-[10px] text-white flex items-center justify-center p-1">
+                  0
+                </span>
+                <FaRegHeart
+                  size={25}
                   className="hover:text-[#D97A4F] cursor-pointer transition-colors"
                 />
               </Link>
+              <Link href="" className="relative">
+                <span className="absolute -top-2 -right-1 bg-red-500 rounded-full min-w-4 h-4 px-1 text-[10px] text-white flex items-center justify-center p-1">
+                  0
+                </span>
+                <IoChatboxOutline
+                  size={25}
+                  className="hover:text-[#D97A4F] cursor-pointer transition-colors "
+                />
+              </Link>
+
               <div className="relative">
                 <button
                   onClick={() => setIsUserDropdownOpen(!isUserDropdownOpen)}

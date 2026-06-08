@@ -10,6 +10,7 @@ import { CiImport } from "react-icons/ci"
 import { IoIosAdd } from "react-icons/io"
 import AddProductModal from "./Modal/AddProductModal"
 import { Product } from "@/types/global"
+import DataTableToolbar from "../_pages/DataTableToolbar"
 
 function ProductTable({ product }: ProductCardProps) {
   const [products, setProducts] = useState<ProductCardProps["product"][]>([])
@@ -22,6 +23,9 @@ function ProductTable({ product }: ProductCardProps) {
   const indexOfFirst = indexOfLast - itemPerPage
   const currentProducts = products.slice(indexOfFirst, indexOfLast)
   const totalPages = Math.ceil(products.length / itemPerPage)
+
+  const [filter, setFilter] = useState("TOUS")
+  const [search, setSearch] = useState("")
 
   const loadProducts = async () => {
     try {
@@ -84,29 +88,30 @@ function ProductTable({ product }: ProductCardProps) {
     <div className="m-5 md:m-10 max-w-400 mx-auto">
       <div className="flex flex-col sm:flex-row gap-4 items-center justify-between mb-6 font-text">
         <div></div>
-        <div className="flex gap-4 w-full sm:w-auto">
-          <button className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-3 bg-blue-400 text-white rounded-xl hover:bg-blue-500 text-lg transition-colors">
-            <CiImport size={25} />
-            Export
-          </button>
-
+        <div className="flex-col w-full sm:w-auto">
           <button
             onClick={() => setIsModalOpen(true)}
-            className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-3 bg-[#e67e22] rounded-xl text-white text-lg hover:bg-[#cf6c16] transition-all duration-200"
+            className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-2 bg-[#e67e22] rounded-xl text-white text-sm hover:bg-[#cf6c16] transition-all duration-200"
           >
             <IoIosAdd size={25} />
             Ajouter produit
           </button>
         </div>
       </div>
+      <DataTableToolbar
+        searchValue={search}
+        onSearchChange={setSearch}
+        onFilterClick={() => console.log("filter")}
+        onExportClick={() => console.log("export")}
+      />
 
       <div className="overflow-x-auto bg-neutral-primary-soft shadow-xl rounded-xl border border-gray-100">
         <table className="w-full text-left border-collapse">
           <thead className="bg-gray-200  text-gray-700 uppercase text-sm border-b border-gray-200">
             <tr>
-              <th className="px-6 py-4 font-bold">Produit</th>
+              <th className="px-6 py-4 font-bold">Nom Produit</th>
               <th className="px-6 py-4 font-bold hidden lg:table-cell max-w-xs">
-                Description
+                Description Produit
               </th>
               <th className="px-6 py-4 font-bold">Image</th>
               <th className="px-6 py-4 font-bold text-center">Prix</th>

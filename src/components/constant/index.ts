@@ -15,7 +15,7 @@ export const ADMIN_MENU_ITEMS: NavItem[] = [
   { title: "Clients", icon: Users, href: "/dashboard/clients" },
   { title: "Commandes", icon: ShoppingBag, href: "/dashboard/commandes" },
   { title: "Produits", icon: PlusCircle, href: "/dashboard/products" },
-  { title: "Ventes", icon: PlusCircle, href: "/admin/sales" },
+
   { title: "Analytiques", icon: BarChart3, href: "/admin/analytics" },
   {
     title: "Messages",
@@ -33,7 +33,6 @@ export const ROUTE_TITLES: Record<string, string> = {
   "/dashboard/clients": "Gestion des Clients",
   "/dashboard/products": "Gestion des Produits",
   "/dashboard/commandes": "Gestion des Commandes",
-  "/dashboard/ventes": "Gestion des Ventes",
   "/dashboard/messages": "Messagerie",
   "/dashboard/parametres": "Configuration",
   "/dashboard": "Dashboard",

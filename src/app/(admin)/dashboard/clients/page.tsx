@@ -10,6 +10,7 @@ import { CiEdit } from "react-icons/ci"
 import { MdDeleteForever, MdClose } from "react-icons/md"
 import { Client } from "@/types/global"
 import Button from "@/components/common/Button"
+import DataTableToolbar from "../_pages/DataTableToolbar"
 
 function ClientTable() {
   const [clients, setClients] = useState<Client[]>([])
@@ -21,16 +22,16 @@ function ClientTable() {
   const indexOfLast = currentPage * itemPerPage
   const indexOfFirst = indexOfLast - itemPerPage
 
-  // On découpe la liste originale pour n'afficher que les clients de la page actuelle
   const currentClients = clients.slice(indexOfFirst, indexOfLast)
   const totalPages = Math.ceil(clients.length / itemPerPage)
+  const [filter, setFilter] = useState("TOUS")
+  const [search, setSearch] = useState("")
 
   const handleDelete = async (id: number, name: string) => {
     if (confirm(`Supprimer le client ${name} ?`)) {
       try {
         await deleteClient(id)
         setClients((prev) => prev.filter((c: any) => c.id_user !== id))
-        // Ajustement si on supprime le dernier élément d'une page
         if (currentClients.length === 1 && currentPage > 1) {
           setCurrentPage(currentPage - 1)
         }
@@ -67,6 +68,12 @@ function ClientTable() {
 
   return (
     <div>
+      <DataTableToolbar
+        searchValue={search}
+        onSearchChange={setSearch}
+        onFilterClick={() => console.log("filter")}
+        onExportClick={() => console.log("export")}
+      />
       {editingClient && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
           <div className="bg-white p-10 rounded-2xl shadow-2xl w-full max-w-2xl border border-gray-200">
@@ -177,24 +184,23 @@ function ClientTable() {
           </div>
         </div>
       )}
-
       {/* --- TABLE ORIGINALE AVEC PAGINATION --- */}
       <div className="relative overflow-x-auto bg-neutral-primary-soft shadow-lg rounded-lg m-5 md:m-10 border border-gray-200">
         <table className="w-full text-lg text-left rtl:text-right text-body">
-          <thead className="bg-gray-200 text-xl font-extrabold border-b border-gray-300">
+          <thead className="bg-gray-200 text-sm text-gray-700 font-extrabold border-b border-gray-300">
             <tr>
-              <th className="px-6 py-3 font-medium">Nom complet</th>
+              <th className="px-6 py-3 font-medium">NOM COMPLET</th>
               <th className="px-6 py-3 font-medium hidden md:table-cell">
-                Email
+                EMAIL
               </th>
               <th className="px-6 py-3 font-medium hidden sm:table-cell">
-                Téléphone
+                TELEPHONE
               </th>
               <th className="px-6 py-3 font-medium hidden lg:table-cell">
-                Adresse
+                ADRESSE
               </th>
-              <th className="px-6 py-3 font-medium">Inscription</th>
-              <th className="px-6 py-3 font-medium text-right">Actions</th>
+              <th className="px-6 py-3 font-medium">DATE D'INSCRIPTION</th>
+              <th className="px-6 py-3 font-medium text-right">ACTION</th>
             </tr>
           </thead>
           <tbody className="font-text text-[16px]">

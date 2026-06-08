@@ -2,8 +2,8 @@ interface StatCardProps {
   title: string
   value: string | number
   icon: React.ReactNode
-  iconBg: string // ex: "bg-purple-100"
-  iconColor: string // ex: "text-purple-600"
+  iconBg: string
+  iconColor: string
 }
 
 export const StatCard = ({

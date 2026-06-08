@@ -11,7 +11,6 @@ export async function getProduits() {
 
 //GET PRODUCT BY ID
 export async function getProductById(id: number) {
-  console.log("-----------------------" + id)
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/products/${id}`)
   if (!res.ok) throw new Error("Erreur chargement des produits")
   const data = await res.json()

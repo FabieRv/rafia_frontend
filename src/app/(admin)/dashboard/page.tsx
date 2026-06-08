@@ -8,22 +8,34 @@ import {
 } from "lucide-react"
 import { TopSoldItem } from "./_pages/TopSoldItem"
 import { StatCard } from "./_pages/StatCard"
+import { getTotalClients, getTotalProduct } from "@/services/dashboardService"
+import { cookies } from "next/headers"
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+  const cookieStore = await cookies()
+  const token = cookieStore.get("token")?.value
+
+  const [clients, products] = await Promise.all([
+    getTotalClients(token!),
+    getTotalProduct(),
+  ])
+
+  const totalClients = clients?.count ?? 0
+  const totalProducts = products?.count ?? 0
+
   return (
     <div className="p-6 bg-[#F8F9FD] min-h-screen space-y-6 font-sans">
-      {/* 1. TOP STATS */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatCard
           title="Total Clients"
-          value="2000+"
+          value={totalClients}
           icon={<Users size={24} />}
           iconBg="bg-purple-50"
           iconColor="text-purple-500"
         />
         <StatCard
           title="Total Produits"
-          value="140+"
+          value={totalProducts}
           icon={<Package size={24} />}
           iconBg="bg-orange-50"
           iconColor="text-orange-500"
