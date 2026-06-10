@@ -8,8 +8,10 @@ import {
 } from "lucide-react"
 import { TopSoldItem } from "./_pages/TopSoldItem"
 import { StatCard } from "./_pages/StatCard"
-import { getTotalClients, getTotalProduct } from "@/services/dashboardService"
+
 import { cookies } from "next/headers"
+import { getTotalClients } from "@/services/dashboard/clients.service"
+import { getTotalProduct } from "@/services/dashboard/product.service"
 
 export default async function DashboardPage() {
   const cookieStore = await cookies()
@@ -17,7 +19,7 @@ export default async function DashboardPage() {
 
   const [clients, products] = await Promise.all([
     getTotalClients(token!),
-    getTotalProduct(),
+    getTotalProduct(token!),
   ])
 
   const totalClients = clients?.count ?? 0

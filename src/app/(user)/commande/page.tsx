@@ -68,7 +68,7 @@ export default function CommandePage() {
     try {
       const token = localStorage.getItem("token")
       const payload = {
-        items: items.map((item) => ({
+        items: items.map((item:any) => ({
           id_produit: item.id_produit,
           prix: item.prix,
           quantite: item.quantite,
