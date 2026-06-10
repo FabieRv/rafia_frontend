@@ -17,7 +17,7 @@ export default async function DashboardPage() {
 
   const [clients, products] = await Promise.all([
     getTotalClients(token!),
-    getTotalProduct(),
+    getTotalProduct(token!),
   ])
 
   const totalClients = clients?.count ?? 0
