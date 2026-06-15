@@ -107,7 +107,6 @@ export default function CommandesDashboard({ commandes }: CommandesTableProps) {
   ]
 
   const mapCommandeToCsvRow = (cmd: any) => {
-    // Sécurité pour le calcul des articles
     const totalItems =
       cmd?.items?.reduce(
         (acc: number, item: any) => acc + (item?.quantite || 0),
@@ -118,7 +117,6 @@ export default function CommandesDashboard({ commandes }: CommandesTableProps) {
       ? new Date(cmd.createdAt).toLocaleDateString("fr-FR")
       : "-"
 
-    // infos du client
     const clientName = cmd?.user?.name || "Client Inconnu"
     const clientEmail = cmd?.user?.email || "-"
     const totalTtc = cmd?.total ? Number(cmd.total).toFixed(2) : "0.00"
@@ -160,13 +158,11 @@ export default function CommandesDashboard({ commandes }: CommandesTableProps) {
   }
 
   const handleExport = () => {
-    // On vérifie directement sur filteredCommandes (qui utilise déjà localCommandes)
     if (!filteredCommandes || filteredCommandes.length === 0) {
       alert("Aucune donnée à exporter avec les filtres actuels.")
       return
     }
 
-    // On génère les lignes du tableau
     const rows = filteredCommandes.map((cmd) => {
       const totalItems =
         cmd?.items?.reduce(
@@ -192,7 +188,6 @@ export default function CommandesDashboard({ commandes }: CommandesTableProps) {
       ...rows.map((row: any[]) => row.join(";")),
     ].join("\n")
 
-    //  CE BLOC REFAIT À NEUF POUR FORCER LE TÉLÉCHARGEMENT DIRECT :
     const blob = new Blob(["\uFEFF" + csvContent], {
       type: "text/csv;charset=utf-8;",
     })
@@ -201,20 +196,15 @@ export default function CommandesDashboard({ commandes }: CommandesTableProps) {
     const link = document.createElement("a")
 
     link.href = url
-    // On force l'attribut download de manière très stricte
     link.setAttribute(
       "download",
       `export_commandes_${new Date().toLocaleDateString("fr-CA")}.csv`
     )
 
-    // On l'ajoute obligatoirement au document pour simuler un vrai clic physique
     link.style.display = "none"
     document.body.appendChild(link)
-
-    // Déclenchement du téléchargement
     link.click()
 
-    // Nettoyage complet
     document.body.removeChild(link)
     URL.revokeObjectURL(url)
   }
@@ -228,10 +218,7 @@ export default function CommandesDashboard({ commandes }: CommandesTableProps) {
 
     try {
       await deleteCommande(id, token)
-
-      // 🔥 update UI immédiate
       setLocalCommandes((prev) => prev.filter((cmd) => cmd.id_commande !== id))
-
       alert("Commande supprimée avec succès")
     } catch (error) {
       console.error(error)
@@ -254,7 +241,6 @@ export default function CommandesDashboard({ commandes }: CommandesTableProps) {
         onExportClick={handleExport}
       />
 
-      {/* STRUCTURE DU TABLEAU CORRIGÉE ICI */}
       <div className="bg-white rounded-3xl border border-gray-100 shadow-[0_10px_40px_rgba(0,0,0,0.02)] overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
@@ -363,7 +349,6 @@ export default function CommandesDashboard({ commandes }: CommandesTableProps) {
         />
       )}
 
-      {/* LE VOLET LATÉRAL (DRAWER) */}
       <div
         className={`fixed right-0 top-0 h-full w-80 bg-white shadow-2xl z-50 transform transition-transform duration-300 border-l border-gray-100 ${
           isFilterOpen ? "translate-x-0" : "translate-x-full"
@@ -390,7 +375,7 @@ export default function CommandesDashboard({ commandes }: CommandesTableProps) {
             setMaxPrice={setMaxPrice}
             handleReset={handleReset}
             onApply={() => setIsFilterOpen(false)}
-          ></FilterContent>
+          />
         </div>
       </div>
     </div>
