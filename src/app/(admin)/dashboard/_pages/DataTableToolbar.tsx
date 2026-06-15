@@ -1,5 +1,3 @@
-// components/ui/DataTableToolbar.tsx
-
 "use client"
 
 import { IoMdSearch } from "react-icons/io"
@@ -9,8 +7,11 @@ import Container from "@/components/common/Container"
 type Props = {
   searchValue: string
   onSearchChange: (value: string) => void
+  dateValue?: string
+  onDateChange?: (value: string) => void
   onFilterClick?: () => void
   onExportClick?: () => void
+  renderExport?: React.ReactNode
   placeholder?: string
 }
 
@@ -50,6 +51,7 @@ export default function DataTableToolbar({
 
           {onExportClick && (
             <button
+              type="button"
               onClick={onExportClick}
               className="flex items-center justify-center px-3 py-3 bg-blue-400 text-white rounded-xl hover:bg-blue-500 text-sm transition-colors"
             >

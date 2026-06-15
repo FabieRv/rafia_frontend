@@ -117,3 +117,37 @@
   justify-content: center !important;
   align-items: center !important;
 }
+
+/*filter tab*/
+.filter-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 16px;
+}
+
+.tabbutton {
+  padding: 10px 24px;
+  border-radius: 9999px;
+  border: 1px solid #d7d0c7;
+  background: #f5f1ec;
+  color: #000;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tabbutton:hover {
+  background: #ece6df;
+}
+
+.tabbutton:hover {
+  background: #fff4ec;
+}
+
+.tabbutton.active {
+  background: #f49f0a;
+  color: white;
+  border-color: #f49f0a;
+}

@@ -1,29 +1,29 @@
-import {
-  Users,
-  Package,
-  ShoppingCart,
-  BarChart3,
-  Calendar,
-  MoreVertical,
-} from "lucide-react"
+import { Users, Package, ShoppingCart, BarChart3, Calendar } from "lucide-react"
 import { TopSoldItem } from "./_pages/TopSoldItem"
 import { StatCard } from "./_pages/StatCard"
 
 import { cookies } from "next/headers"
 import { getTotalClients } from "@/services/dashboard/clients.service"
 import { getTotalProduct } from "@/services/dashboard/product.service"
+import { getTotalCommandes } from "@/services/dashboard/commande.service"
 
 export default async function DashboardPage() {
   const cookieStore = await cookies()
   const token = cookieStore.get("token")?.value
 
-  const [clients, products] = await Promise.all([
+  const [clients, products, commande] = await Promise.all([
     getTotalClients(token!),
     getTotalProduct(token!),
+    getTotalCommandes(token!),
   ])
 
   const totalClients = clients?.count ?? 0
   const totalProducts = products?.count ?? 0
+  const totalCommandes = Number(commande)
+
+  console.log("clients ok")
+  console.log("products ok")
+  console.log("commandes ok")
 
   return (
     <div className="p-6 bg-[#F8F9FD] min-h-screen space-y-6 font-sans">
@@ -44,7 +44,7 @@ export default async function DashboardPage() {
         />
         <StatCard
           title="Total des commandes"
-          value="1600+"
+          value={totalCommandes}
           icon={<ShoppingCart size={24} />}
           iconBg="bg-red-50"
           iconColor="text-red-500"

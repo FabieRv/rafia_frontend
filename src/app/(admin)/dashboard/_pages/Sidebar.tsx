@@ -28,7 +28,6 @@ export const Sidebar = () => {
           const isActive = pathname === item.href
           const isLogout = item.title === "Logout"
 
-          
           const content = (
             <div className="flex items-center gap-4">
               <Icon
@@ -50,7 +49,7 @@ export const Sidebar = () => {
               <button
                 key="logout-btn"
                 onClick={handleLogout}
-                className="w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-200 group text-red-400 hover:bg-[#FC7A57]  hover:text-white mt-10"
+                className="w-full flex items-center justify-between px-1 py-3 rounded-xl transition-all duration-200 group text-red-400 hover:bg-[#FC7A57]  hover:text-white mt-10"
               >
                 {content}
               </button>

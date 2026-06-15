@@ -114,6 +114,8 @@ export interface CommandeItem {
   product: Product
 }
 
+//commande props
+
 export interface Commande {
   id_commande: number
   total: number
@@ -123,6 +125,7 @@ export interface Commande {
   ville: string
   region: string
   createdAt: string
+  produits: number[]
   user: User
 
   items: CommandeItem[]
