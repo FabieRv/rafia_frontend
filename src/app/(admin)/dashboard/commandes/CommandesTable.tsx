@@ -1,181 +1,383 @@
 "use client"
-import { useEffect, useState } from "react"
-import { CiImport } from "react-icons/ci"
-import { IoMdSearch } from "react-icons/io"
+import { useState, useEffect } from "react"
+import { CommandesTableProps } from "@/types/global"
+import { MdDeleteForever } from "react-icons/md"
+import { AiOutlineEye } from "react-icons/ai"
+import { IoMdClose } from "react-icons/io"
+import FilterTabs from "../_pages/FilterTabs"
 import DataTableToolbar from "../_pages/DataTableToolbar"
+import { useRouter } from "next/navigation"
+import FilterContent from "../_pages/FilterContent"
+import { STATUTS, StatutCommande } from "@/components/constant/Status"
+import { COMMANDE_CSV_HEADERS } from "@/components/constant/commandeExport"
+import { deleteCommande } from "@/services/dashboard/commande.service"
 
-import { motion } from "framer-motion"
-import { Commande, CommandesTableProps } from "@/types/global"
+export default function CommandesDashboard({ commandes }: CommandesTableProps) {
+  const [search, setSearch] = useState("")
+  const [statutSelectionne, setStatutSelectionne] =
+    useState<StatutCommande>("Tous")
+  const [isFilterOpen, setIsFilterOpen] = useState(false)
+  const [localCommandes, setLocalCommandes] = useState(commandes)
 
-export default function CommandesDashboard({
-  commandes,
-  onStatusChange,
-}: CommandesTableProps) {
-  const [selectedCommande, setSelectedCommande] = useState<Commande | null>(
-    null
-  )
+  const [startDate, setStartDate] = useState("")
+  const [endDate, setEndDate] = useState("")
+  const [minPrice, setMinPrice] = useState("")
+  const [maxPrice, setMaxPrice] = useState("")
 
-  // Couleurs dynamiques pour le statut de la commande
+  const router = useRouter()
+  const statusMap: Record<string, string> = {
+    "En attente": "EN_ATTENTE",
+    Confirmée: "CONFIRMEE",
+    Négociée: "NEGOCIEE",
+    Livrée: "LIVREE",
+    Annulée: "ANNULEE",
+  }
+
+  const filteredCommandes = localCommandes.filter((cmd) => {
+    const matchesStatut =
+      statutSelectionne === "Tous" ||
+      cmd.statut === statusMap[statutSelectionne]
+
+    const searchLower = search.toLowerCase().trim()
+
+    // filtrer date
+    const matchesSearch =
+      search === "" ||
+      cmd.user.name.toLowerCase().includes(searchLower) ||
+      cmd.user.email.toLowerCase().includes(searchLower) ||
+      `cmd ${cmd.id_commande}`.toLowerCase().includes(searchLower) ||
+      String(cmd.id_commande).includes(searchLower) ||
+      `cmd${cmd.id_commande}`.includes(searchLower) ||
+      `cmd ${cmd.id_commande}`.includes(searchLower)
+
+    // filtre par plage de prix
+    const cmdTotal = Number(cmd.total)
+    const matchesMinPrice = minPrice === "" || cmdTotal >= Number(minPrice)
+    const matchesMaxPrice = maxPrice === "" || cmdTotal <= Number(maxPrice)
+
+    // filtre par date
+    let matchesDate = true
+    const cmdDateStr = new Date(cmd.createdAt).toLocaleDateString("fr-CA")
+
+    if (startDate) {
+      matchesDate = matchesDate && cmdDateStr >= startDate
+    }
+    if (endDate) {
+      matchesDate = matchesDate && cmdDateStr <= endDate
+    }
+
+    return (
+      matchesStatut &&
+      matchesSearch &&
+      matchesMinPrice &&
+      matchesMaxPrice &&
+      matchesDate
+    )
+  })
+
+  useEffect(() => {
+    setLocalCommandes(commandes)
+  }, [commandes])
+
+  //Transformation des lignes
+  const rows = filteredCommandes.map((cmd) => {
+    const totalItems =
+      cmd.items?.reduce((acc, item) => acc + item.quantite, 0) ?? 0
+    const dateFormatee = new Date(cmd.createdAt).toLocaleDateString("fr-FR")
+
+    return [
+      `CMD${cmd.id_commande}`,
+      cmd.user.name,
+      cmd.user.email,
+      totalItems,
+      Number(cmd.total).toFixed(2),
+      dateFormatee,
+      cmd.statut,
+    ]
+  })
+
+  const csvHeaders = [
+    "N° Commande",
+    "Nom Client",
+    "Email Client",
+    "Nombre d'articles",
+    "Total TTC (€)",
+    "Date de Commande",
+    "Statut",
+  ]
+
+  const mapCommandeToCsvRow = (cmd: any) => {
+    const totalItems =
+      cmd?.items?.reduce(
+        (acc: number, item: any) => acc + (item?.quantite || 0),
+        0
+      ) ?? 0
+
+    const dateFormatee = cmd?.createdAt
+      ? new Date(cmd.createdAt).toLocaleDateString("fr-FR")
+      : "-"
+
+    const clientName = cmd?.user?.name || "Client Inconnu"
+    const clientEmail = cmd?.user?.email || "-"
+    const totalTtc = cmd?.total ? Number(cmd.total).toFixed(2) : "0.00"
+    const idCommande = cmd?.id_commande || ""
+
+    return [
+      `CMD${idCommande}`,
+      clientName.replace(/;/g, " "),
+      clientEmail.replace(/;/g, " "),
+      totalItems,
+      totalTtc,
+      dateFormatee,
+      cmd?.statut || "-",
+    ]
+  }
+
   const getStatutColor = (statut: string) => {
     switch (statut) {
       case "EN_ATTENTE":
         return "bg-amber-50 text-amber-700 border-amber-200"
-      case "VALIDE":
+      case "CONFIRMEE":
+        return "bg-blue-50 text-blue-700 border-blue-200"
+      case "NEGOCIEE":
+        return "bg-purple-50 text-purple-700 border-purple-200"
+      case "LIVREE":
         return "bg-emerald-50 text-emerald-700 border-emerald-200"
-      default:
+      case "ANNULEE":
         return "bg-rose-50 text-rose-700 border-rose-200"
+      default:
+        return "bg-gray-50 text-gray-700 border-agray-200"
+    }
+  }
+
+  const handleReset = () => {
+    setStartDate("")
+    setEndDate("")
+    setMinPrice("")
+    setMaxPrice("")
+  }
+
+  const handleExport = () => {
+    if (!filteredCommandes || filteredCommandes.length === 0) {
+      alert("Aucune donnée à exporter avec les filtres actuels.")
+      return
+    }
+
+    const rows = filteredCommandes.map((cmd) => {
+      const totalItems =
+        cmd?.items?.reduce(
+          (acc: number, item: any) => acc + (item?.quantite || 0),
+          0
+        ) ?? 0
+      const dateFormatee = cmd?.createdAt
+        ? new Date(cmd.createdAt).toLocaleDateString("fr-FR")
+        : "-"
+      return [
+        `CMD${cmd?.id_commande || ""}`,
+        (cmd?.user?.name || "Client Inconnu").replace(/;/g, " "),
+        (cmd?.user?.email || "-").replace(/;/g, " "),
+        totalItems,
+        cmd?.total ? Number(cmd.total).toFixed(2) : "0.00",
+        dateFormatee,
+        cmd?.statut || "-",
+      ]
+    })
+
+    const csvContent = [
+      COMMANDE_CSV_HEADERS.join(";"),
+      ...rows.map((row: any[]) => row.join(";")),
+    ].join("\n")
+
+    const blob = new Blob(["\uFEFF" + csvContent], {
+      type: "text/csv;charset=utf-8;",
+    })
+
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement("a")
+
+    link.href = url
+    link.setAttribute(
+      "download",
+      `export_commandes_${new Date().toLocaleDateString("fr-CA")}.csv`
+    )
+
+    link.style.display = "none"
+    document.body.appendChild(link)
+    link.click()
+
+    document.body.removeChild(link)
+    URL.revokeObjectURL(url)
+  }
+
+  const handleDelete = async (id: number) => {
+    const confirmDelete = confirm("Voulez-vous supprimer cette commande ?")
+    if (!confirmDelete) return
+
+    const token = localStorage.getItem("token")
+    if (!token) return
+
+    try {
+      await deleteCommande(id, token)
+      setLocalCommandes((prev) => prev.filter((cmd) => cmd.id_commande !== id))
+      alert("Commande supprimée avec succès")
+    } catch (error) {
+      console.error(error)
+      alert("Erreur suppression commande")
     }
   }
 
   return (
-    <div className="w-full space-y-6 font-text">
+    <div className="w-full space-y-6 font-text relative">
+      <FilterTabs
+        tabs={STATUTS}
+        activeTab={statutSelectionne}
+        onChange={setStatutSelectionne}
+      />
+
+      <DataTableToolbar
+        searchValue={search}
+        onSearchChange={setSearch}
+        onFilterClick={() => setIsFilterOpen(true)}
+        onExportClick={handleExport}
+      />
+
       <div className="bg-white rounded-3xl border border-gray-100 shadow-[0_10px_40px_rgba(0,0,0,0.02)] overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-gray-200 border-b border-gray-100 text-gray-700 text-sm font-bold tracking-wider uppercase">
-                <th className="p-5">COMMANDE</th>
+                <th className="p-5"> N° COMMANDE</th>
                 <th className="p-5">CLIENT</th>
-                <th className="p-5">DATE COMMANDE</th>
+                <th className="p-5">PRODUIT</th>
                 <th className="p-5">TOTAL TTC</th>
+                <th className="p-5">DATE COMMANDE</th>
                 <th className="p-5">STATUS</th>
                 <th className="p-5 text-right">ACTIONS</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50 text-sm">
-              {commandes.map((cmd) => (
-                <tr
-                  key={cmd.id_commande}
-                  className="hover:bg-gray-50/50 transition-colors group"
-                >
-                  {/* ID Commande */}
-                  <td className="p-5 font-bold text-gray-900">
-                    #{cmd.id_commande}
-                  </td>
+              {filteredCommandes.map((cmd) => {
+                const totalItems =
+                  cmd.items?.reduce((acc, item) => acc + item.quantite, 0) ?? 0
 
-                  {/* Client */}
-                  <td className="p-5">
-                    <div className="flex flex-col">
-                      <span className="font-semibold text-gray-800">
+                return (
+                  <tr
+                    key={cmd.id_commande}
+                    className="hover:bg-gray-50/50 transition-colors group"
+                  >
+                    <td className="p-5 font-bold text-gray-900">
+                      CMD{cmd.id_commande}
+                    </td>
+
+                    <td className="p-5 flex flex-col">
+                      <span className="text-gray-800 font-text text-sm">
                         {cmd.user.name}
                       </span>
                       <span className="text-xs text-gray-400">
                         {cmd.user.email}
                       </span>
-                    </div>
-                  </td>
+                    </td>
 
-                  {/* Date */}
-                  <td className="p-5 text-gray-500">
-                    {new Date(cmd.createdAt).toLocaleDateString("fr-FR", {
-                      day: "numeric",
-                      month: "short",
-                      year: "numeric",
-                    })}
-                  </td>
+                    <td className="p-5">
+                      <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-50 text-blue-500 text-xs font-semibold">
+                        {totalItems} article{totalItems > 1 ? "s" : ""}
+                      </span>
+                    </td>
 
-                  {/* Total */}
-                  <td className="p-5 font-bold text-gray-900">
-                    {Number(cmd.total).toFixed(2)} €
-                  </td>
+                    <td className="p-5 font-bold text-gray-900">
+                      {Number(cmd.total).toFixed(2)} €
+                    </td>
 
-                  {/* Statut */}
-                  <td className="p-5">
-                    <span
-                      className={`px-3 py-1.5 rounded-full text-xs font-bold border ${getStatutColor(
-                        cmd.statut
-                      )}`}
-                    >
-                      {cmd.statut}
-                    </span>
-                  </td>
+                    <td className="p-5 text-gray-500">
+                      {new Date(cmd.createdAt).toLocaleDateString("fr-FR", {
+                        day: "numeric",
+                        month: "short",
+                        year: "numeric",
+                      })}
+                    </td>
 
-                  {/* Actions */}
-                  <td className="p-5 text-right space-x-2">
-                    <button
-                      onClick={() => setSelectedCommande(cmd)}
-                      className="p-2 text-gray-400 hover:text-orange-600 hover:bg-orange-50 rounded-xl transition-all inline-flex items-center gap-1"
-                    ></button>
+                    <td className="p-5">
+                      <span
+                        className={`px-3 py-1.5 rounded-full text-xs font-bold border ${getStatutColor(
+                          cmd.statut
+                        )}`}
+                      >
+                        {cmd.statut}
+                      </span>
+                    </td>
+
+                    <td className="p-5 text-right">
+                      <div className="flex items-center justify-end gap-2">
+                        <button
+                          onClick={() =>
+                            router.push(
+                              `/dashboard/commandes/${cmd.id_commande}`
+                            )
+                          }
+                        >
+                          <AiOutlineEye />
+                        </button>
+
+                        <button
+                          onClick={() => handleDelete(cmd.id_commande)}
+                          className="p-2 rounded-full bg-orange-100 hover:bg-red-200 transition"
+                        >
+                          <MdDeleteForever size={20} className="text-red-600" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                )
+              })}
+
+              {filteredCommandes.length === 0 && (
+                <tr>
+                  <td colSpan={7} className="p-10 text-center text-gray-400">
+                    Aucune commande ne correspond à vos critères de recherche.
                   </td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
         </div>
       </div>
 
-      {/* MODAL Framer Motion pour les détails de la commande sélectionnée */}
-      {selectedCommande && (
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="bg-white rounded-[2.5rem] p-8 max-w-2xl w-full max-h-[85vh] overflow-y-auto shadow-2xl relative"
-          >
-            <button
-              onClick={() => setSelectedCommande(null)}
-              className="absolute top-6 right-6 text-gray-400 hover:text-black font-bold text-lg"
-            >
-              ✕
-            </button>
-
-            <h3 className="text-2xl font-bold text-gray-900 mb-6">
-              Détails de la Commande #{selectedCommande.id_commande}
-            </h3>
-
-            {/* Articles achetés */}
-            <div className="space-y-4 mb-6">
-              <h4 className="text-xs font-bold tracking-wider text-gray-400 uppercase flex items-center gap-2">
-                Articles Commandés
-              </h4>
-              <div className="divide-y divide-gray-100 border border-gray-100 rounded-2xl p-2 bg-gray-50/50">
-                {selectedCommande.items.map((item) => (
-                  <div
-                    key={item.id_commandeItem}
-                    className="flex items-center gap-4 py-3 px-2"
-                  >
-                    <div className="w-12 h-12 bg-white rounded-xl border border-gray-100 flex items-center justify-center overflow-hidden shrink-0">
-                      <img
-                        src={
-                          item.product.image
-                            ? `/images/${item.product.image}`
-                            : "https://placehold.co/100"
-                        }
-                        alt={item.product.nom_produit}
-                        className="object-contain w-full h-full p-1"
-                      />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="font-bold text-gray-900 truncate text-sm">
-                        {item.product.nom_produit}
-                      </p>
-                      <p className="text-xs text-gray-400">
-                        Quantité : {item.quantite} × {item.prix} €
-                      </p>
-                    </div>
-                    <p className="font-bold text-gray-900 text-sm">
-                      {(item.quantite * item.prix).toFixed(2)} €
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Adresse de livraison */}
-            <div className="bg-orange-50/50 border border-orange-100/50 rounded-2xl p-5 text-sm">
-              <h4 className="font-bold text-orange-900 mb-2">
-                Adresse de livraison
-              </h4>
-              <p className="text-gray-700">
-                {selectedCommande.adresse_livraison}
-              </p>
-              <p className="text-gray-600 font-medium">
-                {selectedCommande.ville} - {selectedCommande.region}
-              </p>
-            </div>
-          </motion.div>
-        </div>
+      {isFilterOpen && (
+        <div
+          className="fixed inset-0 bg-black/10 backdrop-blur-sm z-40"
+          onClick={() => setIsFilterOpen(false)}
+        />
       )}
+
+      <div
+        className={`fixed right-0 top-0 h-full w-80 bg-white shadow-2xl z-50 transform transition-transform duration-300 border-l border-gray-100 ${
+          isFilterOpen ? "translate-x-0" : "translate-x-full"
+        }`}
+      >
+        <div className="flex justify-between items-center px-6 py-5 border-b border-gray-50">
+          <h2 className="font-semibold text-gray-900">Filtres avancés</h2>
+          <button
+            onClick={() => setIsFilterOpen(false)}
+            className="p-1.5 rounded-full hover:bg-gray-50 text-gray-400"
+          >
+            <IoMdClose size={18} />
+          </button>
+        </div>
+        <div className="p-6">
+          <FilterContent
+            startDate={startDate}
+            setStartDate={setStartDate}
+            endDate={endDate}
+            setEndDate={setEndDate}
+            minPrice={minPrice}
+            setMinPrice={setMinPrice}
+            maxPrice={maxPrice}
+            setMaxPrice={setMaxPrice}
+            handleReset={handleReset}
+            onApply={() => setIsFilterOpen(false)}
+          />
+        </div>
+      </div>
     </div>
   )
 }

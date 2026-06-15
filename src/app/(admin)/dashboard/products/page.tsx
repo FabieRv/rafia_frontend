@@ -145,13 +145,11 @@ function ProductTable({ product }: ProductCardProps) {
                       {p.description}
                     </span>
                   </td>
-
                   <td className="px-6 py-4 hidden lg:table-cell">
                     <p className="text-gray-600 line-clamp-2 max-w-xs text-sm">
                       {p.description}
                     </p>
                   </td>
-
                   <td className="px-6 py-4">
                     <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden border border-gray-100">
                       {p.image ? (
@@ -167,11 +165,9 @@ function ProductTable({ product }: ProductCardProps) {
                       )}
                     </div>
                   </td>
-
                   <td className="px-6 py-4 text-center font-semibold text-blue-600">
                     {p.prix}€
                   </td>
-
                   <td className="px-6 py-4 text-center">
                     {(() => {
                       const stock = Number(p.quantite_stock ?? 0)
@@ -188,7 +184,6 @@ function ProductTable({ product }: ProductCardProps) {
                       )
                     })()}
                   </td>
-
                   <td className="px-6 py-4">
                     <div className="flex flex-col text-sm">
                       {/* TYPE */}
@@ -207,7 +202,6 @@ function ProductTable({ product }: ProductCardProps) {
                       </span>
                     </div>
                   </td>
-
                   <td className="px-6 py-4">
                     <div className="flex justify-end gap-3">
                       <button

@@ -1,6 +1,6 @@
 "use client"
 
-import { Sun, Moon } from "lucide-react"
+//import { Sun, Moon } from "lucide-react"
 import { UserProps } from "@/types/global"
 import { ROUTE_TITLES } from "@/components/constant"
 import { usePathname } from "next/navigation"
@@ -31,14 +31,14 @@ export const Header = ({ user }: { user?: UserProps | null }) => {
 
       <div className="flex items-center gap-6">
         {/* Toggle Mode Sombre/Clair */}
-        <div className="flex items-center bg-gray-200 rounded-xl p-1 border border-gray-200">
+        {/* <div className="flex items-center bg-gray-200 rounded-xl p-1 border border-gray-200">
           <button className="p-1.5 rounded-lg bg-white text-indigo-600 shadow-sm transition-all">
             <Sun size={18} />
           </button>
           <button className="p-1.5 rounded-lg text-gray-500 hover:text-gray-700 transition-colors">
             <Moon size={18} />
           </button>
-        </div>
+        </div> */}
         <div className="flex items-center gap-4">
           <div className="text-right hidden sm:block">
             <p className="text-lg leading-tight">
