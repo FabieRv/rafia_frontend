@@ -7,302 +7,290 @@ import {
 } from "@/services/clientService"
 import { useEffect, useState } from "react"
 import { CiEdit } from "react-icons/ci"
-import { MdDeleteForever, MdClose } from "react-icons/md"
+import { MdDeleteForever } from "react-icons/md"
 import { Client } from "@/types/global"
-import Button from "@/components/common/Button"
 import DataTableToolbar from "../_pages/DataTableToolbar"
+import EditModal from "./EditModal"
 
 function ClientTable() {
   const [clients, setClients] = useState<Client[]>([])
   const [editingClient, setEditingClient] = useState<Client | null>(null)
 
-  // --- LOGIQUE PAGINATION ---
+  const [search, setSearch] = useState("")
+  const [isFilterOpen, setIsFilterOpen] = useState(false)
+  const [dateFilter, setDateFilter] = useState("")
+
   const [currentPage, setCurrentPage] = useState(1)
-  const itemPerPage = 5 // Tu peux changer ce nombre
-  const indexOfLast = currentPage * itemPerPage
+  const itemPerPage = 5
+
+  // FETCH
+  useEffect(() => {
+    getClients().then(setClients).catch(console.error)
+  }, [])
+
+  // RESET PAGE si filtre change
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [search, dateFilter])
+
+  // FILTER
+  const filteredClients = clients.filter((client) => {
+    const searchLower = search.toLowerCase()
+
+    const matchesSearch =
+      client.name.toLowerCase().includes(searchLower) ||
+      client.email.toLowerCase().includes(searchLower) ||
+      client.phone.toLowerCase().includes(searchLower)
+
+    const clientDate = new Date(client.createdAt).toISOString().split("T")[0]
+
+    const matchesDate = dateFilter === "" || clientDate === dateFilter
+
+    return matchesSearch && matchesDate
+  })
+
+  // PAGINATION SAFE
+  const totalPages = Math.max(
+    1,
+    Math.ceil(filteredClients.length / itemPerPage)
+  )
+
+  const safeCurrentPage = Math.min(currentPage, totalPages)
+
+  const indexOfLast = safeCurrentPage * itemPerPage
   const indexOfFirst = indexOfLast - itemPerPage
 
-  const currentClients = clients.slice(indexOfFirst, indexOfLast)
-  const totalPages = Math.ceil(clients.length / itemPerPage)
-  const [filter, setFilter] = useState("TOUS")
-  const [search, setSearch] = useState("")
+  const paginatedClients = filteredClients.slice(indexOfFirst, indexOfLast)
 
+  // DELETE
   const handleDelete = async (id: number, name: string) => {
-    if (confirm(`Supprimer le client ${name} ?`)) {
-      try {
-        await deleteClient(id)
-        setClients((prev) => prev.filter((c: any) => c.id_user !== id))
-        if (currentClients.length === 1 && currentPage > 1) {
-          setCurrentPage(currentPage - 1)
-        }
-      } catch (error) {
-        console.error("Erreur:", error)
-        alert("Impossible de supprimer le client.")
-      }
+    if (!confirm(`Supprimer ${name} ?`)) return
+
+    try {
+      await deleteClient(id)
+      setClients((prev) => prev.filter((c) => c.id_user !== id))
+    } catch (err) {
+      console.error(err)
     }
   }
 
+  // EDIT
   const handleEditClick = (client: Client) => {
     setEditingClient({ ...client })
   }
 
+  // UPDATE
   const handleUpdateSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!editingClient) return
+
     try {
       await updateClient(editingClient.id_user, editingClient)
+
       setClients((prev) =>
         prev.map((c) =>
           c.id_user === editingClient.id_user ? editingClient : c
         )
       )
+
       setEditingClient(null)
-    } catch (error) {
-      alert("Erreur lors de la mise à jour")
+    } catch (err) {
+      alert("Erreur update")
     }
   }
 
-  useEffect(() => {
-    getClients().then(setClients).catch(console.error)
-  }, [])
+  const handleExport = () => {
+    if (!filteredClients || filteredClients.length === 0) {
+      alert("Aucun client à exporter avec les filtres actuels.")
+      return
+    }
+
+    const rows = filteredClients.map((client) => {
+      const dateFormatee = client.createdAt
+        ? new Date(client.createdAt).toLocaleDateString("fr-FR")
+        : "-"
+
+      return [
+        client.id_user,
+        client.name || "Client Inconnu",
+        (client.email || "-").replace(/;/g, " "),
+        (client.phone || "-").replace(/;/g, " "),
+        (client.adress || "-").replace(/;/g, " "),
+        dateFormatee,
+      ]
+    })
+
+    const csvHeaders = [
+      "ID Client",
+      "Nom",
+      "Email",
+      "Téléphone",
+      "Adresse",
+      "Date inscription",
+    ]
+
+    const csvContent = [
+      csvHeaders.join(";"),
+      ...rows.map((row) => row.join(";")),
+    ].join("\n")
+
+    const blob = new Blob(["\uFEFF" + csvContent], {
+      type: "text/csv;charset=utf-8;",
+    })
+
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement("a")
+
+    link.href = url
+    link.setAttribute(
+      "download",
+      `export_clients_${new Date().toLocaleDateString("fr-CA")}.csv`
+    )
+
+    document.body.appendChild(link)
+    link.click()
+
+    document.body.removeChild(link)
+    URL.revokeObjectURL(url)
+  }
 
   return (
     <div>
+      {/* TOOLBAR */}
       <DataTableToolbar
         searchValue={search}
         onSearchChange={setSearch}
-        onFilterClick={() => console.log("filter")}
-        onExportClick={() => console.log("export")}
+        placeholder="Rechercher client..."
+        onFilterClick={() => setIsFilterOpen(true)}
+        onExportClick={handleExport}
       />
+
+      {/* MODAL EDIT */}
       {editingClient && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-          <div className="bg-white p-10 rounded-2xl shadow-2xl w-full max-w-2xl border border-gray-200">
-            <div className="flex justify-between items-center mb-8 pb-4">
-              <h2 className="text-2xl font-bold text-gray-800">
-                Modifier le client
-              </h2>
-              <button
-                onClick={() => setEditingClient(null)}
-                className="text-gray-400"
-              >
-                <MdClose size={28} />
-              </button>
-            </div>
-
-            <form onSubmit={handleUpdateSubmit} className="space-y-6">
-              <div className="flex flex-col gap-2.5">
-                <label className="text-sm font-bold text-gray-400 uppercase tracking-widest ml-1">
-                  Nom complet
-                </label>
-                <input
-                  className="w-full p-4 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-amber-300 outline-none bg-gray-50/50 transition-all text-gray-700 shadow-sm"
-                  value={editingClient.name}
-                  onChange={(e) =>
-                    setEditingClient({ ...editingClient, name: e.target.value })
-                  }
-                />
-              </div>
-              <div className="flex flex-col gap-2.5">
-                <label className="text-sm font-bold text-gray-400 uppercase tracking-widest ml-1">
-                  Adresse Email
-                </label>
-                <input
-                  type="email"
-                  className="w-full p-4 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-amber-300 outline-none bg-gray-50/50 transition-all text-gray-700 shadow-sm"
-                  value={editingClient.email}
-                  onChange={(e) =>
-                    setEditingClient({
-                      ...editingClient,
-                      email: e.target.value,
-                    })
-                  }
-                />
-              </div>
-
-              <div className="flex flex-wrap gap-4">
-                <div className="flex-1 min-w-50 flex flex-col gap-2">
-                  <label className="text-sm font-bold text-gray-400 uppercase tracking-widest ml-1">
-                    Téléphone
-                  </label>
-                  <input
-                    className="w-full p-4 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-amber-300 outline-none bg-gray-50/50 transition-all text-gray-700 shadow-sm"
-                    value={editingClient.phone}
-                    onChange={(e) =>
-                      setEditingClient({
-                        ...editingClient,
-                        phone: e.target.value,
-                      })
-                    }
-                  />
-                </div>
-                <div className="flex-1 min-w-50 flex flex-col gap-2">
-                  <label className="text-sm font-bold text-gray-400 uppercase tracking-widest ml-1">
-                    Adresse
-                  </label>
-                  <input
-                    className="w-full p-4 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-amber-300 outline-none bg-gray-50/50 transition-all text-gray-700 shadow-sm"
-                    value={editingClient.adress}
-                    onChange={(e) =>
-                      setEditingClient({
-                        ...editingClient,
-                        adress: e.target.value,
-                      })
-                    }
-                  />
-                </div>
-              </div>
-
-              <div className="flex flex-col gap-2.5 pt-4 border-t border-gray-100">
-                <label className="text-sm font-bold text-gray-400 uppercase tracking-widest ml-1">
-                  Date d'inscription
-                </label>
-                <input
-                  type="date"
-                  className="w-full p-4 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-amber-300 outline-none bg-white transition-all text-gray-600 font-medium cursor-pointer"
-                  value={
-                    new Date(editingClient.createdAt)
-                      .toISOString()
-                      .split("T")[0]
-                  }
-                  onChange={(e) =>
-                    setEditingClient({
-                      ...editingClient,
-                      createdAt: new Date(e.target.value).toISOString(),
-                    })
-                  }
-                />
-              </div>
-
-              <div className="pt-8 w-full flex justify-center">
-                <Button
-                  label=" Enregistrer le profil client"
-                  className="rounded-xl w-full max-w-lg text-[18px] uppercase"
-                  type="submit"
-                />
-              </div>
-            </form>
-          </div>
-        </div>
+        <EditModal
+          editingClient={editingClient}
+          setEditingClient={setEditingClient}
+          handleUpdateSubmit={handleUpdateSubmit}
+        />
       )}
-      {/* --- TABLE ORIGINALE AVEC PAGINATION --- */}
-      <div className="relative overflow-x-auto bg-neutral-primary-soft shadow-lg rounded-lg m-5 md:m-10 border border-gray-200">
-        <table className="w-full text-lg text-left rtl:text-right text-body">
-          <thead className="bg-gray-200 text-sm text-gray-700 font-extrabold border-b border-gray-300">
+
+      {/* TABLE */}
+      <div className="relative overflow-x-auto bg-white shadow-lg rounded-lg m-5 ">
+        <table className="w-full text-left text-sm">
+          <thead className="bg-gray-200 text-gray-700 uppercase text-sm border-b border-gray-200">
             <tr>
-              <th className="px-6 py-3 font-medium">NOM COMPLET</th>
-              <th className="px-6 py-3 font-medium hidden md:table-cell">
-                EMAIL
-              </th>
-              <th className="px-6 py-3 font-medium hidden sm:table-cell">
-                TELEPHONE
-              </th>
-              <th className="px-6 py-3 font-medium hidden lg:table-cell">
-                ADRESSE
-              </th>
-              <th className="px-6 py-3 font-medium">DATE D'INSCRIPTION</th>
-              <th className="px-6 py-3 font-medium text-right">ACTION</th>
+              <th className="p-4">Nom</th>
+              <th className="p-4 hidden md:table-cell">Email</th>
+              <th className="p-4 hidden sm:table-cell">Téléphone</th>
+              <th className="p-4 hidden lg:table-cell">Adresse</th>
+              <th className="p-4">Date</th>
+              <th className="p-4 text-right">Actions</th>
             </tr>
           </thead>
-          <tbody className="font-text text-[16px]">
-            {currentClients.map((client: any) => (
-              <tr
-                key={client.id_user}
-                className="odd:bg-neutral-primary even:bg-neutral-secondary-soft border-b border-default hover:bg-gray-50/50 transition-colors"
-              >
-                <td className="px-6 py-4 whitespace-nowrap font-bold text-[16px]">
-                  {client.name}
-                  {/* Email visible sur mobile uniquement */}
-                  <div className="text-[12px] font-normal text-gray-400 md:hidden">
-                    {client.email}
-                  </div>
-                </td>
-                <td className="px-6 py-4 hidden md:table-cell">
-                  {client.email}
-                </td>
-                <td className="px-6 py-4 hidden sm:table-cell">
-                  {client.phone}
-                </td>
-                <td className="px-6 py-4 hidden lg:table-cell">
-                  {client.adress}
-                </td>
-                <td className="px-6 py-4">
-                  {new Date(client.createdAt).toLocaleDateString()}
-                </td>
-                <td className="px-6 py-4">
-                  <div className="flex justify-end gap-6 md:gap-10">
-                    <CiEdit
-                      size={25}
-                      className="text-blue-600 cursor-pointer"
-                      onClick={() => handleEditClick(client)}
-                    />
-                    <MdDeleteForever
-                      size={25}
-                      className="text-red-500 cursor-pointer"
-                      onClick={() => handleDelete(client.id_user, client.name)}
-                    />
-                  </div>
+
+          <tbody>
+            {paginatedClients.length > 0 ? (
+              paginatedClients.map((client) => (
+                <tr key={client.id_user} className="border-b hover:bg-gray-50">
+                  <td className="p-4 font-semibold">{client.name}</td>
+
+                  <td className="p-4 hidden md:table-cell">{client.email}</td>
+
+                  <td className="p-4 hidden sm:table-cell">{client.phone}</td>
+
+                  <td className="p-4 hidden lg:table-cell">{client.adress}</td>
+
+                  <td className="p-4">
+                    {new Date(client.createdAt).toLocaleDateString()}
+                  </td>
+
+                  <td className="p-4">
+                    <div className="flex justify-end gap-3">
+                      <CiEdit
+                        size={20}
+                        className="text-blue-600 cursor-pointer"
+                        onClick={() => handleEditClick(client)}
+                      />
+                      <MdDeleteForever
+                        size={20}
+                        className="text-red-500 cursor-pointer"
+                        onClick={() =>
+                          handleDelete(client.id_user, client.name)
+                        }
+                      />
+                    </div>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan={6} className="text-center py-10 text-gray-400">
+                  Aucun client ne correspond à vos critères de recherche.
                 </td>
               </tr>
-            ))}
+            )}
           </tbody>
         </table>
 
-        {/* --- CONTRÔLES DE PAGINATION --- */}
-        <div className="p-6 bg-gray-50 border-t border-gray-200 flex flex-col sm:flex-row justify-between items-center gap-4">
-          <p className="text-sm text-gray-500 font-text">
-            Affichage de{" "}
-            <span className="font-semibold text-gray-700">
-              {clients.length > 0 ? indexOfFirst + 1 : 0}
-            </span>{" "}
-            à{" "}
-            <span className="font-semibold text-gray-700">
-              {Math.min(indexOfLast, clients.length)}
-            </span>{" "}
-            sur{" "}
-            <span className="font-semibold text-gray-700">
-              {clients.length}
-            </span>{" "}
-            clients
+        {/* PAGINATION */}
+        <div className="flex justify-between p-4 ">
+          <p>
+            Page {safeCurrentPage} / {totalPages}
           </p>
 
-          <div className="flex items-center gap-2">
+          <div className="flex gap-2">
             <button
-              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-              disabled={currentPage === 1}
-              className="px-4 py-2 bg-white border rounded-lg disabled:opacity-50 hover:bg-gray-100 transition-all text-sm font-medium"
+              onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
+              disabled={safeCurrentPage === 1}
             >
-              {" "}
-              {"<"}
+              Prev
             </button>
 
-            <div className="hidden sm:flex gap-1">
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map((n) => (
-                <button
-                  key={n}
-                  onClick={() => setCurrentPage(n)}
-                  className={`w-10 h-10 rounded-lg border transition-all text-sm font-bold ${
-                    currentPage === n
-                      ? "bg-blue-600 text-white border-blue-600"
-                      : "bg-white text-gray-600 hover:border-blue-400"
-                  }`}
-                >
-                  {n}
-                </button>
-              ))}
-            </div>
-
             <button
-              onClick={() =>
-                setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-              }
-              disabled={currentPage === totalPages || totalPages === 0}
-              className="px-4 py-2 bg-white border rounded-lg disabled:opacity-50 hover:bg-gray-100 transition-all text-sm font-medium"
+              onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
+              disabled={safeCurrentPage === totalPages}
             >
-              Suivant
+              Next
             </button>
           </div>
         </div>
       </div>
+
+      {/* FILTER MODAL */}
+      {isFilterOpen && (
+        <>
+          <div
+            className="fixed inset-0 bg-black/10 backdrop-blur-sm z-40"
+            onClick={() => setIsFilterOpen(false)}
+          />
+
+          <div className="fixed right-0 top-0 h-full w-80 bg-white shadow-xl z-50 p-6">
+            <h2 className="font-bold mb-4">Filtre clients</h2>
+
+            <label>Date inscription</label>
+            <input
+              type="date"
+              value={dateFilter}
+              onChange={(e) => setDateFilter(e.target.value)}
+              className="w-full border p-2 mt-2"
+            />
+
+            <button
+              onClick={() => setDateFilter("")}
+              className="w-full mt-4 bg-gray-200 p-2"
+            >
+              Réinitialiser
+            </button>
+
+            <button
+              onClick={() => setIsFilterOpen(false)}
+              className="w-full mt-2 bg-blue-600 text-white p-2"
+            >
+              Appliquer
+            </button>
+          </div>
+        </>
+      )}
     </div>
   )
 }

@@ -1,7 +1,7 @@
 "use client"
 
 import { IoMdSearch } from "react-icons/io"
-import { CiImport } from "react-icons/ci"
+import { CiExport } from "react-icons/ci"
 import Container from "@/components/common/Container"
 
 type Props = {
@@ -55,7 +55,7 @@ export default function DataTableToolbar({
               onClick={onExportClick}
               className="flex items-center justify-center px-3 py-3 bg-blue-400 text-white rounded-xl hover:bg-blue-500 text-sm transition-colors"
             >
-              <CiImport size={25} />
+              <CiExport size={25} />
               Export
             </button>
           )}

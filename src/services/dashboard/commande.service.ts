@@ -70,3 +70,21 @@ export async function deleteCommande(id: number, token: string) {
 
   return data
 }
+
+// Exemple à ajouter dans @/services/dashboard/commande.service.ts
+export async function getTotalVentes(token: string) {
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/dashboard/totalventes`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    )
+    return res.json() // Doit retourner un objet structure comme { totalRevenue: 150000 }
+  } catch (error) {
+    console.error("Erreur récupération total ventes", error)
+    return { totalRevenue: 0 }
+  }
+}

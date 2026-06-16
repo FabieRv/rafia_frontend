@@ -75,6 +75,8 @@ export interface Product {
   quantite_stock?: number
   image?: string
 
+  date_ajout: string | Date
+
   sous_category?: {
     nom_sous_categorie?: string
     category?: {

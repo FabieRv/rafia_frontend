@@ -5,7 +5,10 @@ import { StatCard } from "./_pages/StatCard"
 import { cookies } from "next/headers"
 import { getTotalClients } from "@/services/dashboard/clients.service"
 import { getTotalProduct } from "@/services/dashboard/product.service"
-import { getTotalCommandes } from "@/services/dashboard/commande.service"
+import {
+  getTotalCommandes,
+  getTotalVentes,
+} from "@/services/dashboard/commande.service"
 
 export default async function DashboardPage() {
   const cookieStore = await cookies()
@@ -15,6 +18,7 @@ export default async function DashboardPage() {
     getTotalClients(token!),
     getTotalProduct(token!),
     getTotalCommandes(token!),
+    getTotalVentes(token!),
   ])
 
   const totalClients = clients?.count ?? 0

@@ -14,50 +14,14 @@ export default function AddProductModal({
   onSuccess,
   productToEdit,
 }: AddProductModalProps) {
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
   const [selectedCategory, setSelectedCategory] =
     useState<keyof typeof SUB_CATEGORIES_DATA>("Chapeaux")
 
-  const fileInputRef = useRef<HTMLInputElement>(null)
   const [preview, setPreview] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [showSuccess, setShowSuccess] = useState(false)
-
-  useEffect(() => {
-    if (!productToEdit) return
-
-    setFormData({
-      nom_produit: productToEdit.nom_produit ?? "",
-      description: productToEdit.description ?? "",
-      prix: productToEdit.prix ?? 0,
-      quantite_stock: productToEdit.quantite_stock ?? 0,
-      type:
-        productToEdit.sous_category?.category?.type?.nom_type ??
-        productToEdit.type ??
-        "RAFIA",
-
-      image: productToEdit.image ?? "",
-
-      id_sous_categorie: productToEdit.id_sous_categorie ?? 1,
-    })
-
-    setPreview(productToEdit.image ?? null)
-  }, [productToEdit])
-
-  useEffect(() => {
-    if (!isOpen) {
-      setFormData({
-        nom_produit: "",
-        description: "",
-        prix: 0,
-        quantite_stock: 0,
-        type: "RAFIA",
-        image: "",
-        id_sous_categorie: 1,
-      })
-
-      setPreview(null)
-    }
-  }, [isOpen])
 
   const [formData, setFormData] = useState({
     nom_produit: "",
@@ -69,6 +33,41 @@ export default function AddProductModal({
     id_sous_categorie: 1,
   })
 
+  // EDIT MODE
+  useEffect(() => {
+    if (!productToEdit) return
+
+    setFormData({
+      nom_produit: productToEdit.nom_produit ?? "",
+      description: productToEdit.description ?? "",
+      prix: productToEdit.prix ?? 0,
+      quantite_stock: productToEdit.quantite_stock ?? 0,
+      type: productToEdit.sous_category?.category?.type?.nom_type ?? "RAFIA",
+
+      image: productToEdit.image ?? "",
+      id_sous_categorie: productToEdit.id_sous_categorie ?? 1,
+    })
+
+    setPreview(productToEdit.image ?? null)
+  }, [productToEdit])
+
+  // RESET WHEN CLOSE
+  useEffect(() => {
+    if (!isOpen) {
+      setFormData({
+        nom_produit: "",
+        description: "",
+        prix: 0,
+        quantite_stock: 0,
+        type: "RAFIA",
+        image: "",
+        id_sous_categorie: 1,
+      })
+      setPreview(null)
+    }
+  }, [isOpen])
+
+  // HANDLE INPUT
   const handleInputChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
@@ -76,32 +75,30 @@ export default function AddProductModal({
   ) => {
     const { name, value } = e.target
 
-    setFormData((prev) => {
-      const newData = {
-        ...prev,
-        [name]:
-          name === "prix" ||
-          name === "quantite_stock" ||
-          name === "id_sous_categorie"
-            ? value === ""
-              ? 0
-              : Number(value)
-            : value,
-      }
-
-      console.log(`Changement sur ${name}:`, newData[name as keyof typeof prev])
-      return newData
-    })
+    setFormData((prev) => ({
+      ...prev,
+      [name]:
+        name === "prix" ||
+        name === "quantite_stock" ||
+        name === "id_sous_categorie"
+          ? Number(value)
+          : value,
+    }))
   }
 
+  // IMAGE
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
-    if (file) {
-      setPreview(URL.createObjectURL(file))
-      setFormData((prev) => ({ ...prev, image: file.name }))
-    }
+    if (!file) return
+
+    setPreview(URL.createObjectURL(file))
+    setFormData((prev) => ({
+      ...prev,
+      image: file.name,
+    }))
   }
 
+  // SUBMIT
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
@@ -110,9 +107,12 @@ export default function AddProductModal({
 
     try {
       const token = localStorage.getItem("token") || ""
+
       const currentSubCategories = SUB_CATEGORIES_DATA[selectedCategory]
+
       const subCategoryName =
         currentSubCategories[formData.id_sous_categorie - 1]
+
       const payload = {
         nom_produit: formData.nom_produit,
         description: formData.description,
@@ -125,13 +125,13 @@ export default function AddProductModal({
       }
 
       const response = await addProduit(payload, token)
+
       const newProduct = {
         ...response,
         nom_produit: formData.nom_produit,
         prix: formData.prix,
         quantite_stock: formData.quantite_stock,
         image: formData.image,
-
         sous_category: {
           nom_sous_categorie: subCategoryName,
           category: {
@@ -141,227 +141,170 @@ export default function AddProductModal({
             },
           },
         },
-
         date_ajout: response.date_ajout || new Date().toISOString(),
       }
+
       setShowSuccess(true)
 
       setTimeout(() => {
         setShowSuccess(false)
         onSuccess(newProduct)
         onClose()
-      }, 1500)
+      }, 1200)
     } catch (error: any) {
-      console.error("Erreur attrapée :", error)
-      alert(`Erreur : ${error.message || "Impossible de contacter le serveur"}`)
+      console.error(error)
+      alert(error.message || "Erreur serveur")
     } finally {
       setLoading(false)
     }
   }
 
+
+  
   if (!isOpen) return null
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4">
-      <div className="bg-white rounded-3xl shadow-2xl w-full max-w-5xl max-h-[95vh] overflow-y-auto relative p-8">
+      <div className="bg-white rounded-3xl shadow-2xl w-full max-w-5xl max-h-[95vh] overflow-y-auto p-8">
+        {/* HEADER */}
         <div className="flex justify-between items-center mb-8">
-          <h2 className="text-2xl font-bold text-slate-800">
-            Ajouter un produit
-          </h2>
-          <button
-            onClick={onClose}
-            className="p-2 hover:bg-slate-100 rounded-full transition-colors"
-          >
-            <IoMdClose size={28} className="text-slate-500" />
+          <h2 className="text-2xl font-bold">Ajouter un produit</h2>
+          <button onClick={onClose}>
+            <IoMdClose size={28} />
           </button>
         </div>
 
+        {/* FORM */}
         <form
           onSubmit={handleSubmit}
           className="grid grid-cols-1 lg:grid-cols-2 gap-12"
         >
+          {/* LEFT */}
           <div className="space-y-6">
-            <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-2">
-                Nom du produit
-              </label>
-              <input
-                name="nom_produit"
-                type="text"
-                required
-                value={formData.nom_produit}
-                onChange={handleInputChange}
-                placeholder="Panier Rabane"
-                className="w-full p-3 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50/50"
-              />
-            </div>
+            {/* NOM */}
+            <input
+              name="nom_produit"
+              value={formData.nom_produit}
+              onChange={handleInputChange}
+              placeholder="Nom produit"
+              className="w-full p-3 border rounded-xl"
+            />
 
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2">
-                  Type
-                </label>
-                <select
-                  name="type"
-                  onChange={handleInputChange}
-                  className="w-full p-3 border border-slate-200 rounded-xl bg-slate-50/50 outline-none"
-                >
-                  <option value="RAFIA">RAFIA</option>
-                  <option value="RABANE">RABANE</option>
-                  <option value="SATRANA">SATRANA</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2">
-                  Catégorie
-                </label>
-                <select
-                  name="categorie"
-                  value={selectedCategory}
-                  onChange={(e) =>
-                    setSelectedCategory(
-                      e.target.value as keyof typeof SUB_CATEGORIES_DATA
-                    )
-                  }
-                  className="w-full p-3 border border-slate-200 rounded-xl bg-slate-50/50 outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  {Object.keys(SUB_CATEGORIES_DATA).map((cat) => (
-                    <option key={cat} value={cat}>
-                      {cat}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
+            {/* TYPE */}
+            <select
+              name="type"
+              value={formData.type}
+              onChange={handleInputChange}
+              className="w-full p-3 border rounded-xl"
+            >
+              <option value="RAFIA">RAFIA</option>
+              <option value="RABANE">RABANE</option>
+              <option value="SATRANA">SATRANA</option>
+            </select>
 
-            <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-2">
-                Sous Categories
-              </label>
-              <select
-                name="id_sous_categorie"
-                onChange={handleInputChange}
-                value={formData.id_sous_categorie}
-                className="w-full p-3 border border-slate-200 rounded-xl bg-slate-50/50 outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                {SUB_CATEGORIES_DATA[selectedCategory].map((sub, index) => (
-                  <option key={sub} value={index + 1}>
-                    {sub}
-                  </option>
-                ))}
-              </select>
-            </div>
+            {/* CATEGORIE */}
+            <select
+              value={selectedCategory}
+              onChange={(e) =>
+                setSelectedCategory(
+                  e.target.value as keyof typeof SUB_CATEGORIES_DATA
+                )
+              }
+              className="w-full p-3 border rounded-xl"
+            >
+              {Object.keys(SUB_CATEGORIES_DATA).map((cat) => (
+                <option key={cat} value={cat}>
+                  {cat}
+                </option>
+              ))}
+            </select>
 
-            <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-2">
-                Description
-              </label>
-              <textarea
-                name="description"
-                rows={4}
-                value={formData.description}
-                onChange={handleInputChange}
-                className="w-full p-3 border border-slate-200 rounded-xl bg-slate-50/50 outline-none resize-none"
-                placeholder="Entrez la description..."
-              ></textarea>
-            </div>
+            {/* SOUS CATEGORIE */}
+            <select
+              name="id_sous_categorie"
+              value={formData.id_sous_categorie}
+              onChange={handleInputChange}
+              className="w-full p-3 border rounded-xl"
+            >
+              {SUB_CATEGORIES_DATA[selectedCategory].map((sub, i) => (
+                <option key={sub} value={i + 1}>
+                  {sub}
+                </option>
+              ))}
+            </select>
+
+            {/* DESCRIPTION */}
+            <textarea
+              name="description"
+              value={formData.description}
+              onChange={handleInputChange}
+              className="w-full p-3 border rounded-xl"
+              placeholder="Description"
+            />
           </div>
 
+          {/* RIGHT */}
           <div className="space-y-6">
-            <label className="block text-sm font-semibold text-slate-700 mb-2">
-              Images du produit
-            </label>
-
+            {/* IMAGE */}
             <div
               onClick={() => fileInputRef.current?.click()}
-              className="group w-48 aspect-square border-2 border-dashed border-slate-200 rounded-3xl flex flex-col items-center justify-center bg-slate-50 hover:bg-white hover:border-blue-400 hover:shadow-lg transition-all cursor-pointer p-6"
+              className="border-dashed border-2 p-6 rounded-xl cursor-pointer"
             >
               {preview ? (
-                <img
-                  src={preview}
-                  alt="Preview"
-                  className="w-full h-full object-cover rounded-2xl"
-                />
+                <img src={preview} className="w-full h-48 object-cover" />
               ) : (
-                <>
-                  <FaCloudUploadAlt
-                    size={48}
-                    className="text-slate-300 group-hover:text-blue-500 mb-4 transition-colors"
-                  />
-                  <div className="text-center">
-                    <p className="text-sm text-slate-500 font-medium">
-                      Glissez vos images ici
-                    </p>
-                    <p className="text-sm text-slate-400">
-                      ou{" "}
-                      <span className="text-blue-600 font-bold">
-                        cliquez pour parcourir
-                      </span>
-                    </p>
-                  </div>
-                  <p className="text-[10px] text-slate-400 mt-4">
-                    PNG, JPG jusqu'à 10MB
-                  </p>
-                </>
+                <FaCloudUploadAlt size={40} />
               )}
               <input
                 type="file"
+                hidden
                 ref={fileInputRef}
                 onChange={handleImageChange}
-                className="hidden"
-                accept="image/*"
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-4 pt-4">
-              <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2">
-                  Prix en ($)
-                </label>
-                <input
-                  name="prix"
-                  type="number"
-                  value={formData.prix}
-                  onChange={handleInputChange}
-                  placeholder="35$"
-                  className="w-full p-3 border border-slate-200 rounded-xl bg-slate-50/50 outline-none"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2">
-                  Quantité stock
-                </label>
-                <input
-                  name="quantite_stock"
-                  value={formData.quantite_stock}
-                  type="number"
-                  onChange={handleInputChange}
-                  placeholder="10"
-                  className="w-full p-3 border border-slate-200 rounded-xl bg-slate-50/50 outline-none"
-                />
-              </div>
-            </div>
+            {/* PRIX */}
+            <input
+              name="prix"
+              type="number"
+              value={formData.prix}
+              onChange={handleInputChange}
+              className="w-full p-3 border rounded-xl"
+              placeholder="Prix"
+            />
 
-            <div className="flex gap-4 pt-10">
+            {/* STOCK */}
+            <input
+              name="quantite_stock"
+              type="number"
+              value={formData.quantite_stock}
+              onChange={handleInputChange}
+              className="w-full p-3 border rounded-xl"
+              placeholder="Stock"
+            />
+
+            {/* BUTTONS */}
+            <div className="flex gap-4">
               <button
                 type="submit"
                 disabled={loading}
-                className="flex-2 bg-blue-500 text-white p-4 rounded-xl"
+                className="bg-blue-500 text-white px-4 py-3 rounded-xl w-full"
               >
                 {loading ? "Chargement..." : "Enregistrer"}
               </button>
+
               <button
                 type="button"
                 onClick={onClose}
-                className="flex-1 p-4 bg-red-600 text-white transition-transform hover:scale-105 active:scale-95 flex items-center justify-center py-4 rounded-xl font-bold cursor-pointer"
+                className="bg-red-600 text-white px-4 py-3 rounded-xl w-full"
               >
-                Annuler Produit
+                Annuler
               </button>
             </div>
           </div>
         </form>
-        {showSuccess && (
-          <SuccessPopup message="Enregistrement produit avec succès !" />
-        )}
+
+        {showSuccess && <SuccessPopup message="Produit ajouté avec succès !" />}
       </div>
     </div>
   )
