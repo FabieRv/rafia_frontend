@@ -23,9 +23,6 @@ export const ADMIN_MENU_ITEMS: NavItem[] = [
     href: "/admin/messages",
     badge: 26,
   },
-
-  { title: "Paramètres", icon: Settings, href: "/admin/settings" },
-
   { title: "Logout", icon: User, href: "admin/logout" },
 ]
 
@@ -34,7 +31,6 @@ export const ROUTE_TITLES: Record<string, string> = {
   "/dashboard/products": "Gestion des Produits",
   "/dashboard/commandes": "Gestion des Commandes",
   "/dashboard/messages": "Messagerie",
-  "/dashboard/parametres": "Configuration",
   "/dashboard": "Dashboard",
 }
 

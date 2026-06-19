@@ -5,7 +5,7 @@ import { FaCloudUploadAlt } from "react-icons/fa"
 import { useRef, useState, useEffect } from "react"
 import { SUB_CATEGORIES_DATA } from "@/components/constant"
 import SuccessPopup from "@/components/common/SuccessPopup"
-import { addProduit } from "@/services/produitServices"
+import { addProduit, updateProduit } from "@/services/produitServices"
 import { AddProductModalProps } from "@/types/global"
 
 export default function AddProductModal({
@@ -99,6 +99,7 @@ export default function AddProductModal({
   }
 
   // SUBMIT
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
@@ -109,7 +110,6 @@ export default function AddProductModal({
       const token = localStorage.getItem("token") || ""
 
       const currentSubCategories = SUB_CATEGORIES_DATA[selectedCategory]
-
       const subCategoryName =
         currentSubCategories[formData.id_sous_categorie - 1]
 
@@ -122,6 +122,7 @@ export default function AddProductModal({
         type: formData.type,
         categorie: selectedCategory,
         id_sous_categorie: Number(formData.id_sous_categorie),
+        isEdit: true,
       }
 
       const response = await addProduit(payload, token)
@@ -159,8 +160,6 @@ export default function AddProductModal({
     }
   }
 
-
-  
   if (!isOpen) return null
 
   return (

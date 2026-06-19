@@ -63,26 +63,33 @@ export default async function DashboardPage() {
           iconColor="text-green-500"
         />
       </div>
-      <div className="flex flex-col lg:flex-row lg:flex-wrap justify-between gap-6 w-full items-stretch">
-        <div className="w-full lg:w-0 lg:flex-2 flex">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full items-stretch">
+        {/* LEFT */}
+        <div className="w-full flex">
           <RecentActivity activities={activities} />
         </div>
 
-        <div className="w-full lg:w-0 lg:flex-2 bg-white p-6 rounded-2xl shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-gray-100/80 h-80 flex flex-col justify-between">
+        {/* RIGHT */}
+        <div className="w-full bg-white p-6 rounded-2xl shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-gray-100/80 h-90 flex flex-col justify-between">
           <div>
             <h3 className="font-bold text-gray-800 text-[17px] mb-4 tracking-tight">
-              Top Sold Items
+              Top catégories du mois
             </h3>
-            <div className="space-y-3.5">
-              <TopSoldItem name="Jeans" percentage={75} color="bg-blue-400" />
+
+            <div className="space-y-3.5 mt-10">
               <TopSoldItem
-                name="Jacket"
+                name="Chapeaux"
+                percentage={75}
+                color="bg-blue-400"
+              />
+              <TopSoldItem
+                name="Panier"
                 percentage={90}
                 color="bg-orange-400"
               />
-              <TopSoldItem name="Sweater" percentage={80} color="bg-red-400" />
+              <TopSoldItem name="Pochette" percentage={80} color="bg-red-400" />
               <TopSoldItem
-                name="T-Shirt"
+                name="Boite"
                 percentage={60}
                 color="bg-emerald-400"
               />

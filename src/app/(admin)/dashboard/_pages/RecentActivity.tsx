@@ -27,11 +27,16 @@ export function RecentActivity({ activities }: RecentActivityProps) {
     const now = new Date()
     const past = new Date(dateString)
     const diffInMs = now.getTime() - past.getTime()
-    const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60))
+    const diffInHours = diffInMs / (1000 * 60 * 60)
 
-    if (diffInHours < 1) return "à l'instant"
-    if (diffInHours === 1) return "Il y a 1 heure"
-    if (diffInHours < 24) return `Il y a  ${diffInHours} heures`
+    if (diffInHours < 0.05) return "à l'instant"
+    if (diffInHours < 0.09) return "Il y a 5 minutes"
+    if (diffInHours < 0.2) return "Il y a 10 minutes"
+    if (diffInHours < 0.4) return "Il y a 20 minutes"
+    if (diffInHours < 0.5) return "Il y a 30 minutes"
+    if (Math.floor(diffInHours) === 1) return "Il y a 1 heure"
+    if (Math.floor(diffInHours) < 24)
+      return `Il y a  ${Math.floor(diffInHours)} heures`
     return past.toLocaleDateString("fr-FR")
   }
 
@@ -67,15 +72,15 @@ export function RecentActivity({ activities }: RecentActivityProps) {
   const groupedActivities = getGroupedActivities()
 
   return (
-    <div className="bg-white p-5 rounded-2xl shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-gray-100/80 h-80 flex flex-col overflow-hidden w-full">
+    <div className="bg-white p-5 rounded-2xl shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-gray-100/80 h-90 flex flex-col overflow-hidden w-full ">
       <h3 className="font-bold text-gray-800 text-[17px] mb-4 tracking-tight shrink-0">
         Recent Activity
       </h3>
 
-      <div className="divide-y divide-gray-100/70 overflow-y-auto pr-2 flex-1 min-h-0 scrollbar-thin">
+      <div className="divide-y divide-gray-100/70 overflow-y-auto pr-2 flex-1 min-h-0 scrollbar-thin mt-2">
         {groupedActivities.length > 0 ? (
           groupedActivities.map((log: any, index: number) => {
-            let title = "Activity Log"
+            let title = "Journal des actions"
             let icon = <Zap size={18} className="text-gray-500 stroke-[1.6]" />
 
             const isGrouped = log.messages && log.messages.length > 1
@@ -162,9 +167,9 @@ export function RecentActivity({ activities }: RecentActivityProps) {
             return (
               <div
                 key={log.id_activity || index}
-                className="flex flex-wrap  justify-between py-4 first:pt-0 last:pb-0 gap-4 mr-10"
+                className="flex flex-wrap  justify-between py-4 first:pt-0 last:pb-0 gap-4 mr-10 "
               >
-                <div className="flex items-start gap-4">
+                <div className="flex flex-wrap items-start gap-4">
                   <div className="mt-0.5 flex items-center justify-center w-5 h-5 shrink-0">
                     {icon}
                   </div>
