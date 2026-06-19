@@ -1,3 +1,5 @@
+const API_URL = "http://localhost:3001/clients"
+
 export async function getClients() {
   const res = await fetch("http://localhost:3001/clients")
 
@@ -7,20 +9,30 @@ export async function getClients() {
   return res.json()
 }
 
-const API_URL = "http://localhost:3001/clients"
-export const deleteClient = async (id: number) => {
+export const deleteClient = async (id: number, token: string) => {
   const response = await fetch(`${API_URL}/${id}`, {
     method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
   })
-  if (!response.ok) throw new Error("Erreur lors de la suppression")
-  return response.json()
+
+  if (!response.ok) {
+    throw new Error("Erreur lors de la suppression")
+  }
+  if (response.status === 204) {
+    return { success: true }
+  }
+  const text = await response.text()
+  return text ? JSON.parse(text) : { success: true }
 }
 
-export const updateClient = async (id: number, data: any) => {
+export const updateClient = async (id: number, data: any, token: string) => {
   const response = await fetch(`${API_URL}/${id}`, {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify(data),
   })

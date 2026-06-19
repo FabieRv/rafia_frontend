@@ -12,6 +12,12 @@ import { Client } from "@/types/global"
 import DataTableToolbar from "../_pages/DataTableToolbar"
 import EditModal from "./EditModal"
 
+const getTokenFromCookies = (): string => {
+  if (typeof document === "undefined") return ""
+  const match = document.cookie.match(new RegExp("(^| )token=([^;]+)"))
+  return match ? match[2] : ""
+}
+
 function ClientTable() {
   const [clients, setClients] = useState<Client[]>([])
   const [editingClient, setEditingClient] = useState<Client | null>(null)
@@ -67,7 +73,8 @@ function ClientTable() {
     if (!confirm(`Supprimer ${name} ?`)) return
 
     try {
-      await deleteClient(id)
+      const token = getTokenFromCookies()
+      await deleteClient(id, token)
       setClients((prev) => prev.filter((c) => c.id_user !== id))
     } catch (err) {
       console.error(err)
@@ -85,7 +92,8 @@ function ClientTable() {
     if (!editingClient) return
 
     try {
-      await updateClient(editingClient.id_user, editingClient)
+      const token = getTokenFromCookies()
+      await updateClient(editingClient.id_user, editingClient, token)
 
       setClients((prev) =>
         prev.map((c) =>

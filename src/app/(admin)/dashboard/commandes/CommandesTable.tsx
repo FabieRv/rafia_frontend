@@ -280,7 +280,7 @@ export default function CommandesDashboard({ commandes }: CommandesTableProps) {
 
                     <td className="p-5">
                       <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-50 text-blue-500 text-xs font-semibold">
-                        {totalItems} article{totalItems > 1 ? "s" : ""}
+                        {totalItems} produit{totalItems > 1 ? "s" : ""}
                       </span>
                     </td>
 
