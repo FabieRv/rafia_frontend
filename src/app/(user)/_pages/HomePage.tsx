@@ -21,7 +21,7 @@ export default function HomePage() {
     <section className="relative w-full h-113 md:h-149 overflow-hidden shadow-lg rounded-2xl bg-stone-900 mt-3">
       <div className="absolute inset-0 z-0">
         <Image
-          src="/img/fond.png"
+          src="/img/fond_heros.png"
           alt="Artisanat Malagasy"
           fill
           sizes="100vw"

@@ -16,11 +16,11 @@ export const ADMIN_MENU_ITEMS: NavItem[] = [
   { title: "Commandes", icon: ShoppingBag, href: "/dashboard/commandes" },
   { title: "Produits", icon: PlusCircle, href: "/dashboard/products" },
 
-  { title: "Analytiques", icon: BarChart3, href: "/admin/analytics" },
+  { title: "Analytiques", icon: BarChart3, href: "/dashboard/analytics" },
   {
     title: "Messages",
     icon: MessageSquare,
-    href: "/admin/messages",
+    href: "/admin/chat",
     badge: 26,
   },
   { title: "Logout", icon: User, href: "admin/logout" },
