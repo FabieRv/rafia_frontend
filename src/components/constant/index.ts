@@ -20,7 +20,7 @@ export const ADMIN_MENU_ITEMS: NavItem[] = [
   {
     title: "Messages",
     icon: MessageSquare,
-    href: "/admin/chat",
+    href: "/dashboard/chat",
     badge: 26,
   },
   { title: "Logout", icon: User, href: "admin/logout" },

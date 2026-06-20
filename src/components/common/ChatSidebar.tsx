@@ -13,7 +13,7 @@ export default function ChatSidebar() {
   const conversations: Conversation[] = [
     {
       id: 1,
-      name: "Stephen",
+      name: "Client1",
       avatarColor: "bg-orange-500",
       initial: "S",
       lastMessage: "Le prix est fixé à 20 000 Ariary. On se trouve à...",
@@ -21,7 +21,7 @@ export default function ChatSidebar() {
     },
     {
       id: 2,
-      name: "utilisateur Sh",
+      name: "Client2",
       avatarColor: "bg-gradient-to-br from-orange-400 to-emerald-600",
       initial: "U",
       lastMessage: "Aucun message",

@@ -1,25 +1,23 @@
-import React from "react"
+"use client"
+import { useState } from "react"
+
+import ChatBoutton from "./ChatBoutton"
+import { IoIosSend } from "react-icons/io"
+import { BsPaperclip } from "react-icons/bs"
+import EmojiPicker, { EmojiClickData } from "emoji-picker-react"
 
 export default function ChatWindow() {
+  const [message, setMessage] = useState("") // Gère le texte du message
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false)
+
+  const handleEmojiClick = (emojiData: EmojiClickData) => {
+    setMessage((prevMessage) => prevMessage + emojiData.emoji)
+  }
+
   return (
     <div className="flex flex-col h-full border-l border-slate-100">
-      {/* En-tête du Chat */}
-      <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-white">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-slate-200 rounded-full flex items-center justify-center text-slate-600">
-            👤
-          </div>
-          <div>
-            <h2 className="font-bold text-slate-900 text-sm md:text-base">
-              utilisateur Sh
-            </h2>
-            <p className="text-xs text-emerald-500 font-medium">En ligne</p>
-          </div>
-        </div>
-        <div className="flex items-center gap-4 text-slate-400">
-          <button className="hover:text-slate-600 text-lg">📞</button>
-          <button className="hover:text-slate-600 text-lg">⋮</button>
-        </div>
+      <div className="p-4 border-b border-slate-100 bg-white flex items-center justify-end">
+        <ChatBoutton />
       </div>
 
       {/* Zone des messages */}
@@ -52,20 +50,39 @@ export default function ChatWindow() {
       {/* Barre de saisie de message */}
       <div className="p-4 bg-white border-t border-slate-100 flex items-center gap-3">
         <button className="text-slate-400 hover:text-slate-600 text-xl">
-          📎
+          <BsPaperclip size={25} />
         </button>
         <div className="flex-1 relative flex items-center">
           <input
             type="text"
             placeholder="Écrire un message..."
-            className="w-full pl-4 pr-10 py-3 bg-slate-100 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            className="w-full pl-4 pr-14 py-3 bg-slate-100 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
           />
-          <button className="absolute right-3 text-xl hover:scale-110 transition">
+
+          <button
+            onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+            className="absolute right-4 text-xl hover:scale-110 transition z-10 cursor-pointer"
+            type="button"
+          >
             😊
           </button>
+
+          {/* Boîte des emojis */}
+          {showEmojiPicker && (
+            <div className="absolute bottom-16 right-0 z-50 shadow-xl rounded-2xl overflow-hidden">
+              <EmojiPicker
+                onEmojiClick={handleEmojiClick}
+                searchDisabled={false}
+                height={400}
+                width={320}
+              />
+            </div>
+          )}
         </div>
         <button className="w-10 h-10 bg-emerald-100 text-emerald-700 rounded-full flex items-center justify-center hover:bg-emerald-600 hover:text-white transition shadow-sm">
-          ➔
+          <IoIosSend size={25} />
         </button>
       </div>
     </div>

@@ -7,15 +7,12 @@ interface NavItem {
 
 export default function ChatBoutton() {
   const navItems: NavItem[] = [
-    { label: "Messages", icon: "💬", active: true },
     { label: "Notifications", icon: "🔔", count: 2 },
-    { label: "Publish", icon: "➕" },
-    { label: "Profile", icon: "👤" },
-    { label: "Cart", icon: "🛒", count: 1 },
+    { label: "panier", icon: "🛒", count: 1 },
   ]
 
   return (
-    <div className="bg-white border-t border-slate-200 py-2 px-6 flex justify-around items-center md:justify-center md:gap-16">
+    <div className="bg-white  border-slate-200 py-2 px-6 flex justify-around items-center md:justify-center md:gap-8">
       {navItems.map((item, index) => (
         <button
           key={index}
@@ -31,7 +28,9 @@ export default function ChatBoutton() {
           </div>
           <span
             className={`text-[10px] md:text-xs font-medium ${
-              item.active ? "text-slate-900 font-semibold" : "text-slate-400"
+              item.active
+                ? "text-slate-900 font-semibold"
+                : "text-slate-400 text-xs"
             }`}
           >
             {item.label}

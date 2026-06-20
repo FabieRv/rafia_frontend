@@ -1,11 +1,10 @@
-import ChatBoutton from "@/components/common/ChatBoutton"
 import ChatSidebar from "@/components/common/ChatSidebar"
 import ChatWindow from "@/components/common/ChatWindow"
 
 export default function ChatPage() {
   return (
     <div>
-      <div className="flex flex-col h-screen bg-slate-50 text-slate-800 font-sans">
+      <div className="flex flex-col h-130 bg-slate-50 text-slate-800 font-sans">
         {/* Zone principale */}
         <div className="flex flex-1 overflow-hidden">
           {/* Colonne Gauche : Liste des messages */}
@@ -42,7 +41,6 @@ export default function ChatPage() {
         </div>
 
         {/* Barre de navigation inférieure */}
-        <ChatBoutton />
       </div>
     </div>
   )
