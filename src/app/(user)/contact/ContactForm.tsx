@@ -11,7 +11,7 @@ function ContactForm() {
       <Container>
         <div className="flex justify-center mb-12">
           <div className="flex flex-col items-center text-center max-w-2xl mx-auto mb-12">
-            <h1 className="font-title text-3xl md:text-5xl font-bold text-gray-900">
+            <h1 className="font-title text-3xl md:text-4xl font-bold text-[#4A3728] ">
               Contactez-nous
             </h1>
             <p className="font-text text-gray-600 text-lg mt-4">

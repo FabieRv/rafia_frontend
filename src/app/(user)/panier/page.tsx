@@ -2,6 +2,7 @@
 
 import CartItem from "@/components/common/CartItem"
 import Container from "@/components/common/Container"
+import Title from "@/components/common/Title"
 import { useCommandeStore } from "@/store/commande.store"
 import { useRouter } from "next/navigation"
 
@@ -21,8 +22,9 @@ export default function Panier() {
   const router = useRouter()
 
   return (
-    <Container>
-      <div className="min-h-screen bg-[#f0f7ff] p-10 font-sans">
+    <div className="bg-[#f0f7ff]">
+      <Container className=" min-h-screen  p-10 font-sans">
+        <Title text="Mon panier" className="font-text mb-4" />
         <h1 className="text-2xl font-bold mb-8 text-[#1a1a1a]">
           {items.length}{" "}
           {items.length > 1
@@ -98,7 +100,7 @@ export default function Panier() {
             </div>
           </div>
         </div>
-      </div>
-    </Container>
+      </Container>
+    </div>
   )
 }

@@ -11,7 +11,7 @@ function Title({ text, size = "h1", className = "" }: TitleProps) {
 
   return (
     <Tag
-      className={` text-5xl text-[#4A3728]  text-center font-title title ${className}  `}
+      className={` text-4xl text-[#4A3728]  text-center font-title title ${className}  `}
     >
       {text}
     </Tag>
