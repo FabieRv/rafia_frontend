@@ -25,10 +25,17 @@ export default function CommandesDashboard({ commandes }: CommandesTableProps) {
   const [maxPrice, setMaxPrice] = useState("")
 
   const router = useRouter()
+  const statusLabels: Record<string, string> = {
+    EN_ATTENTE: "En attente",
+    NEGOCIEE: "Négociée",
+    CONFIRMEE: "Confirmée",
+    LIVREE: "Livrée",
+    ANNULEE: "Annulée",
+  }
   const statusMap: Record<string, string> = {
     "En attente": "EN_ATTENTE",
-    Confirmée: "CONFIRMEE",
     Négociée: "NEGOCIEE",
+    Confirmée: "CONFIRMEE",
     Livrée: "LIVREE",
     Annulée: "ANNULEE",
   }

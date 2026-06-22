@@ -1,0 +1,117 @@
+"use client"
+import ChatSidebar from "@/components/common/ChatSidebar"
+import ChatWindow from "@/components/common/ChatWindow"
+import { getMessages } from "@/services/chat.service"
+import { getTokenFromLocalStorage } from "@/utils/getToken"
+
+import { useEffect, useState } from "react"
+import { io, Socket } from "socket.io-client"
+
+export default function ChatPage() {
+  const [conversations, setConversations] = useState<any[]>([])
+  const [socket, setSocket] = useState<Socket | null>(null)
+  const [selectedConv, setSelectedConv] = useState<any | null>(null)
+  const [token, setToken] = useState<string>("")
+
+  const currentUser = {
+    id: 1,
+    role: "ADMIN",
+  }
+
+  //initialisation message
+  useEffect(() => {
+    const savedToken = getTokenFromLocalStorage() || ""
+    setToken(savedToken)
+
+    const socketInstance = io(process.env.NEXT_PUBLIC_API_URL, {
+      transports: ["websocket", "polling"],
+    })
+    setSocket(socketInstance)
+
+    const loadConversations = async () => {
+      const data = await getMessages(
+        currentUser.role,
+        currentUser.id,
+        savedToken
+      )
+      setConversations(data)
+    }
+    loadConversations()
+
+    return () => {
+      socketInstance.disconnect()
+    }
+  }, [])
+
+  //gestion nouveau messade
+  useEffect(() => {
+    if (!socket) return
+
+    socket.on("newMessage", (message: any) => {
+      setConversations((prevConvs) =>
+        prevConvs.map((conv) =>
+          conv.id === message.conversationId
+            ? { ...conv, messages: [message] }
+            : conv
+        )
+      )
+    })
+
+    return () => {
+      socket.off("newMessage")
+    }
+  }, [socket])
+
+  const handleSelectConversation = (conv: any) => {
+    setSelectedConv(conv)
+    if (socket) {
+      socket.emit("joinConversation", String(conv.id))
+    }
+  }
+  return (
+    <div>
+      <div className="flex flex-col h-130 bg-slate-50 text-slate-800 font-sans">
+        <div className="flex flex-1 overflow-hidden">
+          <aside className="w-full md:w-96 border-r border-slate-200 bg-white flex flex-col">
+            <div className="p-4 flex items-center justify-between">
+              <h1 className="text-2xl font-bold">Messages</h1>
+              <button className="w-10 h-10 bg-emerald-600 text-white rounded-full flex items-center justify-center shadow-md hover:bg-emerald-700 transition">
+                <span className="text-xl font-bold">+</span>
+              </button>
+            </div>
+            <div className="px-4 pb-4">
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder="Rechercher une conversation..."
+                  className="w-full pl-10 pr-4 py-2 bg-slate-100 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                />
+                <span className="absolute left-3 top-2.5 text-slate-400 text-sm">
+                  🔍
+                </span>
+              </div>
+            </div>
+
+            {/* Liste des discussions */}
+            <ChatSidebar
+              conversations={conversations}
+              onSelect={handleSelectConversation}
+              selectedConvId={selectedConv?.id}
+              currentAdminId={currentUser.id}
+            />
+          </aside>
+
+          {/* Colonne Droite : Fenêtre de discussion active */}
+          <main className="hidden md:flex flex-1 flex-col bg-white">
+            <ChatWindow
+              selectedConv={selectedConv}
+              socket={socket}
+              currentUser={currentUser}
+              token={token}
+            />
+          </main>
+        </div>
+      </div>
+    </div>
+  )
+}

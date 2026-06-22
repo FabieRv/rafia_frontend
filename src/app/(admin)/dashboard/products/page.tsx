@@ -124,7 +124,7 @@ export default function ProductTable() {
 
   return (
     <div className="min-h-screen bg-[#F4F6F9] p-6 md:p-12 font-sans text-slate-700">
-      <div className="max-w-[1400px] mx-auto">
+      <div className="max-w-350 mx-auto">
         <div className="flex justify-end mb-6">
           <button
             onClick={() => setIsModalOpen(true)}
@@ -209,7 +209,7 @@ export default function ProductTable() {
                       <td className="py-5 px-6 font-bold text-slate-900">
                         {p.nom_produit}
                       </td>
-                      <td className="py-5 px-6 text-gray-400 max-w-[200px] truncate">
+                      <td className="py-5 px-6 text-gray-400 max-w-50 truncate">
                         {p.description || "fabie"}
                       </td>
                       <td className="py-4 px-6 text-center">
