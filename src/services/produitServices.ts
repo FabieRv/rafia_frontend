@@ -43,7 +43,7 @@ export async function addProduit(data: any, token: string) {
 // UPDATE
 export async function updateProduit(
   id: number,
-  data: ProductCardProps,
+  data: any,
   token: string
 ) {
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/products/${id}`, {

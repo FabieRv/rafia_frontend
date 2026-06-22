@@ -6,13 +6,14 @@ import { useRef, useState, useEffect } from "react"
 import { SUB_CATEGORIES_DATA } from "@/components/constant"
 import SuccessPopup from "@/components/common/SuccessPopup"
 import { addProduit, updateProduit } from "@/services/produitServices"
-import { AddProductModalProps } from "@/types/global"
+import { EditProductModalProps } from "@/types/global"
 
-export default function AddProductModal({
+export default function EditProductModal({
   isOpen,
   onClose,
   onSuccess,
-}: AddProductModalProps) {
+  productToEdit,
+}: EditProductModalProps) {
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const [selectedCategory, setSelectedCategory] =
@@ -21,7 +22,7 @@ export default function AddProductModal({
   const [preview, setPreview] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [showSuccess, setShowSuccess] = useState(false)
-  const [isEdit, setIsEdit] = useState(false)
+  const [isEdit, setIsEdit] = useState(true)
 
   const [formData, setFormData] = useState({
     nom_produit: "",
@@ -32,6 +33,25 @@ export default function AddProductModal({
     image: "",
     id_sous_categorie: 1,
   })
+
+  // EDIT MODE
+  useEffect(() => {
+    if (!productToEdit) return
+
+    setFormData({
+      nom_produit: productToEdit.nom_produit ?? "",
+      description: productToEdit.description ?? "",
+      prix: productToEdit.prix ?? 0,
+      quantite_stock: productToEdit.quantite_stock ?? 0,
+      type: productToEdit.sous_category?.category?.type?.nom_type ?? "RAFIA",
+      image: productToEdit.image ?? "",
+     // categorie: selectedCategory,
+      id_sous_categorie: productToEdit.id_sous_categorie ?? 1,
+    })
+
+    setPreview(productToEdit.image ?? null)
+  }, [productToEdit])
+
   // RESET WHEN CLOSE
   useEffect(() => {
     if (!isOpen) {
@@ -49,6 +69,24 @@ export default function AddProductModal({
   }, [isOpen])
 
   // HANDLE INPUT
+  //   const handleInputChange = (
+  //     e: React.ChangeEvent<
+  //       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+  //     >
+  //   ) => {
+  //     const { name, value } = e.target
+
+  //     setFormData((prev) => ({
+  //       ...prev,
+  //       [name]:
+  //         name === "prix" ||
+  //         name === "quantite_stock" ||
+  //         name === "id_sous_categorie"
+  //           ? Number(value)
+  //           : value,
+  //     }))
+  //   }
+
   const handleInputChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
@@ -56,14 +94,11 @@ export default function AddProductModal({
   ) => {
     const { name, value } = e.target
 
+    const numberFields = ["prix", "quantite_stock", "id_sous_categorie"]
+
     setFormData((prev) => ({
       ...prev,
-      [name]:
-        name === "prix" ||
-        name === "quantite_stock" ||
-        name === "id_sous_categorie"
-          ? Number(value)
-          : value,
+      [name]: numberFields.includes(name) ? safeNumber(value) : value,
     }))
   }
 
@@ -93,19 +128,22 @@ export default function AddProductModal({
       const subCategoryName =
         currentSubCategories[formData.id_sous_categorie - 1]
 
-      const payload = {
-        nom_produit: formData.nom_produit,
-        description: formData.description,
-        prix: Number(formData.prix),
-        quantite_stock: Number(formData.quantite_stock),
-        image: formData.image,
-        type: formData.type,
-        categorie: selectedCategory,
-        id_sous_categorie: Number(formData.id_sous_categorie),
-        isEdit: isEdit,
-      }
+      //   const payload = {
+      //     nom_produit: formData.nom_produit,
+      //     description: formData.description,
+      //     prix: Number(formData.prix),
+      //     quantite_stock: Number(formData.quantite_stock),
+      //     image: formData.image,
+      //     type: formData.type,
+      //     categorie: selectedCategory,
+      //     id_sous_categorie: Number(formData.id_sous_categorie),
+      //     isEdit: isEdit,
+      //   }
 
-      const response = await addProduit(payload, token)
+      console.log("-------FORMDATA-------" + JSON.stringify(formData))
+
+      const idProduit = productToEdit.id_produit
+      const response = await updateProduit(idProduit, formData, token)
 
       const newProduct = {
         ...response,
@@ -140,6 +178,8 @@ export default function AddProductModal({
     }
   }
 
+  const safeNumber = (val: string) => (val === "" ? 0 : Number(val))
+
   if (!isOpen) return null
 
   return (
@@ -148,7 +188,7 @@ export default function AddProductModal({
         {/* HEADER */}
         <div className="flex justify-between items-center mb-8 border-b border-slate-100 pb-4">
           <h2 className="text-2xl font-bold text-slate-800">
-            {"Ajouter un produit"}
+            {productToEdit ? "Modifier le produit" : "Ajouter un produit"}
           </h2>
           <button
             type="button"
@@ -349,7 +389,9 @@ export default function AddProductModal({
           </div>
         </form>
 
-        {showSuccess && <SuccessPopup message="Produit ajouté avec succès !" />}
+        {showSuccess && (
+          <SuccessPopup message="Produit modifié avec succès !" />
+        )}
       </div>
     </div>
   )

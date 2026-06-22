@@ -101,7 +101,6 @@ export interface AddProductModalProps {
   isOpen: boolean
   onClose: () => void
   onSuccess: (product: any) => void
-  productToEdit?: any
 }
 
 export interface Image {
@@ -156,7 +155,6 @@ export interface Conversation {
   active: boolean
 }
 
-
 export interface ChatSidebarProps {
   conversations: any[]
   onSelect: (conv: any) => void
@@ -164,3 +162,9 @@ export interface ChatSidebarProps {
   currentAdminId: number
 }
 
+export interface EditProductModalProps {
+  isOpen: boolean
+  onClose: () => void
+  onSuccess: (product: any) => void
+  productToEdit?: any
+}

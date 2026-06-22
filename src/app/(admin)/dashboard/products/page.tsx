@@ -16,14 +16,14 @@ import {
 } from "react-icons/fi"
 import * as XLSX from "xlsx"
 
-import AddProductModal from "./Modal/AddProductModal" 
+import AddProductModal from "./Modal/AddProductModal"
+import EditProductModal from "./Modal/EditProductModal"
 
 export default function ProductTable() {
   const [products, setProducts] = useState<Product[]>([])
   const [productToEdit, setProductToEdit] = useState<Product | null>(null)
-  const [isModalOpen, setIsModalOpen] = useState(false)
-
-
+  const [isModalAddOpen, setIsModalAddOpen] = useState(false)
+  const [isModalEditOpen, setIsModalEditOpen] = useState(false)
   const [search, setSearch] = useState("")
   const [categoryFilter, setCategoryFilter] = useState("ALL")
   const [priceFilter, setPriceFilter] = useState<"NONE" | "ASC" | "DESC">(
@@ -127,7 +127,7 @@ export default function ProductTable() {
       <div className="max-w-350 mx-auto">
         <div className="flex justify-end mb-6">
           <button
-            onClick={() => setIsModalOpen(true)}
+            onClick={() => setIsModalAddOpen(true)}
             className="flex items-center gap-2 px-5 py-3 bg-[#E67E22] hover:bg-[#D35400] text-white font-medium rounded-xl transition shadow-sm"
           >
             <IoIosAdd size={24} />
@@ -210,7 +210,7 @@ export default function ProductTable() {
                         {p.nom_produit}
                       </td>
                       <td className="py-5 px-6 text-gray-400 max-w-50 truncate">
-                        {p.description || "fabie"}
+                        {p.description}
                       </td>
                       <td className="py-4 px-6 text-center">
                         <div className="inline-flex items-center justify-center w-14 h-14 bg-gray-100 rounded-2xl overflow-hidden p-1 shadow-inner border border-gray-100">
@@ -251,7 +251,7 @@ export default function ProductTable() {
                           <button
                             onClick={() => {
                               setProductToEdit(p)
-                              setIsModalOpen(true)
+                              setIsModalEditOpen(true)
                             }}
                             className="p-2 text-blue-500 hover:bg-blue-50 rounded-lg transition"
                           >
@@ -328,13 +328,33 @@ export default function ProductTable() {
       </div>
 
       <AddProductModal
-        isOpen={isModalOpen}
+        isOpen={isModalAddOpen}
         onClose={() => {
-          setIsModalOpen(false)
+          setIsModalAddOpen(false)
           setProductToEdit(null)
         }}
         onSuccess={(product) => {
           setProducts((prev) => [product, ...prev])
+        }}
+      />
+      <EditProductModal
+        isOpen={isModalEditOpen}
+        onClose={() => {
+          setIsModalEditOpen(false)
+          setProductToEdit(null)
+        }}
+        onSuccess={(updatedProduct) => {
+          console.log(
+            "------------------UPDATED-------------" +
+              JSON.stringify(updatedProduct)
+          )
+          setProducts((prev) =>
+            prev.map((p) =>
+              p.id_produit === updatedProduct.product.id_produit
+                ? updatedProduct.product
+                : p
+            )
+          )
         }}
         productToEdit={productToEdit}
       />
