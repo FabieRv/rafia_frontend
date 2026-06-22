@@ -10,10 +10,13 @@ import { useRouter } from "next/navigation"
 export default function Panier() {
   const items = useCommandeStore((state) => state.items)
   const clear = useCommandeStore((state) => state.clear)
-  const total = items.reduce((sum, item) => sum + item.prix * item.quantite, 0)
+  const total = items.reduce(
+    (sum: number, item: any) => sum + item.prix * item.quantite,
+    0
+  )
   const TAX_RATE = 0.2
   const totalHT = items.reduce(
-    (sum, item) => sum + item.prix * item.quantite,
+    (sum: number, item: any) => sum + item.prix * item.quantite,
     0
   )
   const tax = totalHT * TAX_RATE
@@ -35,8 +38,7 @@ export default function Panier() {
           {/* Produits (Scrollable) */}
           <div className="flex-1 bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
             <div className="max-h-125 overflow-y-auto custom-scrollbar">
-              {/* Remplacez par vos data.map */}
-              {items.map((item) => (
+              {items.map((item: any) => (
                 <CartItem key={item.id_produit} {...item} />
               ))}
             </div>
