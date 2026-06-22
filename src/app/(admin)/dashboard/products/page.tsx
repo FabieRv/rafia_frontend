@@ -16,14 +16,14 @@ import {
 } from "react-icons/fi"
 import * as XLSX from "xlsx"
 
-import AddProductModal from "./Modal/AddProductModal" // Vérifie bien le chemin de ton modal ici
+import AddProductModal from "./Modal/AddProductModal" 
 
 export default function ProductTable() {
   const [products, setProducts] = useState<Product[]>([])
   const [productToEdit, setProductToEdit] = useState<Product | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
 
-  // FILTRES
+
   const [search, setSearch] = useState("")
   const [categoryFilter, setCategoryFilter] = useState("ALL")
   const [priceFilter, setPriceFilter] = useState<"NONE" | "ASC" | "DESC">(
@@ -32,7 +32,7 @@ export default function ProductTable() {
 
   // PAGINATION
   const [currentPage, setCurrentPage] = useState(1)
-  const itemPerPage = 6
+  const itemPerPage = 5
 
   useEffect(() => {
     setCurrentPage(1)
@@ -243,9 +243,6 @@ export default function ProductTable() {
                           </span>
                           <span className="text-sm font-bold text-slate-800">
                             {p.sous_category?.nom_sous_categorie || "Paniers"}
-                          </span>
-                          <span className="text-xs text-gray-400 font-medium">
-                            Marinière
                           </span>
                         </div>
                       </td>

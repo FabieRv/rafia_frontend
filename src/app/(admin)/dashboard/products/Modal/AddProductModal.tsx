@@ -14,50 +14,14 @@ export default function AddProductModal({
   onSuccess,
   productToEdit,
 }: AddProductModalProps) {
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
   const [selectedCategory, setSelectedCategory] =
     useState<keyof typeof SUB_CATEGORIES_DATA>("Chapeaux")
 
-  const fileInputRef = useRef<HTMLInputElement>(null)
   const [preview, setPreview] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [showSuccess, setShowSuccess] = useState(false)
-
-  useEffect(() => {
-    if (!productToEdit) return
-
-    setFormData({
-      nom_produit: productToEdit.nom_produit ?? "",
-      description: productToEdit.description ?? "",
-      prix: productToEdit.prix ?? 0,
-      quantite_stock: productToEdit.quantite_stock ?? 0,
-      type:
-        productToEdit.sous_category?.category?.type?.nom_type ??
-        productToEdit.type ??
-        "RAFIA",
-
-      image: productToEdit.image ?? "",
-
-      id_sous_categorie: productToEdit.id_sous_categorie ?? 1,
-    })
-
-    setPreview(productToEdit.image ?? null)
-  }, [productToEdit])
-
-  useEffect(() => {
-    if (!isOpen) {
-      setFormData({
-        nom_produit: "",
-        description: "",
-        prix: 0,
-        quantite_stock: 0,
-        type: "RAFIA",
-        image: "",
-        id_sous_categorie: 1,
-      })
-
-      setPreview(null)
-    }
-  }, [isOpen])
 
   const [formData, setFormData] = useState({
     nom_produit: "",
@@ -69,6 +33,40 @@ export default function AddProductModal({
     id_sous_categorie: 1,
   })
 
+  // EDIT MODE
+  useEffect(() => {
+    if (!productToEdit) return
+
+    setFormData({
+      nom_produit: productToEdit.nom_produit ?? "",
+      description: productToEdit.description ?? "",
+      prix: productToEdit.prix ?? 0,
+      quantite_stock: productToEdit.quantite_stock ?? 0,
+      type: productToEdit.sous_category?.category?.type?.nom_type ?? "RAFIA",
+      image: productToEdit.image ?? "",
+      id_sous_categorie: productToEdit.id_sous_categorie ?? 1,
+    })
+
+    setPreview(productToEdit.image ?? null)
+  }, [productToEdit])
+
+  // RESET WHEN CLOSE
+  useEffect(() => {
+    if (!isOpen) {
+      setFormData({
+        nom_produit: "",
+        description: "",
+        prix: 0,
+        quantite_stock: 0,
+        type: "RAFIA",
+        image: "",
+        id_sous_categorie: 1,
+      })
+      setPreview(null)
+    }
+  }, [isOpen])
+
+  // HANDLE INPUT
   const handleInputChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
@@ -76,32 +74,30 @@ export default function AddProductModal({
   ) => {
     const { name, value } = e.target
 
-    setFormData((prev) => {
-      const newData = {
-        ...prev,
-        [name]:
-          name === "prix" ||
-          name === "quantite_stock" ||
-          name === "id_sous_categorie"
-            ? value === ""
-              ? 0
-              : Number(value)
-            : value,
-      }
-
-      console.log(`Changement sur ${name}:`, newData[name as keyof typeof prev])
-      return newData
-    })
+    setFormData((prev) => ({
+      ...prev,
+      [name]:
+        name === "prix" ||
+        name === "quantite_stock" ||
+        name === "id_sous_categorie"
+          ? Number(value)
+          : value,
+    }))
   }
 
+  // IMAGE
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
-    if (file) {
-      setPreview(URL.createObjectURL(file))
-      setFormData((prev) => ({ ...prev, image: file.name }))
-    }
+    if (!file) return
+
+    setPreview(URL.createObjectURL(file))
+    setFormData((prev) => ({
+      ...prev,
+      image: file.name,
+    }))
   }
 
+  // SUBMIT
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
@@ -110,9 +106,11 @@ export default function AddProductModal({
 
     try {
       const token = localStorage.getItem("token") || ""
+
       const currentSubCategories = SUB_CATEGORIES_DATA[selectedCategory]
       const subCategoryName =
         currentSubCategories[formData.id_sous_categorie - 1]
+
       const payload = {
         nom_produit: formData.nom_produit,
         description: formData.description,
@@ -122,16 +120,17 @@ export default function AddProductModal({
         type: formData.type,
         categorie: selectedCategory,
         id_sous_categorie: Number(formData.id_sous_categorie),
+        isEdit: true,
       }
 
       const response = await addProduit(payload, token)
+
       const newProduct = {
         ...response,
         nom_produit: formData.nom_produit,
         prix: formData.prix,
         quantite_stock: formData.quantite_stock,
         image: formData.image,
-
         sous_category: {
           nom_sous_categorie: subCategoryName,
           category: {
@@ -141,47 +140,52 @@ export default function AddProductModal({
             },
           },
         },
-
         date_ajout: response.date_ajout || new Date().toISOString(),
       }
+
       setShowSuccess(true)
 
       setTimeout(() => {
         setShowSuccess(false)
         onSuccess(newProduct)
         onClose()
-      }, 1500)
+      }, 1200)
     } catch (error: any) {
-      console.error("Erreur attrapée :", error)
-      alert(`Erreur : ${error.message || "Impossible de contacter le serveur"}`)
+      console.error(error)
+      alert(error.message || "Erreur serveur")
     } finally {
       setLoading(false)
     }
   }
 
   if (!isOpen) return null
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4">
-      <div className="bg-white rounded-3xl shadow-2xl w-full max-w-5xl max-h-[95vh] overflow-y-auto relative p-8">
-        <div className="flex justify-between items-center mb-8">
+      <div className="bg-white rounded-3xl shadow-2xl w-full max-w-5xl max-h-[92vh] overflow-y-auto relative p-8">
+        {/* HEADER */}
+        <div className="flex justify-between items-center mb-8 border-b border-slate-100 pb-4">
           <h2 className="text-2xl font-bold text-slate-800">
-            Ajouter un produit
+            {productToEdit ? "Modifier le produit" : "Ajouter un produit"}
           </h2>
           <button
+            type="button"
             onClick={onClose}
-            className="p-2 hover:bg-slate-100 rounded-full transition-colors"
+            className="p-2 hover:bg-slate-100 rounded-full transition-colors text-slate-500 hover:text-slate-700"
           >
-            <IoMdClose size={28} className="text-slate-500" />
+            <IoMdClose size={26} />
           </button>
         </div>
 
+        {/* FORM */}
         <form
           onSubmit={handleSubmit}
-          className="grid grid-cols-1 lg:grid-cols-2 gap-12"
+          className="grid grid-cols-1 lg:grid-cols-2 gap-10"
         >
-          <div className="space-y-6">
+          {/* LEFT COLUMN */}
+          <div className="space-y-5">
             <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-2">
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">
                 Nom du produit
               </label>
               <input
@@ -190,39 +194,40 @@ export default function AddProductModal({
                 required
                 value={formData.nom_produit}
                 onChange={handleInputChange}
-                placeholder="Panier Rabane"
-                className="w-full p-3 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50/50"
+                placeholder="Ex: Sac en Rabane"
+                className="w-full p-3.5 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 bg-slate-50/50 transition-all text-slate-800"
               />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2">
-                  Type
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">
+                  Matière / Type
                 </label>
                 <select
                   name="type"
+                  value={formData.type}
                   onChange={handleInputChange}
-                  className="w-full p-3 border border-slate-200 rounded-xl bg-slate-50/50 outline-none"
+                  className="w-full p-3.5 border border-slate-200 rounded-xl bg-slate-50/50 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-slate-800"
                 >
                   <option value="RAFIA">RAFIA</option>
                   <option value="RABANE">RABANE</option>
                   <option value="SATRANA">SATRANA</option>
                 </select>
               </div>
+
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">
                   Catégorie
                 </label>
                 <select
-                  name="categorie"
                   value={selectedCategory}
                   onChange={(e) =>
                     setSelectedCategory(
                       e.target.value as keyof typeof SUB_CATEGORIES_DATA
                     )
                   }
-                  className="w-full p-3 border border-slate-200 rounded-xl bg-slate-50/50 outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full p-3.5 border border-slate-200 rounded-xl bg-slate-50/50 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-slate-800"
                 >
                   {Object.keys(SUB_CATEGORIES_DATA).map((cat) => (
                     <option key={cat} value={cat}>
@@ -234,17 +239,17 @@ export default function AddProductModal({
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-2">
-                Sous Categories
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">
+                Sous-catégorie
               </label>
               <select
                 name="id_sous_categorie"
-                onChange={handleInputChange}
                 value={formData.id_sous_categorie}
-                className="w-full p-3 border border-slate-200 rounded-xl bg-slate-50/50 outline-none focus:ring-2 focus:ring-blue-500"
+                onChange={handleInputChange}
+                className="w-full p-3.5 border border-slate-200 rounded-xl bg-slate-50/50 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-slate-800"
               >
-                {SUB_CATEGORIES_DATA[selectedCategory].map((sub, index) => (
-                  <option key={sub} value={index + 1}>
+                {SUB_CATEGORIES_DATA[selectedCategory].map((sub, i) => (
+                  <option key={sub} value={i + 1}>
                     {sub}
                   </option>
                 ))}
@@ -252,116 +257,117 @@ export default function AddProductModal({
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-2">
-                Description
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">
+                Description du produit
               </label>
               <textarea
                 name="description"
-                rows={4}
+                rows={5}
                 value={formData.description}
                 onChange={handleInputChange}
-                className="w-full p-3 border border-slate-200 rounded-xl bg-slate-50/50 outline-none resize-none"
-                placeholder="Entrez la description..."
-              ></textarea>
+                placeholder="Décrivez les spécificités de cet article artisanal..."
+                className="w-full p-3.5 border border-slate-200 rounded-xl bg-slate-50/50 outline-none resize-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-slate-800 transition-all"
+              />
             </div>
           </div>
 
-          <div className="space-y-6">
-            <label className="block text-sm font-semibold text-slate-700 mb-2">
-              Images du produit
-            </label>
-
-            <div
-              onClick={() => fileInputRef.current?.click()}
-              className="group w-48 aspect-square border-2 border-dashed border-slate-200 rounded-3xl flex flex-col items-center justify-center bg-slate-50 hover:bg-white hover:border-blue-400 hover:shadow-lg transition-all cursor-pointer p-6"
-            >
-              {preview ? (
-                <img
-                  src={preview}
-                  alt="Preview"
-                  className="w-full h-full object-cover rounded-2xl"
-                />
-              ) : (
-                <>
-                  <FaCloudUploadAlt
-                    size={48}
-                    className="text-slate-300 group-hover:text-blue-500 mb-4 transition-colors"
+          {/* RIGHT COLUMN */}
+          <div className="space-y-6 flex flex-col justify-between">
+            <div className="space-y-5">
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">
+                  Image de couverture
+                </label>
+                <div
+                  onClick={() => fileInputRef.current?.click()}
+                  className="group w-full h-48 border-2 border-dashed border-slate-200 rounded-2xl flex flex-col items-center justify-center bg-slate-50 hover:bg-white hover:border-blue-400 hover:shadow-sm transition-all cursor-pointer overflow-hidden relative"
+                >
+                  {preview ? (
+                    <div className="w-full h-full relative group">
+                      <img
+                        src={preview}
+                        alt="Preview"
+                        className="w-full h-full object-cover"
+                      />
+                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white font-medium text-sm">
+                        Changer l'image
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="text-center p-4">
+                      <FaCloudUploadAlt
+                        size={38}
+                        className="text-slate-400 group-hover:text-blue-500 mx-auto mb-2 transition-colors"
+                      />
+                      <p className="text-sm text-slate-600 font-medium">
+                        Parcourir un fichier image
+                      </p>
+                      <p className="text-xs text-slate-400 mt-1">
+                        Sert d'affichage principal pour la galerie
+                      </p>
+                    </div>
+                  )}
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleImageChange}
+                    className="hidden"
+                    accept="image/*"
                   />
-                  <div className="text-center">
-                    <p className="text-sm text-slate-500 font-medium">
-                      Glissez vos images ici
-                    </p>
-                    <p className="text-sm text-slate-400">
-                      ou{" "}
-                      <span className="text-blue-600 font-bold">
-                        cliquez pour parcourir
-                      </span>
-                    </p>
-                  </div>
-                  <p className="text-[10px] text-slate-400 mt-4">
-                    PNG, JPG jusqu'à 10MB
-                  </p>
-                </>
-              )}
-              <input
-                type="file"
-                ref={fileInputRef}
-                onChange={handleImageChange}
-                className="hidden"
-                accept="image/*"
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-4 pt-4">
-              <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2">
-                  Prix en ($)
-                </label>
-                <input
-                  name="prix"
-                  type="number"
-                  value={formData.prix}
-                  onChange={handleInputChange}
-                  placeholder="35$"
-                  className="w-full p-3 border border-slate-200 rounded-xl bg-slate-50/50 outline-none"
-                />
+                </div>
               </div>
-              <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2">
-                  Quantité stock
-                </label>
-                <input
-                  name="quantite_stock"
-                  value={formData.quantite_stock}
-                  type="number"
-                  onChange={handleInputChange}
-                  placeholder="10"
-                  className="w-full p-3 border border-slate-200 rounded-xl bg-slate-50/50 outline-none"
-                />
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">
+                    Prix ($)
+                  </label>
+                  <input
+                    name="prix"
+                    type="number"
+                    value={formData.prix || ""}
+                    onChange={handleInputChange}
+                    placeholder="0.00"
+                    className="w-full p-3.5 border border-slate-200 rounded-xl bg-slate-50/50 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-slate-800"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">
+                    Quantité en Stock
+                  </label>
+                  <input
+                    name="quantite_stock"
+                    type="number"
+                    value={formData.quantite_stock || ""}
+                    onChange={handleInputChange}
+                    placeholder="0"
+                    className="w-full p-3.5 border border-slate-200 rounded-xl bg-slate-50/50 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-slate-800"
+                  />
+                </div>
               </div>
             </div>
 
-            <div className="flex gap-4 pt-10">
-              <button
-                type="submit"
-                disabled={loading}
-                className="flex-2 bg-blue-500 text-white p-4 rounded-xl"
-              >
-                {loading ? "Chargement..." : "Enregistrer"}
-              </button>
+            {/* ACTION BUTTONS */}
+            <div className="flex gap-4 pt-6 border-t border-slate-100 lg:pt-0 lg:border-none">
               <button
                 type="button"
                 onClick={onClose}
-                className="flex-1 p-4 bg-red-600 text-white transition-transform hover:scale-105 active:scale-95 flex items-center justify-center py-4 rounded-xl font-bold cursor-pointer"
+                className="flex-1 p-3.5 bg-slate-100 hover:bg-slate-200 text-slate-700 transition-all rounded-xl font-semibold text-center cursor-pointer"
               >
-                Annuler Produit
+                Annuler
+              </button>
+              <button
+                type="submit"
+                disabled={loading}
+                className="flex-1 p-3.5 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white transition-all rounded-xl font-semibold shadow-md shadow-blue-500/10 text-center cursor-pointer"
+              >
+                {loading ? "Chargement..." : "Enregistrer"}
               </button>
             </div>
           </div>
         </form>
-        {showSuccess && (
-          <SuccessPopup message="Enregistrement produit avec succès !" />
-        )}
+
+        {showSuccess && <SuccessPopup message="Produit ajouté avec succès !" />}
       </div>
     </div>
   )
