@@ -11,12 +11,7 @@ import { MdDeleteForever } from "react-icons/md"
 import { Client } from "@/types/global"
 import DataTableToolbar from "../_pages/DataTableToolbar"
 import EditModal from "./EditModal"
-
-const getTokenFromCookies = (): string => {
-  if (typeof document === "undefined") return ""
-  const match = document.cookie.match(new RegExp("(^| )token=([^;]+)"))
-  return match ? match[2] : ""
-}
+import { getTokenFromLocalStorage } from "@/utils/getToken"
 
 function ClientTable() {
   const [clients, setClients] = useState<Client[]>([])
@@ -73,7 +68,7 @@ function ClientTable() {
     if (!confirm(`Supprimer ${name} ?`)) return
 
     try {
-      const token = getTokenFromCookies()
+      const token = getTokenFromLocalStorage()
       await deleteClient(id, token)
       setClients((prev) => prev.filter((c) => c.id_user !== id))
     } catch (err) {
@@ -92,7 +87,7 @@ function ClientTable() {
     if (!editingClient) return
 
     try {
-      const token = getTokenFromCookies()
+      const token = getTokenFromLocalStorage()
       await updateClient(editingClient.id_user, editingClient, token)
 
       setClients((prev) =>

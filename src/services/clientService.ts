@@ -1,7 +1,7 @@
 const API_URL = "http://localhost:3001/clients"
 
 export async function getClients() {
-  const res = await fetch("http://localhost:3001/clients")
+  const res = await fetch(API_URL)
 
   if (!res.ok) {
     throw new Error("Erreur lors du chargement des Clients")

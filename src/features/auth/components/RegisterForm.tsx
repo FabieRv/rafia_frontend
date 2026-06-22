@@ -50,7 +50,7 @@ export default function Register({ onSwitch }: { onSwitch: () => void }) {
     <div>
       <div className="animate-in fade-in zoom-in-95 duration-500">
         <h2 className="text-3xl font-bold text-center mb-2 text-white">
-          Register
+          Inscription
         </h2>
         <p className="text-center text-white/80 mb-8 text-sm">
           Créez votre compte RafiaCraft
@@ -136,7 +136,7 @@ export default function Register({ onSwitch }: { onSwitch: () => void }) {
           onClick={onSwitch}
           className="w-full text-center mt-6 text-sm text-white/60 hover:text-white underline"
         >
-          Already Create an Account? Login
+          Vous avez déjà créé un compte? Login
         </button>
       </div>
     </div>

@@ -145,3 +145,22 @@ export interface CartState {
   updateQuantity: (id: number, qty: number) => void
   clear: () => void
 }
+
+//conversationMessage
+export interface Conversation {
+  id: number
+  name: string
+  avatarColor: string
+  initial: string
+  lastMessage: string
+  active: boolean
+}
+
+
+export interface ChatSidebarProps {
+  conversations: any[]
+  onSelect: (conv: any) => void
+  selectedConvId?: number
+  currentAdminId: number
+}
+
