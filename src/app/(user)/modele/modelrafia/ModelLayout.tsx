@@ -26,8 +26,8 @@ export default function ModelLayout() {
   ]
 
   useEffect(() => {
-    countAllProductByCategory()
     fetchProducts()
+    countAllProductByCategory()
   }, [selectedCategoryId])
 
   const fetchProducts = async () => {

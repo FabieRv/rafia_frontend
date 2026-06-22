@@ -32,7 +32,7 @@ export default function ProductTable() {
 
   // PAGINATION
   const [currentPage, setCurrentPage] = useState(1)
-  const itemPerPage = 4
+  const itemPerPage = 6
 
   useEffect(() => {
     setCurrentPage(1)
