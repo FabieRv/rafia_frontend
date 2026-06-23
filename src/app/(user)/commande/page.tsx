@@ -117,8 +117,8 @@ export default function CommandePage() {
     <div className="relative">
       <Container className="pb-16">
         <div className="max-w-2xl mx-auto border border-gray-200 p-10 bg-white mt-10 shadow-lg rounded-xl">
-          <h1 className="text-4xl text-[#4A3728]  text-center font-title title">
-            Finaliser commande
+          <h1 className="text-2xl text-[#4A3728]  text-center font-title title">
+            Finaliser la commande
           </h1>
 
           <div className="space-y-6">

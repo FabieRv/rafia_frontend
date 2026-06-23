@@ -67,8 +67,8 @@ export default function ModelLayout() {
     const data = await response.json()
     let somme = 0
     data.forEach((cat: any) => {
-      somme += cat.count
-      setCountAll(somme)
+      somme += cat.count ?? 0
+
       switch (cat.id) {
         case 1:
           setCountChapeaux(cat.count)
@@ -85,6 +85,7 @@ export default function ModelLayout() {
         default:
           break
       }
+      setCountAll(somme)
     })
   }
 

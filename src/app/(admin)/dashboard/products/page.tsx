@@ -67,6 +67,7 @@ export default function ProductTable() {
     try {
       const token = localStorage.getItem("token") || ""
       await deleteProduit(id, token)
+
       setProducts((prev) => prev.filter((p) => p.id_produit !== id))
     } catch (error) {
       console.error(error)

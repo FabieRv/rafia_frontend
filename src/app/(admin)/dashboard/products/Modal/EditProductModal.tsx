@@ -45,7 +45,6 @@ export default function EditProductModal({
       quantite_stock: productToEdit.quantite_stock ?? 0,
       type: productToEdit.sous_category?.category?.type?.nom_type ?? "RAFIA",
       image: productToEdit.image ?? "",
-     // categorie: selectedCategory,
       id_sous_categorie: productToEdit.id_sous_categorie ?? 1,
     })
 

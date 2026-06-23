@@ -47,18 +47,16 @@ export default function Register({ onSwitch }: { onSwitch: () => void }) {
     }
   }
   return (
-    <div>
+    <div className="text-white!">
       <div className="animate-in fade-in zoom-in-95 duration-500">
-        <h2 className="text-3xl font-bold text-center mb-2 text-white">
-          Inscription
-        </h2>
+        <h2 className="text-3xl font-bold text-center mb-2 ">Inscription</h2>
         <p className="text-center text-white/80 mb-8 text-sm">
           Créez votre compte RafiaCraft
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Champ Nom */}
-          <div className="relative border-b border-white/30 py-2 text-white">
+          <div className="relative border-b border-white/30 py-2 ">
             <input
               name="name"
               type="text"
@@ -71,7 +69,7 @@ export default function Register({ onSwitch }: { onSwitch: () => void }) {
           </div>
 
           {/* Champ Email */}
-          <div className="relative border-b border-white/30 py-2 text-white">
+          <div className="relative border-b border-white/30 py-2 ">
             <input
               name="email"
               type="email"
@@ -96,7 +94,7 @@ export default function Register({ onSwitch }: { onSwitch: () => void }) {
           </div>
 
           {/* Champ Adress */}
-          <div className="relative border-b border-white/30 py-2 text-white">
+          <div className="relative border-b border-white/30 py-2 ">
             <input
               name="adress"
               type="text"
@@ -111,7 +109,7 @@ export default function Register({ onSwitch }: { onSwitch: () => void }) {
           </div>
 
           {/* Champ Password */}
-          <div className="relative border-b border-white/30 py-2 text-white text-sm">
+          <div className="relative border-b border-white/30 py-2 text-sm">
             <input
               name="password"
               type="password"
