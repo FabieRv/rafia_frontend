@@ -7,6 +7,7 @@ import { SUB_CATEGORIES_DATA } from "@/components/constant"
 import SuccessPopup from "@/components/common/SuccessPopup"
 import { addProduit, updateProduit } from "@/services/produitServices"
 import { AddProductModalProps } from "@/types/global"
+import { getCategoryId } from "@/utils/helper"
 
 export default function AddProductModal({
   isOpen,
@@ -90,8 +91,15 @@ export default function AddProductModal({
       const token = localStorage.getItem("token") || ""
       console.log("isEdit: --------------------------" + isEdit)
       const currentSubCategories = SUB_CATEGORIES_DATA[selectedCategory]
+      console.log("++++++++++++selectedCategory++++++++" + selectedCategory)
+      console.log(
+        "++++++++++++currentSubCategories++++++++" +
+          JSON.stringify(currentSubCategories)
+      )
       const subCategoryName =
         currentSubCategories[formData.id_sous_categorie - 1]
+
+      console.log("++++++++++++subCategoryName++++++++" + subCategoryName)
 
       const payload = {
         nom_produit: formData.nom_produit,
@@ -100,10 +108,12 @@ export default function AddProductModal({
         quantite_stock: Number(formData.quantite_stock),
         image: formData.image,
         type: formData.type,
-        categorie: selectedCategory,
+        categorie: getCategoryId(selectedCategory),
         id_sous_categorie: Number(formData.id_sous_categorie),
         isEdit: isEdit,
       }
+
+      console.log("++++++++++++Payload++++++++" + JSON.stringify(payload))
 
       const response = await addProduit(payload, token)
 
@@ -124,7 +134,7 @@ export default function AddProductModal({
         },
         date_ajout: response.date_ajout || new Date().toISOString(),
       }
-
+      console.log("++++++++++++newProduct++++++++" + JSON.stringify(newProduct))
       setShowSuccess(true)
 
       setTimeout(() => {

@@ -30,7 +30,7 @@ export default function ProfilePage() {
     const formData = new FormData()
     formData.append("image", imageFile)
 
-    const res = await fetch("http://localhost:3001/users/uploadimage", {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/uploadimage`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`,

@@ -1,7 +1,7 @@
 export const downloadPdf = async (id: number) => {
   try {
     const response = await fetch(
-      `http://localhost:3001/catalogue/download/${id}`
+      `${process.env.NEXT_PUBLIC_API_URL}/catalogue/download/${id}`
     )
 
     if (!response.ok) {

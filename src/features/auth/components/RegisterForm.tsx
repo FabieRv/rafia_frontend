@@ -20,17 +20,20 @@ export default function Register({ onSwitch }: { onSwitch: () => void }) {
     e.preventDefault()
 
     try {
-      const response = await fetch("http://localhost:3001/auth/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: formData.name,
-          email: formData.email,
-          password: formData.password,
-          phone: formData.phone,
-          adress: formData.adress,
-        }),
-      })
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/auth/register`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: formData.name,
+            email: formData.email,
+            password: formData.password,
+            phone: formData.phone,
+            adress: formData.adress,
+          }),
+        }
+      )
 
       if (response.ok) {
         alert("Compte créé avec succès !")
@@ -126,7 +129,7 @@ export default function Register({ onSwitch }: { onSwitch: () => void }) {
             type="submit"
             className="w-full bg-white text-black font-bold py-3 rounded-full mt-4 hover:bg-opacity-90 transition disabled:bg-gray-400"
           >
-            {loading ? "Chargement..." : "Register"}
+            {loading ? "Chargement..." : "Créer un compte"}
           </button>
         </form>
 

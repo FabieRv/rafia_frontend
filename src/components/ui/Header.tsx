@@ -20,7 +20,10 @@ export default function Header() {
   const [total, setTotal] = useState(0)
 
   const items = useCommandeStore((state) => state.items)
-  const totalItems = items.reduce((sum, item) => sum + item.quantite, 0)
+  const totalItems = items.reduce(
+    (sum: number, item: any) => sum + item.quantite,
+    0
+  )
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user")
@@ -67,6 +70,7 @@ export default function Header() {
             </ul>
 
             <div className="hidden text-[#A0522D] lg:flex items-center  font-text gap-6 ">
+              {/*panier */}
               <Link href="/panier" className="relative ">
                 <span className="absolute -top-2 -right-1 bg-red-500 rounded-full min-w-4 h-4 px-1 text-[10px] text-white flex items-center justify-center p-1">
                   {totalItems}
@@ -77,7 +81,9 @@ export default function Header() {
                   className="hover:text-[#D97A4F] cursor-pointer transition-colors "
                 />
               </Link>
-              <Link href="/wishlist" className="relative">
+
+              {/*avis client */}
+              <Link href="" className="relative">
                 <span className="absolute -top-2 -right-1 bg-red-500 rounded-full min-w-4 h-4 px-1 text-[10px] text-white flex items-center justify-center p-1">
                   0
                 </span>
@@ -86,7 +92,9 @@ export default function Header() {
                   className="hover:text-[#D97A4F] cursor-pointer transition-colors"
                 />
               </Link>
-              <Link href="" className="relative">
+
+              {/*chat */}
+              <Link href="/chat" className="relative">
                 <span className="absolute -top-2 -right-1 bg-red-500 rounded-full min-w-4 h-4 px-1 text-[10px] text-white flex items-center justify-center p-1">
                   0
                 </span>

@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:3001/clients"
+const API_URL = `${process.env.NEXT_PUBLIC_API_URL}/clients`
 
 export async function getClients() {
   const res = await fetch(API_URL)

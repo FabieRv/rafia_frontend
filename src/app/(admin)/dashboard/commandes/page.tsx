@@ -15,7 +15,7 @@ export default function AdminCommandesPage() {
           throw new Error("Vous n'êtes pas connecté ou votre session a expiré.")
 
         const NestUrl =
-          process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"
+          process.env.NEXT_PUBLIC_API_URL
         const response = await fetch(`${NestUrl}/admin/commandes`, {
           method: "GET",
           headers: {

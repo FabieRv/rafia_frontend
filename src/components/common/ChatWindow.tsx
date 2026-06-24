@@ -87,7 +87,7 @@ export default function ChatWindow({
       (user: any) => String(user.id_user) !== String(currentUser.id)
     )
 
-    socket.emit("sendMessage", {  
+    socket.emit("sendMessage", {
       senderId: currentUser.id,
       receiverId: otherUser.id_user,
       content: message.trim(),

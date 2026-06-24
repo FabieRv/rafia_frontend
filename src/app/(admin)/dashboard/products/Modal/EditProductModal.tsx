@@ -297,7 +297,7 @@ export default function EditProductModal({
             <div className="space-y-5">
               <div>
                 <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">
-                  Image de couverture
+                  Image de produit
                 </label>
                 <div
                   onClick={() => fileInputRef.current?.click()}

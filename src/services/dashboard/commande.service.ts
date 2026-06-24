@@ -1,5 +1,5 @@
 export async function getCommandeById(id: number, token: string) {
-  const res = await fetch(`http://localhost:3001/admin/commandes/${id}`, {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/admin/commandes/${id}`, {
     cache: "no-store",
     headers: {
       Authorization: `Bearer ${token}`,
@@ -17,7 +17,7 @@ export async function updateCommandeStatus(
   token: string
 ) {
   const res = await fetch(
-    `http://localhost:3001/admin/commandes/${id}/status`,
+    `${process.env.NEXT_PUBLIC_API_URL}/admin/commandes/${id}/status`,
     {
       method: "PATCH",
       headers: {
@@ -34,7 +34,7 @@ export async function updateCommandeStatus(
 }
 
 export async function getTotalCommandes(token: string) {
-  const res = await fetch("http://localhost:3001/admin/commandes/count", {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/admin/commandes/count`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -54,7 +54,7 @@ export async function getTotalCommandes(token: string) {
 }
 
 export async function deleteCommande(id: number, token: string) {
-  const res = await fetch(`http://localhost:3001/admin/commandes/${id}`, {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/admin/commandes/${id}`, {
     method: "DELETE",
     headers: {
       Authorization: `Bearer ${token}`,
@@ -73,7 +73,7 @@ export async function deleteCommande(id: number, token: string) {
 
 // Exemple à ajouter dans @/services/dashboard/commande.service.ts
 export async function getTotalVentes(token: string) {
-  const url = "http://localhost:3001/admin/commandes/totalventes"
+  const url = `${process.env.NEXT_PUBLIC_API_URL}/admin/commandes/totalventes`
 
   const res = await fetch(url, {
     headers: {
