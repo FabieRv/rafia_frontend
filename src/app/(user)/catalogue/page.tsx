@@ -20,7 +20,9 @@ function Catalogue() {
   return (
     <div className="flex flex-col items-center py-10 bg-[#F9F6F2]">
       <div className="text-center mb-6">
-        <h1 className=" text-[#4A3728] font-title">Notre Catalogue Artisant</h1>
+        <h1 className=" text-[#4A3728] font-title">
+          Notre catalogue d’artisanat
+        </h1>
         <p className="text-sm text-gray-500">Format PDF - 12MB</p>
       </div>
 

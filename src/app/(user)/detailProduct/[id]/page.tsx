@@ -86,7 +86,7 @@ export default async function DetailProduct({
                 ❤️ Ajouter aux favoris
               </button>
               <AddToCartButton product={product} />
-              <button>Chatter avec le vendeur</button>
+              <button>Chatter avec l'admin</button>
             </div>
           </div>
         </div>

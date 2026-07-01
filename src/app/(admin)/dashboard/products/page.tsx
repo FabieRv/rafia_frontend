@@ -123,6 +123,8 @@ export default function ProductTable() {
   const indexOfFirst = indexOfLast - itemPerPage
   const currentProducts = filteredProducts.slice(indexOfFirst, indexOfLast)
 
+  const API_URL = process.env.NEXT_PUBLIC_API_URL
+
   return (
     <div className="min-h-screen bg-[#F4F6F9] p-6 md:p-12 font-sans text-slate-700">
       <div className="max-w-350 mx-auto">
@@ -203,6 +205,7 @@ export default function ProductTable() {
                   </tr>
                 ) : (
                   currentProducts.map((p) => (
+                    
                     <tr
                       key={p.id_produit}
                       className="hover:bg-slate-50/50 transition"
@@ -215,9 +218,12 @@ export default function ProductTable() {
                       </td>
                       <td className="py-4 px-6 text-center">
                         <div className="inline-flex items-center justify-center w-14 h-14 bg-gray-100 rounded-2xl overflow-hidden p-1 shadow-inner border border-gray-100">
+                          {/* image ici*/}
                           {p.image ? (
+                            
                             <img
-                              src={p.image}
+                              src={`${API_URL}/uploads/${p.image}`}
+                              // src={p.image}
                               alt={p.nom_produit}
                               className="w-full h-full object-cover rounded-xl"
                             />

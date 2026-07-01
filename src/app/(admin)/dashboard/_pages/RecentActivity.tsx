@@ -1,3 +1,5 @@
+"use client"
+
 import {
   Zap,
   UserPlus,
@@ -11,6 +13,7 @@ import {
   XCircle,
 } from "lucide-react"
 
+import { useEffect, useState } from "react"
 interface ActivityLog {
   id_activity: number | string
   type: string
@@ -23,6 +26,8 @@ interface RecentActivityProps {
 }
 
 export function RecentActivity({ activities }: RecentActivityProps) {
+  const [mounted, setMounted] = useState(false)
+
   const formatRelativeTime = (dateString: string) => {
     const now = new Date()
     const past = new Date(dateString)
@@ -39,6 +44,10 @@ export function RecentActivity({ activities }: RecentActivityProps) {
       return `Il y a  ${Math.floor(diffInHours)} heures`
     return past.toLocaleDateString("fr-FR")
   }
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   const getGroupedActivities = () => {
     if (!activities) return []
@@ -74,7 +83,7 @@ export function RecentActivity({ activities }: RecentActivityProps) {
   return (
     <div className="bg-white p-5 rounded-2xl shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-gray-100/80 h-90 flex flex-col overflow-hidden w-full ">
       <h3 className="font-bold text-gray-800 text-[17px] mb-4 tracking-tight shrink-0">
-        Recent Activity
+        Activités récentes
       </h3>
 
       <div className="divide-y divide-gray-100/70 overflow-y-auto pr-2 flex-1 min-h-0 scrollbar-thin mt-2">
@@ -199,7 +208,7 @@ export function RecentActivity({ activities }: RecentActivityProps) {
                 </div>
 
                 <span className="text-[12px] text-gray-400 whitespace-nowrap mt-4 font-normal shrink-0">
-                  {formatRelativeTime(log.createdAt)}
+                  {mounted ? formatRelativeTime(log.createdAt) : ""}
                 </span>
               </div>
             )

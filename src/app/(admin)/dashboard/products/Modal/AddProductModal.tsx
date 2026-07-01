@@ -89,17 +89,10 @@ export default function AddProductModal({
 
     try {
       const token = localStorage.getItem("token") || ""
-      console.log("isEdit: --------------------------" + isEdit)
       const currentSubCategories = SUB_CATEGORIES_DATA[selectedCategory]
-      console.log("++++++++++++selectedCategory++++++++" + selectedCategory)
-      console.log(
-        "++++++++++++currentSubCategories++++++++" +
-          JSON.stringify(currentSubCategories)
-      )
+
       const subCategoryName =
         currentSubCategories[formData.id_sous_categorie - 1]
-
-      console.log("++++++++++++subCategoryName++++++++" + subCategoryName)
 
       const payload = {
         nom_produit: formData.nom_produit,
@@ -113,12 +106,10 @@ export default function AddProductModal({
         isEdit: isEdit,
       }
 
-      console.log("++++++++++++Payload++++++++" + JSON.stringify(payload))
-
       const response = await addProduit(payload, token)
 
       const newProduct = {
-        ...response,
+        ...(response || {}),
         nom_produit: formData.nom_produit,
         prix: formData.prix,
         quantite_stock: formData.quantite_stock,
@@ -132,7 +123,8 @@ export default function AddProductModal({
             },
           },
         },
-        date_ajout: response.date_ajout || new Date().toISOString(),
+
+        date_ajout: response?.date_ajout || new Date().toISOString(),
       }
       console.log("++++++++++++newProduct++++++++" + JSON.stringify(newProduct))
       setShowSuccess(true)
@@ -268,7 +260,7 @@ export default function AddProductModal({
             <div className="space-y-5">
               <div>
                 <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">
-                  Image de couverture
+                  Image de produit
                 </label>
                 <div
                   onClick={() => fileInputRef.current?.click()}

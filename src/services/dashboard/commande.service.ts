@@ -1,16 +1,46 @@
 export async function getCommandeById(id: number, token: string) {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/admin/commandes/${id}`, {
-    cache: "no-store",
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  })
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/admin/commandes/${id}`,
+    {
+      cache: "no-store",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  )
 
   if (!res.ok) throw new Error("Erreur chargement commande")
 
   return res.json()
 }
 
+// export async function updateCommandeStatus(
+//   id: number,
+//   status: string,
+//   token: string
+// ) {
+//   const res = await fetch(
+//     `${process.env.NEXT_PUBLIC_API_URL}/admin/commandes/${id}/status`,
+//     {
+//       method: "PATCH",
+//       headers: {
+//         "Content-Type": "application/json",
+//         Authorization: `Bearer ${token}`,
+//       },
+//       body: JSON.stringify({ status }),
+//     }
+//   )
+//   const text = await res.text()
+
+//   console.log("STATUS CODE:", res.status)
+//   console.log("RESPONSE RAW:", text)
+
+//   if (!res.ok) {
+//     throw new Error(text)
+//   }
+
+//   return JSON.parse(text)
+// }
 export async function updateCommandeStatus(
   id: number,
   status: string,
@@ -28,18 +58,35 @@ export async function updateCommandeStatus(
     }
   )
 
-  if (!res.ok) throw new Error("Erreur update status commande")
+  const text = await res.text()
 
-  return res.json()
+  let data: any = {}
+
+  try {
+    data = JSON.parse(text)
+  } catch {
+    data = { message: text }
+  }
+
+  if (!res.ok) {
+    throw new Error(
+      data?.message || data?.error || "Transition de statut interdite"
+    )
+  }
+
+  return data
 }
 
 export async function getTotalCommandes(token: string) {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/admin/commandes/count`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-    cache: "no-store",
-  })
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/admin/commandes/count`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      cache: "no-store",
+    }
+  )
 
   console.log("STATUS:", res.status)
 
@@ -54,12 +101,15 @@ export async function getTotalCommandes(token: string) {
 }
 
 export async function deleteCommande(id: number, token: string) {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/admin/commandes/${id}`, {
-    method: "DELETE",
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  })
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/admin/commandes/${id}`,
+    {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  )
 
   const data = await res.json().catch(() => null)
 

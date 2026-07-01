@@ -6,8 +6,6 @@ import Title from "@/components/common/Title"
 import { useCommandeStore } from "@/store/commande.store"
 import { useRouter } from "next/navigation"
 
-// Composant pour l'item du panier
-
 export default function Panier() {
   const items = useCommandeStore((state) => state.items)
   const clear = useCommandeStore((state) => state.clear)
@@ -24,11 +22,16 @@ export default function Panier() {
   const totalTTC = totalHT + tax
   const router = useRouter()
 
+  const totalUnits = items.reduce(
+    (sum: number, item: any) => sum + item.quantite,
+    0
+  )
+
   return (
     <div className="bg-[#f0f7ff]">
       <Container className=" min-h-screen  p-10 font-sans">
         <Title text="Mon panier" className="font-text mb-4" />
-        <h1 className="text-2xl font-bold mb-8 text-[#1a1a1a]">
+        <h1 className="text-2xl font-bold mb-8 text-[#1a1a1a] ">
           {items.length}{" "}
           {items.length > 1
             ? "Categories de produits"
@@ -37,21 +40,22 @@ export default function Panier() {
         </h1>
 
         <div className="flex flex-col lg:flex-row items-start gap-8 max-w-7xl mx-auto">
-          {/* Produits (Scrollable) */}
           <div className="flex-1 bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-            <div className="max-h-125 overflow-y-auto custom-scrollbar">
+            <div className="max-h-125 overflow-y-auto custom-scrollbar ">
               {items.map((item: any) => (
                 <CartItem key={item.id_produit} {...item} />
               ))}
             </div>
-            <div className="flex items-center">
-              <button onClick={clear} className="text-red-500 underline">
-                Vider le panier
+            <div className="border-t border-gray-100 p-3 flex justify-center bg-gray-50">
+              <button
+                onClick={clear}
+                className="text-red-600 text-sm font-medium hover:text-white hover:bg-red-300 transition px-4 py-2 rounded-md border border-red-200 hover:border-red-200"
+              >
+                🗑 Vider le panier
               </button>
             </div>
           </div>
 
-          {/* Card Total (Bloquée / Sticky) */}
           <div className="w-[350px] sticky top-10">
             <div className="bg-white p-8 rounded-lg shadow-sm border border-gray-200">
               <div className="space-y-4 pb-4 border-b border-gray-100">
@@ -64,7 +68,7 @@ export default function Panier() {
                 <div className="flex justify-between">
                   <span className="text-gray-600">Unités totales :</span>
                   <span className="text-green-600 font-bold">
-                    {items.length} (Unités)
+                    {totalUnits} (Unités)
                   </span>
                 </div>
                 <div className="flex justify-between text-gray-600">

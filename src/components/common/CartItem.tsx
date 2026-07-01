@@ -11,20 +11,28 @@ type Props = {
 const CartItem = ({ id_produit, nom_produit, prix, quantite, image }: any) => {
   const updateQuantity = useCommandeStore((state) => state.updateQuantity)
   const removeItem = useCommandeStore((state) => state.removeItem)
+
+  const API_URL = process.env.NEXT_PUBLIC_API_URL
+
+  const imageUrl = image?.startsWith("http")
+    ? image
+    : `${API_URL}/uploads/${image}`
+
   return (
     <div className="flex items-center justify-between p-6 border-b border-gray-100 last:border-0">
       {/* IMAGE + INFO */}
       <div className="flex items-center gap-6">
-        <div className="w-20 h-20 border border-gray-200 rounded p-2 flex items-center justify-center">
+        <div className="w-20 h-20 border  border-gray-200 rounded p-2 flex items-center justify-center ">
           <img
-            src={image}
+            src={imageUrl}
             alt={nom_produit}
             className="max-w-full max-h-full object-contain"
           />
+          {/* <img src="http://localhost:3001/uploads/test.png" /> */}
         </div>
 
-        <div className="flex flex-col">
-          <h3 className="font-bold text-[#1a1a1a] text-lg max-w-7 leading-snug">
+        <div className="flex flex-col  p-4">
+          <h3 className="font-bold text-[#1a1a1a] text-lg leading-snug">
             {nom_produit}
           </h3>
           <p>{prix} €</p>

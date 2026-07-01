@@ -13,6 +13,7 @@ export default function AddToCartButton({ product }: any) {
       nom_produit: product.nom_produit,
       prix: Number(product.prix),
       quantite: 1,
+      image: product.image,
     })
 
     // redirect vers panier

@@ -7,6 +7,7 @@ import {
 } from "@/services/dashboard/commande.service"
 import { useParams, useRouter } from "next/navigation"
 import { Mail, MessageSquare, Save } from "lucide-react"
+import { toast } from "react-hot-toast"
 
 export default function CommandeDetail() {
   const [statusCommande, setStatusCommande] = useState("")
@@ -17,6 +18,12 @@ export default function CommandeDetail() {
   const id = params.id
   const [commande, setCommande] = useState<any>(null)
   const router = useRouter()
+  const FINAL_STATUTS = ["LIVREE", "ANNULEE"]
+
+  const isFinalStatut = (statut?: string) => {
+    if (!statut) return false
+    return FINAL_STATUTS.includes(statut)
+  }
 
   useEffect(() => {
     const load = async () => {
@@ -59,7 +66,7 @@ export default function CommandeDetail() {
     try {
       await updateCommandeStatus(commande.id_commande, statusCommande, token!)
       router.refresh()
-      alert("Statut mis à jour")
+      toast.success("Statut mis à jour")
     } catch (error) {
       console.error(error)
 
@@ -130,7 +137,14 @@ export default function CommandeDetail() {
         <select
           value={statusCommande}
           onChange={(e) => setStatusCommande(e.target.value)}
-          className="w-full p-2.5 bg-white border border-amber-400 rounded-md shadow-sm text-sm focus:outline-none focus:ring-1 focus:ring-amber-400"
+          disabled={isFinalStatut(commande?.statut)}
+          className={`w-full p-2.5 bg-white border rounded-md shadow-sm text-sm focus:outline-none focus:ring-1
+    ${
+      isFinalStatut(commande?.statut)
+        ? "opacity-50 cursor-not-allowed border-gray-300"
+        : "border-amber-400 focus:ring-amber-400"
+    }
+  `}
         >
           <option value="EN_ATTENTE">En Attente</option>
           <option value="NEGOCIEE">Négociée</option>
@@ -183,7 +197,7 @@ export default function CommandeDetail() {
             className="flex items-center justify-center gap-2 bg-[#A7C957] hover:bg-[#70AE6E] text-white font-bold text-xs uppercase px-4 py-2.5 rounded-lg shadow transition-colors w-full"
           >
             <MessageSquare size={14} />
-            Envoyer un SMS
+            Envoyer un message
           </button>
           <label className="flex items-center gap-2 cursor-pointer select-none">
             <input
