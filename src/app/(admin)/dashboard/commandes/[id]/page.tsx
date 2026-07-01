@@ -8,6 +8,7 @@ import {
 import { useParams, useRouter } from "next/navigation"
 import { Mail, MessageSquare, Save } from "lucide-react"
 import { toast } from "react-hot-toast"
+import axios from "axios"
 
 export default function CommandeDetail() {
   const [statusCommande, setStatusCommande] = useState("")
@@ -74,8 +75,21 @@ export default function CommandeDetail() {
     }
   }
 
-  const handleSendMail = () => {
-    alert("Email envoyé au client !")
+  const handleSendMail = async () => {
+    try {
+      const token = localStorage.getItem("token")
+
+      await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/mail/send`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+
+      toast.success("Email envoyé au client !")
+    } catch (error) {
+      console.error(error)
+      toast.error("Erreur envoi email")
+    }
   }
 
   const handleSendSms = () => {
