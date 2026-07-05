@@ -68,23 +68,28 @@ export default function CommandeDetail() {
       await updateCommandeStatus(commande.id_commande, statusCommande, token!)
       router.refresh()
       toast.success("Statut mis à jour")
-    } catch (error) {
+    } catch (error: any) {
       console.error(error)
-
-      alert("Erreur lors de la mise à jour")
+      toast.error(error.message)
     }
   }
 
   const handleSendMail = async () => {
     try {
       const token = localStorage.getItem("token")
+      const email = commande.user.email
+      const name = commande.user.name
+      const status = commande.statut
 
       await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/mail/send`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
+        params: {
+          email: email,
+          commande: JSON.stringify(commande),
+        },
       })
-
       toast.success("Email envoyé au client !")
     } catch (error) {
       console.error(error)
