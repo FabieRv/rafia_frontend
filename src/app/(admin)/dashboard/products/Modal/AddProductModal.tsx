@@ -23,6 +23,7 @@ export default function AddProductModal({
   const [loading, setLoading] = useState(false)
   const [showSuccess, setShowSuccess] = useState(false)
   const [isEdit, setIsEdit] = useState(false)
+  const [file, setFile] = useState<File | null>(null)
 
   const [formData, setFormData] = useState({
     nom_produit: "",
@@ -70,14 +71,15 @@ export default function AddProductModal({
 
   // IMAGE
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
-
-    setPreview(URL.createObjectURL(file))
-    setFormData((prev) => ({
-      ...prev,
-      image: file.name,
-    }))
+    if (!e.target.files?.[0]) return
+    setFile(e.target.files?.[0])
+    if (file != null) {
+      setPreview(URL.createObjectURL(file))
+      setFormData((prev) => ({
+        ...prev,
+        image: file.name,
+      }))
+    }
   }
 
   // SUBMIT
@@ -94,17 +96,36 @@ export default function AddProductModal({
       const subCategoryName =
         currentSubCategories[formData.id_sous_categorie - 1]
 
-      const payload = {
-        nom_produit: formData.nom_produit,
-        description: formData.description,
-        prix: Number(formData.prix),
-        quantite_stock: Number(formData.quantite_stock),
-        image: formData.image,
-        type: formData.type,
-        categorie: getCategoryId(selectedCategory),
-        id_sous_categorie: Number(formData.id_sous_categorie),
-        isEdit: isEdit,
-      }
+      // const payload = {
+      //   nom_produit: formData.nom_produit,
+      //   description: formData.description,
+      //   prix: Number(formData.prix),
+      //   quantite_stock: Number(formData.quantite_stock),
+      //   image: formData.image,
+      //   type: formData.type,
+      //   categorie: getCategoryId(selectedCategory),
+      //   id_sous_categorie: Number(formData.id_sous_categorie),
+      //   isEdit: isEdit,
+      // }
+      const formDataToSend = new FormData()
+
+      formDataToSend.append("nom_produit", formData.nom_produit)
+      formDataToSend.append("description", formData.description)
+      formDataToSend.append("prix", String(Number(formData.prix)))
+      formDataToSend.append(
+        "quantite_stock",
+        String(Number(formData.quantite_stock))
+      )
+      formDataToSend.append("type", formData.type)
+      formDataToSend.append("categorie", getCategoryId(selectedCategory))
+      formDataToSend.append(
+        "id_sous_categorie",
+        String(Number(formData.id_sous_categorie))
+      )
+      formDataToSend.append("isEdit", String(isEdit))
+
+      // 👇 IMAGE (important)
+      formDataToSend.append("image", formData.image)
 
       const response = await addProduit(payload, token)
 

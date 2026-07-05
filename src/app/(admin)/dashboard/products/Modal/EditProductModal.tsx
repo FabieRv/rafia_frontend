@@ -47,8 +47,10 @@ export default function EditProductModal({
       image: productToEdit.image ?? "",
       id_sous_categorie: productToEdit.id_sous_categorie ?? 1,
     })
-
-    setPreview(productToEdit.image ?? null)
+    const urlEncoded = productToEdit.image.replace(" ", "%20")
+    const urlImageEdit =
+      process.env.NEXT_PUBLIC_API_URL + "/uploads/" + urlEncoded
+    setPreview(urlImageEdit ?? null)
   }, [productToEdit])
 
   // RESET WHEN CLOSE
@@ -107,10 +109,13 @@ export default function EditProductModal({
     if (!file) return
 
     setPreview(URL.createObjectURL(file))
+
     setFormData((prev) => ({
       ...prev,
       image: file.name,
     }))
+
+    console.log("----------------FORMDATA----------------------"+JSON.stringify(formData));
   }
 
   // SUBMIT

@@ -1,4 +1,4 @@
-export function getCategoryId(category: string): number | null {
+export function getCategoryId(category: string): number {
   const categories: Record<string, number> = {
     chapeaux: 1,
     panier: 2,
@@ -6,5 +6,5 @@ export function getCategoryId(category: string): number | null {
     pochette: 4,
   }
 
-  return categories[category.toLowerCase()] ?? null
+  return categories[category.toLowerCase()]
 }

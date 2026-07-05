@@ -16,7 +16,7 @@ export const ADMIN_MENU_ITEMS: NavItem[] = [
   { title: "Commandes", icon: ShoppingBag, href: "/dashboard/commandes" },
   { title: "Produits", icon: PlusCircle, href: "/dashboard/products" },
 
-  { title: "Analytiques", icon: BarChart3, href: "/dashboard/analytics" },
+  // { title: "Analytiques", icon: BarChart3, href: "/dashboard/analytics" },
   {
     title: "Messages",
     icon: MessageSquare,
