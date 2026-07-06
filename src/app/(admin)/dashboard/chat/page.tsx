@@ -29,11 +29,7 @@ export default function ChatPage() {
     setSocket(socketInstance)
 
     const loadConversations = async () => {
-      const data = await getMessages(
-        currentUser.role,
-        currentUser.id,
-        savedToken
-      )
+      const data = await getMessages(currentUser.id, savedToken)
       setConversations(data)
     }
     loadConversations()

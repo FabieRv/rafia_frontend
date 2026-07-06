@@ -58,7 +58,7 @@ export default function ProductTable() {
 
   useEffect(() => {
     loadProducts()
-  }, [])
+  }, [products])
 
   const handleDelete = async (id: number) => {
     const confirmDelete = confirm("Supprimer ce produit ?")
@@ -205,7 +205,6 @@ export default function ProductTable() {
                   </tr>
                 ) : (
                   currentProducts.map((p) => (
-                    
                     <tr
                       key={p.id_produit}
                       className="hover:bg-slate-50/50 transition"
@@ -220,7 +219,6 @@ export default function ProductTable() {
                         <div className="inline-flex items-center justify-center w-14 h-14 bg-gray-100 rounded-2xl overflow-hidden p-1 shadow-inner border border-gray-100">
                           {/* image ici*/}
                           {p.image ? (
-                            
                             <img
                               src={`${API_URL}/uploads/${p.image}`}
                               // src={p.image}

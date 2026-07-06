@@ -25,28 +25,63 @@ export default function ChatWindow({
   const [messagesList, setMessagesList] = useState<any[]>([])
   const [showEmojiPicker, setShowEmojiPicker] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
+  const [userCurrent, setUserCurrent] = useState()
 
-  // Récupération de l'historique des messages
   useEffect(() => {
     if (!selectedConv) return
+    const userNow = localStorage.getItem("user")
+    if (!userNow) {
+      alert("Vous devez vous connecter")
+      return
+    }
+    setUserCurrent(JSON.parse(userNow))
 
     const fetchHistory = async () => {
-      const otherUser = selectedConv.users.find(
-        (user: any) => user.id_user !== String(currentUser.id)
+      // 1. Sécurité : Vérifier que la conversation et ses utilisateurs existent
+      if (!selectedConv || !Array.isArray(selectedConv.users)) return
+
+      // 2. Récupérer l'utilisateur actuel depuis le localStorage via son e-mail
+      const userSessionString = localStorage.getItem("user") || ""
+      if (!userSessionString) {
+        console.error("Aucune session utilisateur trouvée")
+        return
+      }
+      const currentUserSession = JSON.parse(userSessionString)
+
+      // 3. Identifier mon profil dans la conversation courante
+      const myProfile = selectedConv.users.find(
+        (u: any) => u.email === currentUserSession.email
       )
-      if (!otherUser) return
+      if (!myProfile) {
+        console.warn(
+          "L'utilisateur actuel ne fait pas partie de cette conversation"
+        )
+        return
+      }
 
       try {
+        // 4. Exécuter la requête HTTP
         const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/chat/messages/${currentUser.id}/${otherUser.id_user}`,
+          `${process.env.NEXT_PUBLIC_API_URL}/chat/conversation/${selectedConv.id}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }
         )
+
+        // 5. Intercepter les erreurs serveurs (ex: Token expiré, 404, etc.)
+        if (!res.ok) {
+          const errorText = await res.text()
+          throw new Error(errorText || `Erreur HTTP : ${res.status}`)
+        }
+
         const data = await res.json()
-        setMessagesList(data)
+
+        // 6. Mise à jour de l'état avec validation du format de tableau
+        const messages = Array.isArray(data) ? data : data.messages || []
+        setMessagesList(messages)
       } catch (err) {
-        console.error("Erreur lors de la récupération des messages", err)
+        console.error("Erreur lors de la récupération des messages :", err)
+        setMessagesList([]) // Fallback sécurisé en cas de crash
       }
     }
 
@@ -121,78 +156,80 @@ export default function ChatWindow({
         </div>
 
         <div className="space-y-4 flex-1 flex flex-col">
-          {messagesList.map((msg) => {
-            // Vérification : est-ce moi l'expéditeur (Sender) ?
-            const isSender = String(msg.senderId) === String(currentUser.id)
+          {Array.isArray(messagesList) &&
+            messagesList.map((msg) => {
+              // CORRECTION : Extraction de l'ID depuis l'objet 'sender' imbriqué ou 'senderId' (fallback socket)
+              const msgSenderId = msg.sender?.id_user || msg.senderId
+              const isSender = String(msgSenderId) === String(currentUser.id)
 
-            // Formatage de l'heure
-            const messageTime = new Date(msg.createdAt).toLocaleTimeString(
-              "fr-FR",
-              {
-                hour: "2-digit",
-                minute: "2-digit",
-              }
-            )
+              // Formatage de l'heure
+              const messageTime = new Date(msg.createdAt).toLocaleTimeString(
+                "fr-FR",
+                {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                }
+              )
 
-            const isRead = msg.isRead ?? false
+              const isRead = msg.isRead ?? false
 
-            return (
-              <div
-                key={msg.id}
-                className={`flex items-end gap-2 max-w-[70%] ${
-                  isSender ? "ml-auto justify-end" : "mr-auto justify-start"
-                }`}
-              >
-                {/* Emplacement de l'avatar du RECEIVER (à gauche) */}
-                {!isSender && (
-                  <div className="w-6 h-6 bg-slate-200 rounded-full flex items-center justify-center text-xs text-slate-500 shadow-sm">
-                    👤
-                  </div>
-                )}
-
-                {/* Conteneur texte + heure : alignement inversé selon le rôle */}
+              return (
                 <div
-                  className={`flex flex-col ${
-                    isSender ? "items-end" : "items-start"
+                  key={msg.id}
+                  className={`flex items-end gap-2 max-w-[70%] ${
+                    isSender ? "ml-auto justify-end" : "mr-auto justify-start"
                   }`}
                 >
-                  {/* Différenciation de la couleur du message */}
+                  {/* Emplacement de l'avatar du RECEIVER (à gauche) */}
+                  {!isSender && (
+                    <div className="w-6 h-6 bg-slate-200 rounded-full flex items-center justify-center text-xs text-slate-500 shadow-sm">
+                      👤
+                    </div>
+                  )}
+
+                  {/* Conteneur texte + heure : alignement inversé selon le rôle */}
                   <div
-                    className={`px-4 py-2.5 rounded-2xl shadow-sm text-sm ${
-                      isSender
-                        ? "bg-linear-to-r from-pink-400 to-rose-400 text-white rounded-tr-none"
-                        : "bg-white border border-slate-100 text-slate-800 rounded-tl-none"
+                    className={`flex flex-col ${
+                      isSender ? "items-end" : "items-start"
                     }`}
                   >
-                    {msg.content}
+                    {/* Différenciation de la couleur du message */}
+                    <div
+                      className={`px-4 py-2.5 rounded-2xl shadow-sm text-sm ${
+                        isSender
+                          ? "bg-linear-to-r from-pink-400 to-rose-400 text-white rounded-tr-none"
+                          : "bg-white border border-slate-100 text-slate-800 rounded-tl-none"
+                      }`}
+                    >
+                      {msg.content}
+                    </div>
+
+                    {/* Heure et statut de lecture */}
+                    <span className="text-[10px] text-slate-400 mt-1 flex items-center gap-0.5">
+                      {messageTime}
+                      {isSender && (
+                        <span
+                          className={
+                            isRead
+                              ? "text-emerald-500 font-bold"
+                              : "text-slate-400"
+                          }
+                        >
+                          {isRead ? " ✓✓" : " ✓"}
+                        </span>
+                      )}
+                    </span>
                   </div>
 
-                  {/* Heure et statut de lecture */}
-                  <span className="text-[10px] text-slate-400 mt-1 flex items-center gap-0.5">
-                    {messageTime}
-                    {isSender && (
-                      <span
-                        className={
-                          isRead
-                            ? "text-emerald-500 font-bold"
-                            : "text-slate-400"
-                        }
-                      >
-                        {isRead ? " ✓✓" : " ✓"}
-                      </span>
-                    )}
-                  </span>
+                  {/* Emplacement de l'avatar du SENDER (à droite) */}
+                  {isSender && (
+                    <div className="w-6 h-6 bg-slate-300 rounded-full flex items-center justify-center text-xs text-white font-bold shadow-sm">
+                      {currentUser.role === "ADMIN" ? "A" : "U"}
+                    </div>
+                  )}
                 </div>
-
-                {/* Emplacement de l'avatar du SENDER (à droite) */}
-                {isSender && (
-                  <div className="w-6 h-6 bg-slate-300 rounded-full flex items-center justify-center text-xs text-white font-bold shadow-sm">
-                    {currentUser.role === "ADMIN" ? "A" : "U"}
-                  </div>
-                )}
-              </div>
-            )
-          })}
+              )
+            })}
           <div ref={messagesEndRef} />
         </div>
       </div>

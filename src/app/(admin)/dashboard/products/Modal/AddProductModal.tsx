@@ -9,6 +9,17 @@ import { addProduit, updateProduit } from "@/services/produitServices"
 import { AddProductModalProps } from "@/types/global"
 import { getCategoryId } from "@/utils/helper"
 
+interface ProductFormData {
+  nom_produit: string
+  description: string
+  prix: number
+  quantite_stock: number
+  type: string
+  image: string
+  id_sous_categorie: number
+  fichier: File | null
+}
+
 export default function AddProductModal({
   isOpen,
   onClose,
@@ -25,7 +36,7 @@ export default function AddProductModal({
   const [isEdit, setIsEdit] = useState(false)
   const [file, setFile] = useState<File | null>(null)
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<ProductFormData>({
     nom_produit: "",
     description: "",
     prix: 0,
@@ -33,6 +44,7 @@ export default function AddProductModal({
     type: "RAFIA",
     image: "",
     id_sous_categorie: 1,
+    fichier: null,
   })
   // RESET WHEN CLOSE
   useEffect(() => {
@@ -45,6 +57,7 @@ export default function AddProductModal({
         type: "RAFIA",
         image: "",
         id_sous_categorie: 1,
+        fichier: null,
       })
       setPreview(null)
     }
@@ -71,15 +84,15 @@ export default function AddProductModal({
 
   // IMAGE
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.files?.[0]) return
-    setFile(e.target.files?.[0])
-    if (file != null) {
-      setPreview(URL.createObjectURL(file))
-      setFormData((prev) => ({
-        ...prev,
-        image: file.name,
-      }))
-    }
+    const selectedFile = e.target.files?.[0]
+    if (!selectedFile) return
+    setFile(selectedFile)
+    setPreview(URL.createObjectURL(selectedFile))
+    setFormData((prev) => ({
+      ...prev,
+      image: selectedFile.name,
+      fichier: selectedFile,
+    }))
   }
 
   // SUBMIT
@@ -88,53 +101,40 @@ export default function AddProductModal({
 
     if (loading) return
     setLoading(true)
-
     try {
       const token = localStorage.getItem("token") || ""
       const currentSubCategories = SUB_CATEGORIES_DATA[selectedCategory]
-
       const subCategoryName =
         currentSubCategories[formData.id_sous_categorie - 1]
 
-      // const payload = {
-      //   nom_produit: formData.nom_produit,
-      //   description: formData.description,
-      //   prix: Number(formData.prix),
-      //   quantite_stock: Number(formData.quantite_stock),
-      //   image: formData.image,
-      //   type: formData.type,
-      //   categorie: getCategoryId(selectedCategory),
-      //   id_sous_categorie: Number(formData.id_sous_categorie),
-      //   isEdit: isEdit,
-      // }
+      // 1. Préparation propre du FormData (uniquement les propriétés attendues par l'API)
       const formDataToSend = new FormData()
-
       formDataToSend.append("nom_produit", formData.nom_produit)
       formDataToSend.append("description", formData.description)
-      formDataToSend.append("prix", String(Number(formData.prix)))
-      formDataToSend.append(
-        "quantite_stock",
-        String(Number(formData.quantite_stock))
-      )
+      formDataToSend.append("prix", String(formData.prix))
+      formDataToSend.append("quantite_stock", String(formData.quantite_stock))
       formDataToSend.append("type", formData.type)
-      formDataToSend.append("categorie", getCategoryId(selectedCategory))
       formDataToSend.append(
         "id_sous_categorie",
-        String(Number(formData.id_sous_categorie))
+        String(formData.id_sous_categorie)
       )
-      formDataToSend.append("isEdit", String(isEdit))
 
-      // 👇 IMAGE (important)
-      formDataToSend.append("image", formData.image)
+      if (formData.fichier) {
+        formDataToSend.append("image", formData.fichier)
+      }
 
-      const response = await addProduit(payload, token)
+      // 2. Envoi à l'API
+      const response = await addProduit(formDataToSend, token)
 
+      // 3. Construction de l'objet local pour mettre à jour l'affichage Front-End
       const newProduct = {
         ...(response || {}),
         nom_produit: formData.nom_produit,
         prix: formData.prix,
         quantite_stock: formData.quantite_stock,
-        image: formData.image,
+        image: formData.fichier
+          ? URL.createObjectURL(formData.fichier)
+          : formData.image,
         sous_category: {
           nom_sous_categorie: subCategoryName,
           category: {
@@ -144,10 +144,10 @@ export default function AddProductModal({
             },
           },
         },
-
         date_ajout: response?.date_ajout || new Date().toISOString(),
       }
-      console.log("++++++++++++newProduct++++++++" + JSON.stringify(newProduct))
+
+      console.log("++++++++++++newProduct++++++++", JSON.stringify(newProduct))
       setShowSuccess(true)
 
       setTimeout(() => {

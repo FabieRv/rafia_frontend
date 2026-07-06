@@ -7,6 +7,8 @@ import { SUB_CATEGORIES_DATA } from "@/components/constant"
 import SuccessPopup from "@/components/common/SuccessPopup"
 import { addProduit, updateProduit } from "@/services/produitServices"
 import { EditProductModalProps } from "@/types/global"
+import { getCategoryId } from "@/utils/helper"
+import { json } from "stream/consumers"
 
 export default function EditProductModal({
   isOpen,
@@ -16,6 +18,18 @@ export default function EditProductModal({
 }: EditProductModalProps) {
   const fileInputRef = useRef<HTMLInputElement>(null)
 
+  interface ProductFormData {
+    nom_produit: string
+    description: string
+    prix: number
+    quantite_stock: number
+    type: string
+    categorie: number
+    image: string
+    id_sous_categorie: number
+    fichier: File | null
+  }
+
   const [selectedCategory, setSelectedCategory] =
     useState<keyof typeof SUB_CATEGORIES_DATA>("Chapeaux")
 
@@ -24,20 +38,27 @@ export default function EditProductModal({
   const [showSuccess, setShowSuccess] = useState(false)
   const [isEdit, setIsEdit] = useState(true)
 
-  const [formData, setFormData] = useState({
+  const [file, setFile] = useState<File | null>(null)
+
+  const [formData, setFormData] = useState<ProductFormData>({
     nom_produit: "",
     description: "",
     prix: 0,
     quantite_stock: 0,
     type: "RAFIA",
     image: "",
+    categorie: 1,
     id_sous_categorie: 1,
+    fichier: null,
   })
 
   // EDIT MODE
   useEffect(() => {
     if (!productToEdit) return
-
+    console.log(
+      "-------------------------producttoedit  ok?--------------------" +
+        JSON.stringify(productToEdit)
+    )
     setFormData({
       nom_produit: productToEdit.nom_produit ?? "",
       description: productToEdit.description ?? "",
@@ -45,7 +66,9 @@ export default function EditProductModal({
       quantite_stock: productToEdit.quantite_stock ?? 0,
       type: productToEdit.sous_category?.category?.type?.nom_type ?? "RAFIA",
       image: productToEdit.image ?? "",
+      categorie: productToEdit.id_categorie,
       id_sous_categorie: productToEdit.id_sous_categorie ?? 1,
+      fichier: null,
     })
     const urlEncoded = productToEdit.image.replace(" ", "%20")
     const urlImageEdit =
@@ -64,30 +87,12 @@ export default function EditProductModal({
         type: "RAFIA",
         image: "",
         id_sous_categorie: 1,
+        categorie: 1,
+        fichier: null,
       })
       setPreview(null)
     }
   }, [isOpen])
-
-  // HANDLE INPUT
-  //   const handleInputChange = (
-  //     e: React.ChangeEvent<
-  //       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-  //     >
-  //   ) => {
-  //     const { name, value } = e.target
-
-  //     setFormData((prev) => ({
-  //       ...prev,
-  //       [name]:
-  //         name === "prix" ||
-  //         name === "quantite_stock" ||
-  //         name === "id_sous_categorie"
-  //           ? Number(value)
-  //           : value,
-  //     }))
-  //   }
-
   const handleInputChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
@@ -105,17 +110,15 @@ export default function EditProductModal({
 
   // IMAGE
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
-
-    setPreview(URL.createObjectURL(file))
-
+    const selectedFile = e.target.files?.[0]
+    if (!selectedFile) return
+    setFile(selectedFile)
+    setPreview(URL.createObjectURL(selectedFile))
     setFormData((prev) => ({
       ...prev,
-      image: file.name,
+      image: selectedFile.name,
+      fichier: selectedFile,
     }))
-
-    console.log("----------------FORMDATA----------------------"+JSON.stringify(formData));
   }
 
   // SUBMIT
@@ -127,27 +130,40 @@ export default function EditProductModal({
 
     try {
       const token = localStorage.getItem("token") || ""
+
+      console.log("--------FORMDATA---------" + JSON.stringify(formData))
+
+      const dataToSend = new FormData()
+      // 2. Remplir le FormData avec les clés attendues par votre DTO
+      dataToSend.append("nom_produit", formData.nom_produit)
+      dataToSend.append("description", formData.description)
+      dataToSend.append("type", formData.type)
+      dataToSend.append("prix", formData.prix.toString())
+      dataToSend.append("quantite_stock", "" + formData.quantite_stock)
+      dataToSend.append("categorie", "" + getCategoryId(selectedCategory))
+      dataToSend.append(
+        "id_sous_categorie",
+        String(Number(formData.id_sous_categorie))
+      )
+
+      // 3. Ajouter le fichier image s'il a été modifié/sélectionné (ex: stocké dans un state 'file')
+      if (file) {
+        dataToSend.append("image", file)
+      } else {
+        dataToSend.append("image", formData.image) // Garde l'ancienne chaîne textuelle si pas de changement
+      }
+
+      const idProduit = productToEdit.id_produit
+
+      // 4. Envoyer le FormData à votre fonction
+      const response = await updateProduit(idProduit, dataToSend, token)
+
       console.log("isEdit: --------------------------" + isEdit)
       const currentSubCategories = SUB_CATEGORIES_DATA[selectedCategory]
       const subCategoryName =
         currentSubCategories[formData.id_sous_categorie - 1]
 
-      //   const payload = {
-      //     nom_produit: formData.nom_produit,
-      //     description: formData.description,
-      //     prix: Number(formData.prix),
-      //     quantite_stock: Number(formData.quantite_stock),
-      //     image: formData.image,
-      //     type: formData.type,
-      //     categorie: selectedCategory,
-      //     id_sous_categorie: Number(formData.id_sous_categorie),
-      //     isEdit: isEdit,
-      //   }
-
-      console.log("-------FORMDATA-------" + JSON.stringify(formData))
-
-      const idProduit = productToEdit.id_produit
-      const response = await updateProduit(idProduit, formData, token)
+      console.log("-------FORMDATA-------" + JSON.stringify(dataToSend))
 
       const newProduct = {
         ...response,
@@ -247,6 +263,7 @@ export default function EditProductModal({
                   Catégorie
                 </label>
                 <select
+                  name="categorie"
                   value={selectedCategory}
                   onChange={(e) =>
                     setSelectedCategory(

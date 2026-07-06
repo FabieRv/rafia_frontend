@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react"
-import { getMessages } from "@/services/chat.service"
 
 interface ChatSidebarProps {
   conversations: any[]

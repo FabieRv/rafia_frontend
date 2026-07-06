@@ -91,7 +91,7 @@ export default function TopProduits() {
 
         <ViewAllButton
           label="Voir tous les produits"
-          href="/model"
+          href="/modele"
           isInView={isInView}
         />
       </Container>

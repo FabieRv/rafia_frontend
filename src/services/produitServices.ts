@@ -18,41 +18,41 @@ export async function getProductById(id: number) {
   return product
 }
 
-export async function addProduit(data: any, token: string) {
+// UPDATE
+
+export async function addProduit(data: Record<string, any>, token: string) {
   try {
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/products/add`, {
       method: "POST",
       headers: {
-        "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
       },
       body: JSON.stringify(data),
     })
 
+    const result = await res.json().catch(() => null)
+
     if (!res.ok) {
-      const errorData = await res.json()
-      throw new Error(errorData.message || "Erreur lors de la création")
+      throw new Error(
+        result?.message || "Erreur lors de la création du produit"
+      )
     }
 
-    return await res.json()
-  } catch (error) {
-    console.error("Erreur service addProduit:", error)
+    return result
+  } catch (error: any) {
+    console.error("Erreur service addProduit:", error?.message || error)
+    throw error
   }
 }
 
-// UPDATE
-export async function updateProduit(
-  id: number,
-  data: any,
-  token: string
-) {
+export async function updateProduit(id: number, data: any, token: string) {
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/products/${id}`, {
     method: "PATCH",
     headers: {
-      "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify(data),
+    body: data,
   })
   if (!res.ok) {
     const text = await res.text()

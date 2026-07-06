@@ -21,7 +21,6 @@ export const ADMIN_MENU_ITEMS: NavItem[] = [
     title: "Messages",
     icon: MessageSquare,
     href: "/dashboard/chat",
-    badge: 26,
   },
   { title: "Logout", icon: User, href: "admin/logout" },
 ]
@@ -58,8 +57,8 @@ export const ACCORDION_ITEMS = [
   },
   {
     id: 5,
-    title: "Savoir-faire",
-    imageUrl: "/img/savoir-faire.png",
+    title: "Les bijoux artisanaux",
+    imageUrl: "/img/bisou.webp",
   },
 ]
 
