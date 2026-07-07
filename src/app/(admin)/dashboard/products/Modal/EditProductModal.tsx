@@ -2,14 +2,53 @@
 
 import { IoMdClose } from "react-icons/io"
 import { FaCloudUploadAlt } from "react-icons/fa"
-import { useRef, useState, useEffect } from "react"
-import { SUB_CATEGORIES_DATA } from "@/components/constant"
+import { useRef, useState, useEffect, useCallback } from "react"
 import SuccessPopup from "@/components/common/SuccessPopup"
-import { addProduit, updateProduit } from "@/services/produitServices"
+import { updateProduit } from "@/services/produitServices"
 import { EditProductModalProps } from "@/types/global"
-import { getCategoryId } from "@/utils/helper"
-import { json } from "stream/consumers"
-import axios from "axios"
+
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+interface ProductFormData {
+  nom_produit: string
+  description: string
+  prix: number
+  quantite_stock: number
+  type: string
+  categorie: number
+  image: string
+  id_sous_categorie: number
+}
+
+interface SubCategory {
+  id_sous_categorie: number
+  nom_sous_categorie: string
+  description: string
+  date_creation: string
+  id_categorie: number
+}
+
+interface Category {
+  id_categorie: number
+  nom_categorie: string
+  description: string
+  id_type: number
+}
+
+// ─── Valeurs par défaut ────────────────────────────────────────────────────────
+
+const DEFAULT_FORM: ProductFormData = {
+  nom_produit: "",
+  description: "",
+  prix: 0,
+  quantite_stock: 0,
+  type: "RAFIA",
+  image: "",
+  categorie: 1,
+  id_sous_categorie: 1,
+}
+
+// ─── Composant ────────────────────────────────────────────────────────────────
 
 export default function EditProductModal({
   isOpen,
@@ -19,279 +58,228 @@ export default function EditProductModal({
 }: EditProductModalProps) {
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  interface ProductFormData {
-    nom_produit: string
-    description: string
-    prix: number
-    quantite_stock: number
-    type: string
-    categorie: number
-    image: string
-    id_sous_categorie: number
-    fichier: File | null
-  }
-
-  interface SubCategory {
-    id_sous_categorie: number
-    nom_sous_categorie: string
-    description: string
-    date_creation: string // Présent dans votre JSON
-    id_categorie: number // Fait le lien avec selectedCategory.id_categorie
-  }
-
-  interface Category {
-    id_categorie: number
-    nom_categorie: string
-    description: string
-    id_type: number
-  }
-
-  const [selectedCategory, setSelectedCategory] = useState<Category>({
-    id_categorie: 0,
-    nom_categorie: "",
-    description: "",
-    id_type: 0,
-  })
-
-  const [selectedSubCategory, setSelectedSubCategory] = useState<SubCategory>({
-    id_sous_categorie: 0,
-    nom_sous_categorie: "",
-    description: "",
-    date_creation: "",
-    id_categorie: 0,
-  })
   const [categories, setCategories] = useState<Category[]>([])
   const [sousCategories, setSousCategories] = useState<SubCategory[]>([])
-
+  const [selectedCategoryId, setSelectedCategoryId] = useState<number>(1)
+  const [selectedSubCategoryId, setSelectedSubCategoryId] = useState<number>(1)
   const [preview, setPreview] = useState<string | null>(null)
+  const [file, setFile] = useState<File | null>(null)
   const [loading, setLoading] = useState(false)
   const [showSuccess, setShowSuccess] = useState(false)
-  const [isEdit, setIsEdit] = useState(true)
+  const [formData, setFormData] = useState<ProductFormData>(DEFAULT_FORM)
 
-  const [file, setFile] = useState<File | null>(null)
+  // ─── Helpers API ────────────────────────────────────────────────────────────
 
-  const [formData, setFormData] = useState<ProductFormData>({
-    nom_produit: "",
-    description: "",
-    prix: 0,
-    quantite_stock: 0,
-    type: "RAFIA",
-    image: "",
-    categorie: 1,
-    id_sous_categorie: 1,
-    fichier: null,
-  })
+  const getToken = () => localStorage.getItem("token") || ""
 
-  useEffect(() => {
-    const token = localStorage.getItem("token") || ""
-    const fetchData = async () => {
-      try {
-        const token = localStorage.getItem("token") || ""
-        const categors: any = await getAllCategory()
-        setCategories(categors)
-        const subCategories: any = await getAllSouscategory()
-        setSousCategories(subCategories.data || subCategories)
-        console.log(
-          "---------------subCategories----------" +
-            JSON.stringify(subCategories)
-        )
-      } catch (error) {
-        console.error("Erreur lors de la récupération des données :", error)
-      }
-    }
-    fetchData()
-  }, [])
-
-  const getAllCategory = async () => {
-    const token = localStorage.getItem("token") || ""
+  const fetchCategories = useCallback(async (): Promise<Category[]> => {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/products/category/find`,
-      {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
+      { headers: { Authorization: `Bearer ${getToken()}` } }
     )
     return res.json()
-  }
+  }, [])
 
-  const getAllSouscategory = async () => {
-    const token = localStorage.getItem("token") || ""
+  const fetchSousCategories = useCallback(async (): Promise<SubCategory[]> => {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/products/sous_category/find`,
-      {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
+      { headers: { Authorization: `Bearer ${getToken()}` } }
     )
-    return res.json()
-  }
+    const data = await res.json()
+    // Gère les deux formats : tableau direct ou { data: [...] }
+    return Array.isArray(data) ? data : data.data ?? []
+  }, [])
+  useEffect(() => {   console.log("productToEdit reçu :", productToEdit)   ;
+    console.log("id_categorie :", productToEdit?.id_categorie)   ;
+    console.log("id_sous_categorie :", productToEdit?.id_sous_categorie) }, [productToEdit])
 
-  // EDIT MODE
-  // EDIT MODE
-  useEffect(() => {
-    if (!productToEdit) return
-
-    setFormData({
-      nom_produit: productToEdit.nom_produit ?? "",
-      description: productToEdit.description ?? "",
-      prix: productToEdit.prix ?? 0,
-      quantite_stock: productToEdit.quantite_stock ?? 0,
-      type:
-        productToEdit.type ??
-        productToEdit.sous_category?.category?.type?.nom_type ??
-        "RAFIA",
-      image: productToEdit.image ?? "",
-      categorie: productToEdit.id_categorie,
-      id_sous_categorie: productToEdit.id_sous_categorie ?? 1,
-      fichier: null,
-    })
-
-    // 🌟 SYNC 1 : Trouver la catégorie complète du produit et l'activer
-    if (categories.length > 0) {
-      const matchedCat = categories.find(
-        (c) => c.id_categorie === productToEdit.id_categorie
-      )
-      if (matchedCat) {
-        setSelectedCategory(matchedCat)
+    useEffect(() => {
+      if (isOpen && productToEdit) {
+        console.log("Structure complète productToEdit :", JSON.stringify(productToEdit, null, 2))
       }
-    }
+    }, [isOpen, productToEdit])
+ 
+  // ─── EFFECT UNIQUE : chargement + initialisation ─────────────────────────────
+  // Se déclenche uniquement quand la modal s'ouvre ou que productToEdit change
 
-    // 🌟 SYNC 2 : Trouver la sous-catégorie complète du produit et l'activer
-    if (sousCategories.length > 0) {
-      const matchedSub = sousCategories.find(
-        (s) => s.id_sous_categorie === productToEdit.id_sous_categorie
-      )
-      if (matchedSub) {
-        setSelectedSubCategory(matchedSub)
-      }
-    }
-
-    const urlEncoded = productToEdit.image.replace(" ", "%20")
-    const urlImageEdit =
-      process.env.NEXT_PUBLIC_API_URL + "/uploads/" + urlEncoded
-    setPreview(urlImageEdit ?? null)
-
-    // Ajout indispensable de categories et sousCategories dans les dépendances
-  }, [productToEdit, categories, sousCategories])
-
-  // RESET WHEN CLOSE
   useEffect(() => {
     if (!isOpen) {
-      setFormData({
-        nom_produit: "",
-        description: "",
-        prix: 0,
-        quantite_stock: 0,
-        type: "RAFIA",
-        image: "",
-        id_sous_categorie: 1,
-        categorie: 1,
-        fichier: null,
-      })
+      // Reset complet à la fermeture
+      setFormData(DEFAULT_FORM)
       setPreview(null)
+      setFile(null)
+      setSelectedCategoryId(1)
+      setSelectedSubCategoryId(1)
+      return
     }
-  }, [isOpen])
+   
+    // ✅ ÉTAPE 1 : Initialisation IMMÉDIATE depuis productToEdit
+    // Sans attendre l'API → pas de flash avec les valeurs par défaut
+    if (productToEdit) {
+      const catId = productToEdit.id_categorie
+        ?? productToEdit.sous_category?.category?.id_categorie
+        ?? 1
+   
+      const subCatId = productToEdit.id_sous_categorie
+        ?? productToEdit.sous_category?.id_sous_categorie
+        ?? 1
+   
+      // ✅ On set les IDs AVANT le fetch
+      setSelectedCategoryId(catId)
+      setSelectedSubCategoryId(subCatId)
+   
+      setFormData({
+        nom_produit:     productToEdit.nom_produit     ?? "",
+        description:     productToEdit.description     ?? "",
+        prix:            productToEdit.prix            ?? 0,
+        quantite_stock:  productToEdit.quantite_stock  ?? 0,
+        type:
+          productToEdit.type
+          ?? productToEdit.sous_category?.category?.type?.nom_type
+          ?? "RAFIA",
+        image:           productToEdit.image           ?? "",
+        categorie:       catId,
+        id_sous_categorie: subCatId,
+      })
+   
+      // ✅ Image preview immédiate
+      if (productToEdit.image) {
+        const urlEncoded = productToEdit.image.replace(/ /g, "%20")
+        setPreview(`${process.env.NEXT_PUBLIC_API_URL}/uploads/${urlEncoded}`)
+      }
+    }
+   
+    // ✅ ÉTAPE 2 : Chargement des listes en arrière-plan (ne touche PAS formData)
+    const loadLists = async () => {
+      try {
+        const [cats, subCats] = await Promise.all([
+          fetchCategories(),
+          fetchSousCategories(),
+        ])
+        setCategories(cats)
+        setSousCategories(subCats)
+        // ⚠️ On ne réinitialise PAS formData ici → les valeurs restent correctes
+      } catch (error) {
+        console.error("Erreur chargement listes :", error)
+      }
+    }
+   
+    loadLists()
+   
+  }, [isOpen, productToEdit])
+
+  // ─── Sous-catégories filtrées selon la catégorie sélectionnée ───────────────
+
+  const filteredSubCategories = sousCategories.filter(
+    (sub) => sub.id_categorie === selectedCategoryId
+  )
+
+  // ─── Handlers ───────────────────────────────────────────────────────────────
+
   const handleInputChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
     >
   ) => {
     const { name, value } = e.target
-
-    const numberFields = ["prix", "quantite_stock", "id_sous_categorie"]
-
+    const numberFields = ["prix", "quantite_stock"]
     setFormData((prev) => ({
       ...prev,
-      [name]: numberFields.includes(name) ? safeNumber(value) : value,
+      [name]: numberFields.includes(name) ? (value === "" ? 0 : Number(value)) : value,
     }))
   }
 
-  // IMAGE
+  const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newCatId = Number(e.target.value)
+    setSelectedCategoryId(newCatId)
+    setFormData((prev) => ({ ...prev, categorie: newCatId }))
+
+    // Auto-sélectionne la première sous-catégorie de la nouvelle catégorie
+    const firstSub = sousCategories.find(
+      (sub) => sub.id_categorie === newCatId
+    )
+    if (firstSub) {
+      setSelectedSubCategoryId(firstSub.id_sous_categorie)
+      setFormData((prev) => ({
+        ...prev,
+        categorie: newCatId,
+        id_sous_categorie: firstSub.id_sous_categorie,
+      }))
+    }
+  }
+
+  const handleSubCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newSubId = Number(e.target.value)
+    setSelectedSubCategoryId(newSubId)
+    setFormData((prev) => ({ ...prev, id_sous_categorie: newSubId }))
+  }
+
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0]
     if (!selectedFile) return
     setFile(selectedFile)
     setPreview(URL.createObjectURL(selectedFile))
-    setFormData((prev) => ({
-      ...prev,
-      image: selectedFile.name,
-      fichier: selectedFile,
-    }))
+    setFormData((prev) => ({ ...prev, image: selectedFile.name }))
   }
 
-  // SUBMIT
+  // ─── Submit ──────────────────────────────────────────────────────────────────
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-
     if (loading) return
     setLoading(true)
 
     try {
-      const token = localStorage.getItem("token") || ""
-
-      console.log("--------FORMDATA---------" + JSON.stringify(formData))
-
       const dataToSend = new FormData()
-      // 2. Remplir le FormData avec les clés attendues par votre DTO
       dataToSend.append("nom_produit", formData.nom_produit)
       dataToSend.append("description", formData.description)
       dataToSend.append("type", formData.type)
       dataToSend.append("prix", formData.prix.toString())
-      dataToSend.append("quantite_stock", "" + formData.quantite_stock)
-      dataToSend.append("categorie", "" + selectedCategory.id_categorie)
-      dataToSend.append(
-        "id_sous_categorie",
-        String(Number(formData.id_sous_categorie))
-      )
+      dataToSend.append("quantite_stock", formData.quantite_stock.toString())
+      dataToSend.append("categorie", selectedCategoryId.toString())
+      dataToSend.append("id_sous_categorie", selectedSubCategoryId.toString())
 
-      // 3. Ajouter le fichier image s'il a été modifié/sélectionné (ex: stocké dans un state 'file')
       if (file) {
         dataToSend.append("image", file)
       } else {
-        dataToSend.append("image", formData.image) // Garde l'ancienne chaîne textuelle si pas de changement
+        dataToSend.append("image", formData.image)
       }
 
-      const idProduit = productToEdit.id_produit
-
-      // 4. Envoyer le FormData à votre fonction
-      const response = await updateProduit(idProduit, dataToSend, token)
-
-      console.log("isEdit: --------------------------" + isEdit)
-      const currentSubCategories = selectedCategory
-      const subCategoryName = selectedSubCategory.nom_sous_categorie
-
-      console.log(
-        "-------FORMDATA-------" + JSON.stringify(dataToSend.entries())
+      const response = await updateProduit(
+        productToEdit.id_produit,
+        dataToSend,
+        getToken()
       )
 
-      const newProduct = {
-        id_sous_categorie: selectedSubCategory.id_sous_categorie,
+      // Construction de l'objet retourné au parent
+      const selectedCat = categories.find(
+        (c) => c.id_categorie === selectedCategoryId
+      )
+      const selectedSub = sousCategories.find(
+        (s) => s.id_sous_categorie === selectedSubCategoryId
+      )
+
+      const updatedProduct = {
+        ...response,
+        id_sous_categorie: selectedSubCategoryId,
         nom_produit: formData.nom_produit,
         prix: formData.prix,
         quantite_stock: formData.quantite_stock,
         image: formData.image,
         sous_category: {
-          nom_sous_categorie: subCategoryName,
+          nom_sous_categorie: selectedSub?.nom_sous_categorie ?? "",
           category: {
-            nom_categorie: selectedCategory,
-            type: {
-              nom_type: formData.type,
-            },
+            nom_categorie: selectedCat?.nom_categorie ?? "",
+            type: { nom_type: formData.type },
           },
         },
         date_ajout: response.date_ajout || new Date().toISOString(),
-        ...response,
       }
 
       setShowSuccess(true)
-
       setTimeout(() => {
         setShowSuccess(false)
-        onSuccess(newProduct)
+        onSuccess(updatedProduct)
         onClose()
       }, 1200)
     } catch (error: any) {
@@ -302,13 +290,14 @@ export default function EditProductModal({
     }
   }
 
-  const safeNumber = (val: string) => (val === "" ? 0 : Number(val))
-
   if (!isOpen) return null
+
+  // ─── Rendu ───────────────────────────────────────────────────────────────────
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4">
       <div className="bg-white rounded-3xl shadow-2xl w-full max-w-5xl max-h-[92vh] overflow-y-auto relative p-8">
+
         {/* HEADER */}
         <div className="flex justify-between items-center mb-8 border-b border-slate-100 pb-4">
           <h2 className="text-2xl font-bold text-slate-800">
@@ -366,33 +355,15 @@ export default function EditProductModal({
                 <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">
                   Catégorie
                 </label>
+                {/* ✅ value lié à l'ID (number), pas au nom */}
                 <select
                   name="categorie"
-                  value={selectedCategory.nom_categorie}
-                  onChange={(e) => {
-                    const nextCat = e.target.value
-                    const targetCatName = e.target.value
-
-                    // 1. On cherche l'objet Category complet dans votre tableau de catégories
-                    const foundCategory = categories.find(
-                      (cat) => cat.nom_categorie === targetCatName
-                    )
-
-                    // 2. Si on le trouve, on passe l'objet entier à setSelectedCategory
-                    if (foundCategory) {
-                      setSelectedCategory(foundCategory)
-                    }
-
-                    // Sécurité : Réinitialise la sous-catégorie à 1 pour éviter un index hors-limite
-                    setFormData((prev) => ({
-                      ...prev,
-                      categorie: selectedCategory.id_categorie,
-                    }))
-                  }}
+                  value={selectedCategoryId}
+                  onChange={handleCategoryChange}
                   className="w-full p-3.5 border border-slate-200 rounded-xl bg-slate-50/50 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-slate-800"
                 >
                   {categories.map((cat) => (
-                    <option key={cat.id_categorie} value={cat.nom_categorie}>
+                    <option key={cat.id_categorie} value={cat.id_categorie}>
                       {cat.nom_categorie}
                     </option>
                   ))}
@@ -404,48 +375,21 @@ export default function EditProductModal({
               <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">
                 Sous-catégorie
               </label>
+              {/* ✅ value lié à l'ID (number), filtré par catégorie sélectionnée */}
               <select
                 name="sous_categorie"
-                // On lie la valeur au NOM de la sous-catégorie stockée dans l'objet d'état
-                value={selectedSubCategory.nom_sous_categorie}
-                onChange={(e) => {
-                  const targetSubCatName = e.target.value
-
-                  // 1. On cherche l'objet SubCategory complet dans le tableau global sousCategories
-                  const foundSubCategory = sousCategories.find(
-                    (sub) => sub.nom_sous_categorie === targetSubCatName
-                  )
-
-                  // 2. Si on le trouve, on met à jour l'objet d'état et le formData
-                  if (foundSubCategory) {
-                    setSelectedSubCategory(foundSubCategory)
-
-                    setFormData((prev) => ({
-                      ...prev,
-                      // On enregistre le véritable ID de la base de données pour l'envoi au serveur
-                      id_sous_categorie: foundSubCategory.id_sous_categorie,
-                    }))
-                  }
-                }}
+                value={selectedSubCategoryId}
+                onChange={handleSubCategoryChange}
                 className="w-full p-3.5 border border-slate-200 rounded-xl bg-slate-50/50 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-slate-800"
               >
-                {/* Option par défaut si aucune sous-catégorie n'est encore chargée ou trouvée */}
-                {/*{selectedSubCategory.id_sous_categorie === 0 && (
-                  <option value="">Sélectionnez une sous-catégorie</option>
-                )}*/}
-
-                {sousCategories
-                  .filter(
-                    (sub) => sub.id_categorie === selectedCategory.id_categorie
-                  )
-                  .map((sub) => (
-                    <option
-                      key={sub.id_sous_categorie}
-                      value={sub.nom_sous_categorie}
-                    >
-                      {sub.nom_sous_categorie}
-                    </option>
-                  ))}
+                {filteredSubCategories.map((sub) => (
+                  <option
+                    key={sub.id_sous_categorie}
+                    value={sub.id_sous_categorie}
+                  >
+                    {sub.nom_sous_categorie}
+                  </option>
+                ))}
               </select>
             </div>
 

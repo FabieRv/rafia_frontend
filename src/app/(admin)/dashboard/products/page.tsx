@@ -256,6 +256,7 @@ export default function ProductTable() {
                           <button
                             onClick={() => {
                               setProductToEdit(p)
+                              console.log("-------setProductToEdit------"+JSON.stringify(p));
                               setIsModalEditOpen(true)
                             }}
                             className="p-2 text-blue-500 hover:bg-blue-50 rounded-lg transition"
