@@ -88,7 +88,14 @@ function ClientTable() {
 
     try {
       const token = getTokenFromLocalStorage()
-      await updateClient(editingClient.id_user, editingClient, token)
+      const payload = {
+        name: editingClient.name,
+        email: editingClient.email,
+        phone: editingClient.phone,
+        adress: editingClient.adress,
+      };
+      
+      await updateClient(editingClient.id_user, payload, token);
 
       setClients((prev) =>
         prev.map((c) =>
@@ -98,6 +105,7 @@ function ClientTable() {
 
       setEditingClient(null)
     } catch (err) {
+      console.log("-------ERROR-------"+err)
       alert("Erreur update")
     }
   }
@@ -179,7 +187,7 @@ function ClientTable() {
 
       {/* TABLE */}
       <div className="relative overflow-x-auto bg-white shadow-lg rounded-lg m-5 ">
-        <table className="w-full text-left text-sm">
+        <table className="w-full text-left text-sm bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100">
           <thead className="bg-gray-200 text-gray-700 uppercase text-sm border-b border-gray-200">
             <tr>
               <th className="p-4">Nom</th>

@@ -35,11 +35,14 @@ export const updateClient = async (id: number, data: any, token: string) => {
       Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify(data),
-  })
+  });
+
+  const result = await response.json();
+  console.log(result);
 
   if (!response.ok) {
-    throw new Error("Erreur lors de la mise à jour du client")
+    throw new Error(JSON.stringify(result));
   }
 
-  return response.json()
-}
+  return result;
+};
