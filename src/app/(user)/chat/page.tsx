@@ -1,6 +1,7 @@
 "use client"
 
 import { openConversation } from "@/services/chat.service"
+import { getClients } from "@/services/clientService"
 import { getTokenFromLocalStorage } from "@/utils/getToken"
 import { useEffect, useState, useRef } from "react"
 import { io, Socket } from "socket.io-client"
@@ -15,10 +16,15 @@ export default function IndependentClientChatPage() {
   const [loading, setLoading] = useState(true)
 
   const messagesEndRef = useRef<HTMLDivElement>(null)
-  const currentUser = {
+  type CurrentUser = {
+    id: number;
+    role: "USER" | "ADMIN";
+  };
+  
+  const [currentUser, setCurrentUser] = useState<CurrentUser>({
     id: 2,
     role: "USER",
-  }
+  });
 
   const adminId = 1
 
@@ -33,6 +39,43 @@ export default function IndependentClientChatPage() {
 
   // Initialisation du Chat
   useEffect(() => {
+
+    const userSessionString = localStorage.getItem("user") || ""
+
+  const fetchUser = async () => {if (userSessionString === "") {
+    alert("Vous devez vous connecter, svp!")
+    return
+  }
+
+  // 2. Convertir la chaîne JSON en objet JavaScript exploitable
+  const currentUser = JSON.parse(userSessionString)
+
+  // 3. Récupérer la liste des clients
+  const users = await getClients()
+
+  // 4. Utiliser .find() au lieu de .filter() pour obtenir l'objet de l'utilisateur directement
+  const matchedUser = users.find(
+    (user: any) => user.email === currentUser.email
+  )
+
+  if (!matchedUser) {
+    alert("Utilisateur introuvable dans la base de données.")
+    return
+  }
+  console.log("-----MATCHEDUSER-----" + JSON.stringify(matchedUser))
+  // 5. Vous avez maintenant le senderId correct (un nombre ou une string selon votre BDD)
+  const senderId = matchedUser.id_user // ou matchedUser.id selon votre modèle User
+  console.log("Sender ID trouvé :", senderId)
+
+  setCurrentUser({
+    id: senderId,
+    role: "USER",
+  });
+
+}
+
+  fetchUser();
+
     const savedToken = getTokenFromLocalStorage() || ""
     setToken(savedToken)
 
