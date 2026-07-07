@@ -64,7 +64,7 @@ export default function AddProductModal({
   }, [isOpen])
 
   // HANDLE INPUT
-  const handleInputChange = (
+  /*const handleInputChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
     >
@@ -79,6 +79,21 @@ export default function AddProductModal({
         name === "id_sous_categorie"
           ? Number(value)
           : value,
+    }))
+  }*/
+
+  const handleInputChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => {
+    const { name, value } = e.target
+
+    const numberFields = ["prix", "quantite_stock", "id_sous_categorie"]
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: numberFields.includes(name) ? safeNumber(value) : value,
     }))
   }
 
@@ -104,37 +119,53 @@ export default function AddProductModal({
     try {
       const token = localStorage.getItem("token") || ""
       const currentSubCategories = SUB_CATEGORIES_DATA[selectedCategory]
+
       const subCategoryName =
         currentSubCategories[formData.id_sous_categorie - 1]
-
-      // 1. Préparation propre du FormData (uniquement les propriétés attendues par l'API)
       const formDataToSend = new FormData()
+
+      // 1. Alignement strict sur le snake_case du DTO NestJS
       formDataToSend.append("nom_produit", formData.nom_produit)
       formDataToSend.append("description", formData.description)
-      formDataToSend.append("prix", String(formData.prix))
-      formDataToSend.append("quantite_stock", String(formData.quantite_stock))
       formDataToSend.append("type", formData.type)
+
+      // 2. Envoi des nombres (ils seront des strings dans le FormData, NestJS devra les parser)
+      formDataToSend.append("prix", String(Number(formData.prix)))
+      formDataToSend.append(
+        "quantite_stock",
+        String(Number(formData.quantite_stock))
+      )
+      formDataToSend.append(
+        "categorie",
+        String(getCategoryId(selectedCategory))
+      )
       formDataToSend.append(
         "id_sous_categorie",
-        String(formData.id_sous_categorie)
+        String(Number(formData.id_sous_categorie))
       )
 
+      // 3. Envoi du booléen
+      formDataToSend.append("isEdit", String(isEdit))
+
+      // 4. L'image (FileInterceptor('image') attend la clé "image")
       if (formData.fichier) {
         formDataToSend.append("image", formData.fichier)
       }
 
-      // 2. Envoi à l'API
+      // Pour inspecter correctement votre envoi :
+      console.log(
+        "--- DONNÉES ENVOYÉES ---",
+        Object.fromEntries(formDataToSend.entries())
+      )
+
       const response = await addProduit(formDataToSend, token)
 
-      // 3. Construction de l'objet local pour mettre à jour l'affichage Front-End
       const newProduct = {
         ...(response || {}),
         nom_produit: formData.nom_produit,
         prix: formData.prix,
         quantite_stock: formData.quantite_stock,
-        image: formData.fichier
-          ? URL.createObjectURL(formData.fichier)
-          : formData.image,
+        image: formData.image,
         sous_category: {
           nom_sous_categorie: subCategoryName,
           category: {
@@ -144,10 +175,10 @@ export default function AddProductModal({
             },
           },
         },
+
         date_ajout: response?.date_ajout || new Date().toISOString(),
       }
-
-      console.log("++++++++++++newProduct++++++++", JSON.stringify(newProduct))
+      console.log("++++++++++++newProduct++++++++" + JSON.stringify(newProduct))
       setShowSuccess(true)
 
       setTimeout(() => {
@@ -254,7 +285,8 @@ export default function AddProductModal({
                 className="w-full p-3.5 border border-slate-200 rounded-xl bg-slate-50/50 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-slate-800"
               >
                 {SUB_CATEGORIES_DATA[selectedCategory].map((sub, i) => (
-                  <option key={sub} value={i + 1}>
+                  // CORRECTION ICI : Utilisation combinée du nom et de l'index pour éviter les doublons de clés
+                  <option key={`${sub}-${i}`} value={i + 1}>
                     {sub}
                   </option>
                 ))}
@@ -377,3 +409,4 @@ export default function AddProductModal({
     </div>
   )
 }
+const safeNumber = (val: string) => (val === "" ? 0 : Number(val))

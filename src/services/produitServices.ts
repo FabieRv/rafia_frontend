@@ -20,15 +20,14 @@ export async function getProductById(id: number) {
 
 // UPDATE
 
-export async function addProduit(data: Record<string, any>, token: string) {
+export async function addProduit(data: any, token: string) {
   try {
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/products/add`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
       },
-      body: JSON.stringify(data),
+      body: data,
     })
 
     const result = await res.json().catch(() => null)
