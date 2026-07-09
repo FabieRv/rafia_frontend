@@ -57,8 +57,8 @@ export const ACCORDION_ITEMS = [
   },
   {
     id: 5,
-    title: "Les bijoux artisanaux",
-    imageUrl: "/img/bisou.webp",
+    title: "Savoir faire",
+    imageUrl: "/img/savoir-faire.png",
   },
 ]
 

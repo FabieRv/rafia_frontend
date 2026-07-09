@@ -236,7 +236,13 @@ export default function ProductTable() {
                         {p.prix}€
                       </td>
                       <td className="py-5 px-6 text-center">
-                        <span className="inline-block px-3 py-1 bg-[#E8F8F0] text-[#2ECC71] text-xs font-bold rounded-full min-w-[36px]">
+                        <span
+                          className={`inline-block px-3 py-1 text-xs font-bold rounded-full min-w-[36px] ${
+                            (p.quantite_stock ?? 0) < 4
+                              ? "bg-red-100 text-[#2ECC71]"
+                              : "bg-[#E8F8F0] text-[#2ECC71]"
+                          }`}
+                        >
                           {p.quantite_stock ?? 23}
                         </span>
                       </td>
@@ -256,7 +262,10 @@ export default function ProductTable() {
                           <button
                             onClick={() => {
                               setProductToEdit(p)
-                              console.log("-------setProductToEdit------"+JSON.stringify(p));
+                              console.log(
+                                "-------setProductToEdit------" +
+                                  JSON.stringify(p)
+                              )
                               setIsModalEditOpen(true)
                             }}
                             className="p-2 text-blue-500 hover:bg-blue-50 rounded-lg transition"

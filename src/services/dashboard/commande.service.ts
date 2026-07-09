@@ -46,6 +46,7 @@ export async function updateCommandeStatus(
   status: string,
   token: string
 ) {
+  console.log("------------status--------------" + status)
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/admin/commandes/${id}/status`,
     {
@@ -54,7 +55,8 @@ export async function updateCommandeStatus(
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify({ status }),
+      //body: JSON.stringify({ status: "CONFIRMEE" }),
+      body: JSON.stringify({ status: status }),
     }
   )
 

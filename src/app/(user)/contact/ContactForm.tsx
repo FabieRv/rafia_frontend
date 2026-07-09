@@ -35,16 +35,33 @@ function ContactForm() {
             <div className="font-text space-y-2 mb-14 flex flex-col items-center">
               <ul className="space-y-4">
                 <li className="flex items-center gap-3 text-sky-600  font-medium cursor-pointer hover:text-sky-700 transition">
-                  <MessageCircle size={20} />
-                  <span>Démarrer un chat en direct</span>
+                  <a
+                    href="http://localhost:3000/chat"
+                    className="flex items-center gap-3"
+                  >
+                    <MessageCircle size={20} />
+                    <span>Démarrer un chat en direct</span>
+                  </a>
                 </li>
-                <li className="flex items-center gap-3 text-sky-600  font-medium cursor-pointer hover:text-sky-700 transition">
-                  <FaWhatsapp size={20} />
-                  <span>Contactez-nous sur WhatsApp</span>
+                <li className="flex items-center gap-3 text-sky-600 font-medium cursor-pointer hover:text-sky-700 transition">
+                  <a
+                    href="https://wa.me/0320497005"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-3"
+                  >
+                    <FaWhatsapp size={20} />
+                    <span>Contactez-nous sur WhatsApp</span>
+                  </a>
                 </li>
-                <li className="flex items-center gap-3 text-sky-600  font-medium cursor-pointer hover:text-sky-700 transition">
-                  <Mail size={20} />
-                  <span>Envoyez-nous un email</span>
+                <li className="flex items-center gap-3 text-sky-600 font-medium cursor-pointer hover:text-sky-700 transition">
+                  <a
+                    href="mailto:fabie.rav@gmail.com"
+                    className="flex items-center gap-3"
+                  >
+                    <Mail size={20} />
+                    <span>Envoyez-nous un email</span>
+                  </a>
                 </li>
               </ul>
             </div>
