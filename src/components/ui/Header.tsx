@@ -189,21 +189,23 @@ export default function Header() {
               isClicked ? "translate-x-0" : "translate-x-full"
             }`}
           >
-            {["ACCUEIL", "MODEL", "CATALOGUE", "CONTACT"].map((text, index) => (
-              <li key={index}>
-                <Link
-                  href={
-                    text === "ACCUEIL"
-                      ? "/"
-                      : `/${text.toLowerCase().replace(" ", "")}`
-                  }
-                  className="font-bold hover:text-(--btn-hover) transition-colors"
-                  onClick={() => setIsClicked(false)}
-                >
-                  {text}
-                </Link>
-              </li>
-            ))}
+            {["ACCUEIL", "MODELE", "CATALOGUE", "CONTACT"].map(
+              (text, index) => (
+                <li key={index}>
+                  <Link
+                    href={
+                      text === "ACCUEIL"
+                        ? "/"
+                        : `/${text.toLowerCase().replace(" ", "")}`
+                    }
+                    className="font-bold hover:text-(--btn-hover) transition-colors"
+                    onClick={() => setIsClicked(false)}
+                  >
+                    {text}
+                  </Link>
+                </li>
+              )
+            )}
 
             <div className="h-px bg-gray-200 w-full my-4" />
 
